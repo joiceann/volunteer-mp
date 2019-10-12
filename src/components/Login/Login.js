@@ -1,4 +1,6 @@
-import React from 'react';
+import React, {
+  useState,
+} from 'react';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import colors from '../../colors';
@@ -58,8 +60,8 @@ const Form = styled.form`
 
 const Login = ({ login }) => {
 
-  let [email, setEmail] = React.useState('');
-  let [password, setPassword] = React.useState('');
+  let [email, setEmail] = useState('');
+  let [password, setPassword] = useState('');
   const history = useHistory();
 
 
@@ -74,7 +76,7 @@ const Login = ({ login }) => {
 
   const submit = (event) => {
     event.preventDefault();
-    axios.post(Constants.LOGIN_ENDPOINT,
+    axios.post(Constants.LOGIN,
       JSON.stringify({email, password}),
       {
         headers: {

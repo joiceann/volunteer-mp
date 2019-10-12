@@ -1,11 +1,16 @@
 import React from 'react';
-
+import {
+  Header,
+  Section
+} from '../CommonComponents';
 
 const Overview = () => {
   return (
-    <div>
-      Overview
-    </div>
+    <Section>
+      <Header>
+        Overview
+      </Header>
+    </Section>
   );
 };
 

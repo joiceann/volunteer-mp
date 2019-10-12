@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {
+  useState,
+}from 'react';
 import Drawer from '@material-ui/core/Drawer';
-import { useTheme } from '@material-ui/core/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -21,6 +23,7 @@ import styled from 'styled-components';
 
 const drawerClosedWidth = '60px';
 
+const theme = createMuiTheme();
 const StyledDrawer = styled(Drawer)`
   width: ${props => (props.open) ? '270px' : drawerClosedWidth};
   @media ${devices.labtop} {
@@ -40,8 +43,8 @@ const StyledDrawer = styled(Drawer)`
       width: ${props => (props.open) ? '330px' : drawerClosedWidth};
     }
 
-    transition: width ${props => props.theme.transitions.easing.sharp}
-      ${props => props.theme.transitions.duration.leavingScreen}ms;
+    transition: width ${theme.transitions.easing.sharp}
+      ${theme.transitions.duration.leavingScreen}ms;
       overflow-x: hidden;
   }
   white-space: nowrap;
@@ -73,8 +76,7 @@ const StyledListItem = styled(ListItem)`
 
 
 const Menu = ({ logout }) => {
-  const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
   let { section } = useParams();
   const toggleDrawer = () => {
     setOpen(!open);
@@ -84,7 +86,6 @@ const Menu = ({ logout }) => {
       anchor="left"
       variant="permanent"
       open={open}
-      theme={theme}
     >
       <List>
         <LogoContainer>

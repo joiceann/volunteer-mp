@@ -1,22 +1,42 @@
-import React from 'react';
+import React, {
+  useEffect,
+} from 'react';
 import styled from 'styled-components';
-import Typography from '@material-ui/core/Typography';
+import { createMuiTheme } from '@material-ui/core/styles';
+import {
+  Header,
+  Section,
+  SearchBar
+} from '../CommonComponents';
 
+import axios from '../../axios';
+import * as Constants from '../../constants';
 
-const ProjectView = styled.section`
-  display: flex;
-  flex-direction: column;
+const theme = createMuiTheme();
+
+const CustomSearchBar = styled(SearchBar)`
+  color: blue;
+  margin-top: ${theme.spacing(6)}px;
 `;
-
 
 const Projects = () => {
 
+  const fetchData = () => {
+    axios.get(Constants.PROJECTS_LIST)
+      .then((response) => {
+        console.log(response);
+      });
+  };
+
+  useEffect(fetchData)
+
   return (
-    <ProjectView>
-      <Typography>
+    <Section>
+      <Header>
         Proyectos
-      </Typography>
-    </ProjectView>
+      </Header>
+      <CustomSearchBar />
+    </Section>
   );
 };
 

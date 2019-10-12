@@ -1,11 +1,16 @@
 import React from 'react';
-
+import {
+  Header,
+  Section
+} from '../CommonComponents';
 
 const Profile = () => {
   return (
-    <div>
-      Profile
-    </div>
+    <Section>
+      <Header>
+        Mi perfil
+      </Header>
+    </Section>
   );
 };
 
