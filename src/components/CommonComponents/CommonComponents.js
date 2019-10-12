@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import colors from '../colors';
+import colors from '../../colors';
 import MuButton from '@material-ui/core/Button';
 import MuTextField from '@material-ui/core/TextField';
 import { Link } from 'react-router-dom';

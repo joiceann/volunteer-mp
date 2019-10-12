@@ -1,14 +1,14 @@
 import React from 'react';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
-import colors from '../colors';
+import colors from '../../colors';
 import styled, { createGlobalStyle } from 'styled-components';
 import Typography from '@material-ui/core/Typography';
-import { Button, TextField } from './CommonComponents';
+import { Button, TextField } from '../CommonComponents';
 import Avatar from '@material-ui/core/Avatar';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import * as Constants from '../constants';
-import axios from '../axios';
+import * as Constants from '../../constants';
+import axios from '../../axios';
 import { useHistory } from 'react-router-dom';
 
 const GlobalStyle = createGlobalStyle`

@@ -1,10 +1,10 @@
 import React from 'react';
-import Main from './Main';
-import Login from './Login';
-import PrivateRoute from './PrivateRoute';
+import Main from '../Main';
+import Login from '../Login';
+import { PrivateRoute } from '../Routes';
 import { Route, Switch, Redirect } from "react-router-dom";
 import { useHistory } from 'react-router-dom';
-import { setAuth } from '../axios';
+import { setAuth } from '../../axios';
 
 const Session = () => {
 
@@ -28,7 +28,8 @@ const Session = () => {
       />
       <PrivateRoute
         path="/dashboard/:section"
-        component={() => <Main logout={logout}/>}
+        props={{logout}}
+        component={Main}
       />
       <Route exact path="/">
         <Redirect to="/login" />

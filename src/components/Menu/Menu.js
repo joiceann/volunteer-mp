@@ -13,8 +13,8 @@ import ProjectIcon from '@material-ui/icons/Assignment';
 import ExitIcon from '@material-ui/icons/ExitToApp';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
-import devices from '../devices';
-import { RouterLink } from './CommonComponents';
+import devices from '../../devices';
+import { RouterLink } from '../CommonComponents';
 import { useParams } from 'react-router-dom';
 
 import styled from 'styled-components';

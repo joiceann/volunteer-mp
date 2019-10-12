@@ -35,7 +35,7 @@ function App() {
   return (
     <StylesProvider injectFirst>
       <GlobalStyle />
-      <Router>
+      <Router forceRefresh={false}>
         <Session />
       </Router>
     </StylesProvider>

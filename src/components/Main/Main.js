@@ -1,10 +1,10 @@
 import React from 'react';
-import Menu from './Menu';
+import Menu from '../Menu';
 import styled, { createGlobalStyle } from 'styled-components';
-import Overview from './Overview';
-import Projects from './Projects';
-import Profile from './Profile';
-import colors from '../colors';
+import Overview from '../Overview';
+import Projects from '../Projects';
+import Profile from '../Profile';
+import colors from '../../colors';
 import {
   Route,
   Switch,
