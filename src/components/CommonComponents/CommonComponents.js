@@ -19,6 +19,10 @@ export const Button = styled(MuButton)`
   }
 `;
 
+export const ClearButton = styled(MuButton)`
+  color: ${colors.main};
+`;
+
 export const TextField = styled(MuTextField)`
   & label.Mui-focused {
     color: ${colors.main};

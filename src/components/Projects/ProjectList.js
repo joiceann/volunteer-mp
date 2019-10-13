@@ -14,6 +14,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import {
   LoadingScreen,
   DefaultImage,
+  ClearButton,
 } from '../CommonComponents';
 import devices from '../../devices';
 
@@ -90,12 +91,12 @@ const ProjectList = ({ projects, search }) => {
                 </CardContent>
               </CustomCardAction>
               <CardActions>
-                <Button size="small" color="primary">
+                <ClearButton size="small" color="primary">
                   Editar
-                </Button>
-                <Button size="small" color="primary">
+                </ClearButton>
+                <ClearButton size="small" color="primary">
                   Eliminar
-                </Button>
+                </ClearButton>
               </CardActions>
             </CustomCard>
           </Grid>
