@@ -51,7 +51,6 @@ const SeparatedButton = styled(Button)`
   margin-top: 20px;
 `;
 
-
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -60,8 +59,9 @@ const Form = styled.form`
 
 const Login = ({ login }) => {
 
-  let [email, setEmail] = useState('');
-  let [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [formError, showFormError] = useState(false);
   const history = useHistory();
 
 
@@ -86,9 +86,8 @@ const Login = ({ login }) => {
     ).then((response) => {
       login(response.data.token);
       history.push('/dashboard/overview');
-    }).catch((error) => {
-      console.log(error);
-      alert('Usuario o contraseña invalido');
+    }).catch(() => {
+      showFormError(true);
     });
   };
   return (
@@ -131,6 +130,12 @@ const Login = ({ login }) => {
             id="password"
             autoComplete="current-password"
           />
+          {
+            formError &&
+            <Typography color="error">
+              Correo electrónico o contraseña incorrectos
+            </Typography>
+          }
           <SeparatedButton
             type="submit"
             fullWidth

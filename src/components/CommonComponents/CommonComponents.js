@@ -48,5 +48,6 @@ export const Header = (props) => {
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   padding: ${theme.spacing(7)}px;
 `;

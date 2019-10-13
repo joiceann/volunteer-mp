@@ -11,6 +11,9 @@ const Session = () => {
   const history = useHistory();
 
   const login = (token) => {
+    if (token === undefined) {
+      return;
+    }
     localStorage.setItem('token', token);
     setAuth(token);
   };
@@ -20,6 +23,16 @@ const Session = () => {
     setAuth('');
     history.push('/login');
   };
+
+  const auth = () => {
+    const token = localStorage.getItem('token');
+    if (token != null) {
+      setAuth(token);
+    }
+  };
+
+  auth();
+
   return (
     <Switch>
       <Route path="/login"
@@ -28,6 +41,7 @@ const Session = () => {
       />
       <PrivateRoute
         path="/dashboard/:section"
+        login={login}
         props={{logout}}
         component={Main}
       />

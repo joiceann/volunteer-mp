@@ -23,13 +23,15 @@ const CustomInput = styled(InputBase)`
   flex: 1;
 `;
 
-const SearchBar = ({ className }) => {
+const SearchBar = ({ className, placeholder, value, onChange }) => {
   return (
     <CustomPaper className={className}>
       <CustomInput
-        placeholder="Buscar un proyecto"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
       />
-      <IconButton>
+      <IconButton disabled={true}>
         <SearchIcon />
       </IconButton>
     </CustomPaper>

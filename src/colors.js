@@ -3,6 +3,7 @@ const colors = {
   secondary: '#011627',
   fg: '#ffffff',
   background: '#f7f8fd',
+  error: '#f72254',
 };
 
 export default colors;

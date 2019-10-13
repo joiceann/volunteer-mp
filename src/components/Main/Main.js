@@ -24,6 +24,7 @@ const MainContainer = styled.main`
 `;
 
 const Content = styled.section`
+  display: flex;
   flex-grow: 1;
 `;
 
