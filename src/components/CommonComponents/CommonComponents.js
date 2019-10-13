@@ -23,6 +23,10 @@ export const ClearButton = styled(MuButton)`
   color: ${colors.main};
 `;
 
+export const PrecautionButton = styled(MuButton)`
+  color: ${colors.error};
+`;
+
 export const TextField = styled(MuTextField)`
   & label.Mui-focused {
     color: ${colors.main};

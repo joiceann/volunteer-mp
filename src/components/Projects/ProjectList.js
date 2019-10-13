@@ -14,6 +14,7 @@ import {
   LoadingScreen,
   DefaultImage,
   ClearButton,
+  PrecautionButton,
 } from '../CommonComponents';
 import devices from '../../devices';
 
@@ -93,9 +94,9 @@ const ProjectList = ({ projects, search }) => {
                 <ClearButton size="small" color="primary">
                   Editar
                 </ClearButton>
-                <ClearButton size="small" color="primary">
+                <PrecautionButton size="small" color="primary">
                   Eliminar
-                </ClearButton>
+                </PrecautionButton>
               </CardActions>
             </CustomCard>
           </Grid>
