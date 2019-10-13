@@ -34,6 +34,8 @@ const Projects = () => {
     })
       .then((response) => {
         setProjects(response.data);
+      }).catch(() => {
+
       });
 
     return () => {
@@ -41,7 +43,7 @@ const Projects = () => {
     };
   };
 
-  useEffect(fetchData, [])
+  useEffect(fetchData)
 
   return (
     <Section>
