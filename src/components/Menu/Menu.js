@@ -26,8 +26,14 @@ const drawerClosedWidth = '60px';
 const theme = createMuiTheme();
 const StyledDrawer = styled(Drawer)`
   width: ${props => (props.open) ? '270px' : drawerClosedWidth};
-  @media ${devices.labtop} {
+  @media ${devices.mobileS} {
     width: ${props => (props.open) ? '270px' : drawerClosedWidth};
+    position: ${props => props.open ? 'absolute' : 'relative'};
+  }
+
+  @media ${devices.laptop} {
+    width: ${props => (props.open) ? '270px' : drawerClosedWidth};
+    position: relative;
   }
 
   @media ${devices.laptopL} {

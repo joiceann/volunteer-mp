@@ -17,6 +17,7 @@ import {
   PrecautionButton,
 } from '../CommonComponents';
 import devices from '../../devices';
+import colors from '../../colors';
 
 const theme = createMuiTheme();
 
@@ -27,6 +28,7 @@ const CustomImage = styled(CardMedia)`
 const CustomCard = styled(Card)`
   width: 345px;
   height: 371px;
+  color: ${colors.main};
   @media ${devices.mobileS} {
     width: 100px;
     height: 100px;

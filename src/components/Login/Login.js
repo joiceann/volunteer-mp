@@ -12,6 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import * as Constants from '../../constants';
 import axios from '../../axios';
 import { useHistory } from 'react-router-dom';
+import {
+  LoadingScreen,
+} from '../CommonComponents';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -62,6 +65,7 @@ const Login = ({ login }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formError, showFormError] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const history = useHistory();
 
 
@@ -76,6 +80,7 @@ const Login = ({ login }) => {
 
   const submit = (event) => {
     event.preventDefault();
+    setLoading(true);
     axios.post(Constants.LOGIN,
       JSON.stringify({email, password}),
       {
@@ -85,9 +90,11 @@ const Login = ({ login }) => {
       },
     ).then((response) => {
       login(response.data.token);
+      setLoading(false);
       history.push('/dashboard/overview');
     }).catch(() => {
       showFormError(true);
+      setLoading(false);
     });
   };
   return (
@@ -135,6 +142,9 @@ const Login = ({ login }) => {
             <Typography color="error">
               Correo electrónico o contraseña incorrectos
             </Typography>
+          }
+          {
+            isLoading && <LoadingScreen dark={true} />
           }
           <SeparatedButton
             type="submit"

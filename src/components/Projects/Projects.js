@@ -7,7 +7,8 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import {
   Header,
   Section,
-  SearchBar
+  SearchBar,
+  Snackbar,
 } from '../CommonComponents';
 import ProjectsList from './ProjectList';
 import axios from 'axios';
@@ -25,17 +26,17 @@ const Projects = () => {
 
   const [projects, setProjects] = useState([]);
   const [search, setSearch] = useState('');
+  const [showError, setShowError] = useState(false);
 
   const fetchData = () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     instace.get(Constants.PROJECTS_LIST, {
       cancelToken: source.token,
-    })
-      .then((response) => {
+    }).then((response) => {
         setProjects(response.data);
       }).catch(() => {
-
+        setShowError(true);
       });
 
     return () => {
@@ -43,7 +44,7 @@ const Projects = () => {
     };
   };
 
-  useEffect(fetchData)
+  useEffect(fetchData, [])
 
   return (
     <Section>
@@ -56,6 +57,12 @@ const Projects = () => {
         onChange={setSearch}
       />
       <ProjectsList search={search} projects={projects} />
+      <Snackbar
+        open={showError}
+        variant="error"
+        setOpen={setShowError}
+        message="No fue posible obtener la lista de proyectos"
+      />
     </Section>
   );
 };

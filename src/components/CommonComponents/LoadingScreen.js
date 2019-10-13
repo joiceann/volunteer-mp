@@ -15,13 +15,13 @@ const Wrapper = styled.div`
 `;
 
 const CustomLoader = styled(CircularProgress)`
-  color: ${colors.fg};
+  color: ${({ dark }) => dark ? colors.main : colors.fg};
 `;
 
-const LoadingScreen = () => {
+const LoadingScreen = ({ dark }) => {
   return (
     <Wrapper>
-      <CustomLoader />
+      <CustomLoader dark={dark} />
     </Wrapper>
   );
 };

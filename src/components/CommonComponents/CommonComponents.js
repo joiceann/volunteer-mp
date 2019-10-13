@@ -38,7 +38,7 @@ export const TextField = styled(MuTextField)`
 
 export const RouterLink = styled(Link)`
   text-decoration: none;
-  color: inherit;
+  color: ${colors.main};
 `;
 
 const Title = styled(Typography)`
