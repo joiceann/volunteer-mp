@@ -9,6 +9,7 @@ import {
   Section,
   SearchBar,
   Snackbar,
+  Fab,
 } from '../CommonComponents';
 import ProjectsList from './ProjectList';
 import axios from 'axios';
@@ -20,6 +21,12 @@ const theme = createMuiTheme();
 const CustomSearchBar = styled(SearchBar)`
   color: blue;
   margin-top: ${theme.spacing(6)}px;
+`;
+
+const HeaderLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const Projects = () => {
@@ -48,9 +55,12 @@ const Projects = () => {
 
   return (
     <Section>
-      <Header>
-        Proyectos
-      </Header>
+      <HeaderLine>
+        <Header>
+          Proyectos
+        </Header>
+        <Fab />
+      </HeaderLine>
       <CustomSearchBar
         placeholder="Buscar un proyecto"
         value={search}

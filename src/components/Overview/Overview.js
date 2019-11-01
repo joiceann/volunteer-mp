@@ -8,7 +8,7 @@ const Overview = () => {
   return (
     <Section>
       <Header>
-        Inicio
+        Mis Noticias
       </Header>
     </Section>
   );

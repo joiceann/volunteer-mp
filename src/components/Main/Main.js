@@ -36,9 +36,9 @@ const Main = ({ logout }) => {
       <Menu logout={logout} />
       <Content>
         <Switch>
-          <Route path="/dashboard/projects" component={Projects}/>
-          <Route path="/dashboard/profile" component={Profile}/>
-          <Route component={Overview}/>
+          <Route path="/dashboard/projects" render={() => <Projects />}/>
+          <Route path="/dashboard/profile" render={() => <Profile />}/>
+          <Route render={() => <Overview />}/>
         </Switch>
       </Content>
     </MainContainer>

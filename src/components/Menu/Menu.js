@@ -119,7 +119,7 @@ const Menu = ({ logout }) => {
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText primary="Inicio" />
+            <ListItemText primary="Mis noticias" />
           </StyledListItem>
         </RouterLink>
         <RouterLink to="/dashboard/projects">
@@ -131,7 +131,7 @@ const Menu = ({ logout }) => {
             <ListItemIcon>
               <ProjectIcon />
             </ListItemIcon>
-            <ListItemText primary="Mis proyectos" />
+            <ListItemText primary="Proyectos" />
           </StyledListItem>
         </RouterLink>
         <RouterLink to="/dashboard/profile">
