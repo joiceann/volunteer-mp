@@ -8,6 +8,9 @@ import {
   TextField as MuTextField,
   Typography,
 } from '@material-ui/core';
+import{
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 const theme = createMuiTheme();
 
@@ -41,9 +44,24 @@ export const RouterLink = styled(Link)`
   color: ${colors.main};
 `;
 
+export const DatePicker = styled(KeyboardDatePicker)`
+  & .MuiFormLabel-root.Mui-focused {
+    color: ${colors.main};
+  }
+
+  & .MuiInput-underline::after {
+      border-color: ${colors.main} !important;
+    }
+`;
+
+export const DarkTitle = styled(Typography)`
+  color: ${colors.main};
+`;
+
 const Title = styled(Typography)`
   color: white;
 `;
+
 
 export const Header = (props) => {
   return (

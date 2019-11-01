@@ -42,6 +42,10 @@ const CustomCard = styled(Card)`
     height: 100px;
   }
   @media ${devices.tablet} {
+    width: 286px;
+    height: 338px;
+  }
+  @media ${devices.laptopL} {
     width: 345px;
     height: 371px;
   }
@@ -73,6 +77,12 @@ const ProjectName = styled(Typography)`
 
 const ProjectDescription = styled(Typography)`
   max-height: 168px;
+  @media ${devices.tablet} {
+    max-height: 140px;
+  }
+  @media ${devices.desktop} {
+    max-height: 168px;
+  }
   overflow: hidden;
   text-overflow: ellipsis;
 `
