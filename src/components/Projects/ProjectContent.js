@@ -69,7 +69,6 @@ const BlueAvatar = styled(Avatar)`
 `;
 
 const ProjectContent = ({ project }) => {
-  console.log(project);
   return (
     <Content>
       <DateRangeSection project={project} />

@@ -20,6 +20,7 @@ import {
 import devices from '../../devices';
 import colors from '../../colors';
 import ProjectView from './ProjectView';
+import EditProject from './EditProject';
 
 
 const theme = createMuiTheme();
@@ -96,6 +97,7 @@ const ProjectList = ({ projects, search }) => {
     news: [],
   });
   const [openProject, setOpenProject] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   let projectList = [];
   search = search.trim().toLowerCase();
   if (search !== '') {
@@ -121,6 +123,11 @@ const ProjectList = ({ projects, search }) => {
     setOpenProject(true);
   };
 
+  const showEditProject = (project) => {
+    setSelectedProject(project);
+    setOpenEdit(true);
+  }
+
   const onCloseProject = () => {
     setOpenProject(false);
   };
@@ -130,8 +137,18 @@ const ProjectList = ({ projects, search }) => {
     openConfirmation(false);
   };
 
+  const onCloseEdit = (accept) => {
+    setOpenEdit(false);
+  };
+
   return (
     <CustomGrid container spacing={1} justify="space-between">
+      <EditProject
+        open={openEdit}
+        projectData={selectedProject}
+        setProjectData={setSelectedProject}
+        onClose={onCloseEdit}
+      />
       <Alert
         open={openConfirmDialog}
         title={`¿Desea eliminar el proyecto ${selectedProject.name}?`}
@@ -167,7 +184,11 @@ const ProjectList = ({ projects, search }) => {
                 </CustomCardContent>
               </CustomCardAction>
               <CardActions>
-                <ClearButton size="small" color="primary">
+                <ClearButton
+                  size="small"
+                  color="primary"
+                  onClick={() => showEditProject(project)}
+                >
                   Editar
                 </ClearButton>
                 <PrecautionButton

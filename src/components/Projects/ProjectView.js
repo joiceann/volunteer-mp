@@ -36,7 +36,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const ProjectView = ({ open, onClose, project }) => {
-  console.log(project)
   return (
     <Dialog
       fullScreen

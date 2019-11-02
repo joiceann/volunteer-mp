@@ -85,6 +85,9 @@ const ProjectBanner = ({ project }) => {
         <CompanyInfo>
           Promovido por: {project.organinfo.name}
         </CompanyInfo>
+        <CompanyInfo>
+          Lugar: {project.address}
+        </CompanyInfo>
       </ProjectInsights>
     </Banner>
   );

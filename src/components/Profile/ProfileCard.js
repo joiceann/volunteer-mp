@@ -21,6 +21,9 @@ import {
   Email,
   Phone,
   BusinessCenter,
+  Healing,
+  Favorite,
+  FastRewind,
 } from '@material-ui/icons';
 
 const theme = createMuiTheme();
@@ -52,7 +55,7 @@ const FullPaper = styled(Paper)`
   flex-direction: column;
 `;
 
-const BlueAvatar = styled(Avatar)`
+const BigAvatar = styled(Avatar)`
   color: ${colors.fg};
   background-color: ${colors.yellow};
   @media ${devices.mobileS} {
@@ -68,6 +71,11 @@ const BlueAvatar = styled(Avatar)`
     font-size: 3em;
   }
   border: 5px solid ${colors.fg};
+`;
+
+const DataAvatar = styled(Avatar)`
+  color: ${colors.fg};
+  background-color: ${colors.main};
 `;
 
 const Typography = styled(MuTypography)`
@@ -92,12 +100,11 @@ const SecondColumn = styled.div`
   padding-left: ${theme.spacing(5)}px;
 `;
 
-const ProjectList = styled(List)`
+const AdditionalList = styled(List)`
   width: 100%;
 `;
 
 const ProfileCard = ({ user }) => {
-  console.log(user);
   if (user === null) {
     return <LoadingScreen />;
   }
@@ -105,9 +112,9 @@ const ProfileCard = ({ user }) => {
     <Container>
       <FullPaper>
         <BioContainer>
-          <BlueAvatar>
+          <BigAvatar>
             {`${user.name[0]}${user.lname[0]}`}
-          </BlueAvatar>
+          </BigAvatar>
           <Typography variant="h3">
             {`${user.name} ${user.lname}`}
           </Typography>
@@ -119,9 +126,9 @@ const ProfileCard = ({ user }) => {
           <DetailsList>
             <ListItem>
               <ListItemAvatar>
-                <Avatar>
+                <DataAvatar>
                   <Email />
-                </Avatar>
+                </DataAvatar>
               </ListItemAvatar>
               <ListItemText
                 primary="Correo electrónico"
@@ -131,9 +138,9 @@ const ProfileCard = ({ user }) => {
             <Divider variant="inset" component="li" />
             <ListItem>
               <ListItemAvatar>
-                <Avatar>
+                <DataAvatar>
                   <Phone/>
-                </Avatar>
+                </DataAvatar>
               </ListItemAvatar>
               <ListItemText
                 primary="Teléfono"
@@ -143,9 +150,9 @@ const ProfileCard = ({ user }) => {
             <Divider variant="inset" component="li" />
             <ListItem>
               <ListItemAvatar>
-                <Avatar>
+                <DataAvatar>
                   <BusinessCenter />
-                </Avatar>
+                </DataAvatar>
               </ListItemAvatar>
               <ListItemText
                 primary="Ocupación"
@@ -154,26 +161,43 @@ const ProfileCard = ({ user }) => {
             </ListItem>
           </DetailsList>
           <SecondColumn>
-            <Typography>
-              Proyectos:
-            </Typography>
-            {
-              user.projects.length === 0 &&
-              <Typography>
-                No hay proyectos existentes
-              </Typography>
-            }
-            <ProjectList>
-              {
-                user.projects.map(project => (
-                  <ListItem>
-                    <ListItemText
-                      primary={project.name}
-                    />
-                  </ListItem>
-                ))
-              }
-            </ProjectList>
+            <AdditionalList>
+              <ListItem>
+                <ListItemAvatar>
+                  <DataAvatar>
+                    <Healing />
+                  </DataAvatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary="Alergias"
+                  secondary={user.hinfo.allergies}
+                />
+              </ListItem>
+              <Divider variant="inset" component="li" />
+              <ListItem>
+                <ListItemAvatar>
+                  <DataAvatar>
+                    <Favorite />
+                  </DataAvatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary="Medicina"
+                  secondary={user.hinfo.medicine}
+                />
+              </ListItem>
+              <Divider variant="inset" component="li" />
+              <ListItem>
+                <ListItemAvatar>
+                  <DataAvatar>
+                    <FastRewind />
+                  </DataAvatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary="Condiciones previas"
+                  secondary={user.hinfo.pcondition}
+                />
+              </ListItem>
+            </AdditionalList>
           </SecondColumn>
         </ColumnContainer>
       </FullPaper>
