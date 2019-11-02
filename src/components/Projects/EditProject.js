@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+  useState,
+  useEffect,
+} from 'react';
 
 import {
   Dialog,
@@ -43,8 +46,14 @@ const DatePicker = styled(MyDatePicker)`
   margin-left: ${theme.spacing(5)}px;
 `;
 
-const EditProject = ({ open, projectData, setProjectData, onClose }) => {
+const EditProject = ({ open, project, onClose }) => {
+  const [projectData, setProjectData] = useState({});
 
+  useEffect(() => {
+    if (project != null) {
+      setProjectData(project);
+    }
+  }, [project]);
   return (
     <Dialog
       open={open}
@@ -54,24 +63,30 @@ const EditProject = ({ open, projectData, setProjectData, onClose }) => {
         Editar proyecto
       </CustomDialogTitle>
       <DialogContent>
+        <div>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="name"
+            name="name"
+            label="Nombre"
+            value={projectData.name}
+            onChange={(event) => setProjectData({
+              ...projectData,
+              name: event.target.value,
+            })
+            }
+            autoFocus
+          />
+        </div>
         <TextField
           variant="outlined"
           margin="normal"
           required
-          fullWidth
-          label="Nombre"
-          value={projectData.name}
-          onChange={(event) => setProjectData({
-            ...projectData,
-            name: event.target.value,
-          })
-          }
-          autoFocus
-        />
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
+          id="address"
+          name="address"
           onChange={(event) => setProjectData({
             ...projectData,
             address: event.target.value,
@@ -85,6 +100,8 @@ const EditProject = ({ open, projectData, setProjectData, onClose }) => {
           variant="outlined"
           margin="normal"
           fullWidth
+          id="desc"
+          name="dec"
           required
           value={projectData.desc}
           onChange={(event) => setProjectData({
@@ -105,7 +122,8 @@ const EditProject = ({ open, projectData, setProjectData, onClose }) => {
               variant="inline"
               format="MM/dd/yyyy"
               margin="normal"
-              id="date-picker-inline"
+              id="init-project"
+              name="init-project"
               label="Inicio del proyecto"
               value={projectData.fdate}
               onChange={(date) => setProjectData({...projectData, fdate: date})}
@@ -118,7 +136,8 @@ const EditProject = ({ open, projectData, setProjectData, onClose }) => {
               variant="inline"
               format="MM/dd/yyyy"
               margin="normal"
-              id="date-picker-inline"
+              id="end-project"
+              name="end-project"
               label="Fin del proyecto"
               value={projectData.fdatei}
               onChange={(date) => setProjectData({...projectData, fdatei: date})}

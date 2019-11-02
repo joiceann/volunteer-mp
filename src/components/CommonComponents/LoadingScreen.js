@@ -15,7 +15,7 @@ const Wrapper = styled.div`
 `;
 
 const CustomLoader = styled(CircularProgress)`
-  color: ${({ dark }) => dark ? colors.main : colors.fg};
+  color: ${({ dark }) => dark != null && dark ? colors.main : colors.fg};
 `;
 
 const LoadingScreen = ({ dark }) => {

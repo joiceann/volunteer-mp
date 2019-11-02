@@ -89,13 +89,19 @@ const ProjectDescription = styled(Typography)`
 `
 
 const ProjectList = ({ projects, search }) => {
-  const [openConfirmDialog, openConfirmation] = useState(false);
-  const [selectedProject, setSelectedProject] = useState({
+  const cleanProject = {
     organinfo: {},
+    name: '',
+    desc: '',
+    address: '',
+    fdate: new Date(),
+    fdatei: new Date(),
     volunteers: [],
     photo: [],
     news: [],
-  });
+  };
+  const [openConfirmDialog, openConfirmation] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(cleanProject);
   const [openProject, setOpenProject] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   let projectList = [];
@@ -145,8 +151,7 @@ const ProjectList = ({ projects, search }) => {
     <CustomGrid container spacing={1} justify="space-between">
       <EditProject
         open={openEdit}
-        projectData={selectedProject}
-        setProjectData={setSelectedProject}
+        project={selectedProject}
         onClose={onCloseEdit}
       />
       <Alert

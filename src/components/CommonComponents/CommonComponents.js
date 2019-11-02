@@ -22,6 +22,12 @@ export const Button = styled(MuButton)`
   }
 `;
 
+export const HeaderLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 export const ClearButton = styled(MuButton)`
   color: ${colors.main};
 `;

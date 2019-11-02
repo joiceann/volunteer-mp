@@ -15,9 +15,9 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const DefaultImage = () => {
+const DefaultImage = ({ className }) => {
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <Photo />
     </Wrapper>
   );
