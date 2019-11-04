@@ -144,7 +144,7 @@ const Login = ({ login }) => {
             </Typography>
           }
           {
-            isLoading && <LoadingScreen dark={true} />
+            isLoading && <LoadingScreen dark="true" />
           }
           <SeparatedButton
             type="submit"
