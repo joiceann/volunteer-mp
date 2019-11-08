@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:400,700&display=swap');
+
+.wrapper-flex {
+    display: flex;
+    width: 99%;
+    height: 98vh;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.wrapper-my-projects {
+    background-color: #13293d;
+    width: 99%;    
+    
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;     
+}
+
+.project-card-wrapper {
+    width: 100%;
+    max-width: 250px;
+    min-height: 150px;
+    max-height: 250px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: flex-end;
+}
+
+.projects-grid {
+    padding: 20px 20px;
+    flex-grow: 1;
+}
+
+.projects-open-btn {
+    position: absolute;
+    max-width: 250px;
+    min-width: 160px;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #F0AD4E;
+    color: #fff;
+}
+
+.projects-open-btn:hover {
+    background-color: #f7bc68;
+}
+
+.project-name-container {
+    position: absolute;
+    max-width: 230px;
+    min-width: 160px;
+    width: 100%;
+    height: 85px;
+    background-color: rgba(1, 22, 39, 0.5);
+    padding-bottom: 70px;
+    padding-left: 10px;
+    padding-right: 10px;  
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;  
+}
+
+.project-name-container:hover {
+    height: 180px;
+    background-color: rgba(19, 41, 61, 0.8);
+    cursor: pointer;
+}
+
+.project-name-text {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+}
+
+.project-desc-text {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 400;
+    color: #fff;
+    text-align: justify;
+}
+
+.inner-grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
