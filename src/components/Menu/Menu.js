@@ -134,6 +134,21 @@ const Menu = ({ logout }) => {
             <ListItemText primary="Proyectos" />
           </StyledListItem>
         </RouterLink>
+
+        {/* MyProjects component router link */}
+        <RouterLink to="/dashboard/my-projects">
+          <StyledListItem
+            selected={section === 'my-projects'}
+            button
+            alignItems="center"
+          >
+            <ListItemIcon>
+              <ProjectIcon />
+            </ListItemIcon>
+            <ListItemText primary="Mis Proyectos" />
+          </StyledListItem>
+        </RouterLink>
+
         <RouterLink to="/dashboard/profile">
           <StyledListItem
             selected={section === 'profile'}
