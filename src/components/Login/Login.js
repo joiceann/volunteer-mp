@@ -60,23 +60,37 @@ const Form = styled.form`
   width: 100%;
 `;
 
+//{8,}
+const generalInputRegex = /^[a-zA-Z0-9¡¿?@.:+]*$/gim;
+const emailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/gim;
+const credentialRegex  = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[¡¿?@:+]).{8,}$/gim;
+
 const Login = ({ login }) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formError, showFormError] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const [validEmail, showEmail] = useState(false);
+  const [validPassword, showPassword] = useState(false);
   const history = useHistory();
 
 
   const handleEmailChange = (event) => {
+    console.log(event.target.value);
+    let emailValid = event.target.value.match(emailRegex);
+    let inputValid = event.target.value.match(generalInputRegex);
+    console.log(emailValid);
+    console.log(inputValid);
     setEmail(event.target.value);
+
   };
 
   const handlePasswordChange = (event) => {
+    let passwordValidate = event.target.value.match(credentialRegex);
+    console.log(passwordValidate);
     setPassword(event.target.value);
   };
-
 
   const submit = (event) => {
     event.preventDefault();
@@ -92,7 +106,8 @@ const Login = ({ login }) => {
       login(response.data.token);
       setLoading(false);
       history.push('/dashboard/overview');
-    }).catch(() => {
+    }).catch((response) => {
+      console.log(response)
       showFormError(true);
       setLoading(false);
     });
@@ -143,6 +158,7 @@ const Login = ({ login }) => {
               Correo electrónico o contraseña incorrectos
             </Typography>
           }
+
           {
             isLoading && <LoadingScreen dark="true" />
           }
