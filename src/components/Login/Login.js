@@ -71,46 +71,70 @@ const Login = ({ login }) => {
   const [password, setPassword] = useState('');
   const [formError, showFormError] = useState(false);
   const [isLoading, setLoading] = useState(false);
-  const [validEmail, showEmail] = useState(false);
-  const [validPassword, showPassword] = useState(false);
+  const [validEmail, setValidEmail] = useState(false);
+  const [validPassword, setValidPassword] = useState(false);
   const history = useHistory();
+  const [validEmailText, setET] = useState("");
+  const [validPasswordText, setPT] = useState("");
+
 
 
   const handleEmailChange = (event) => {
     console.log(event.target.value);
     let emailValid = event.target.value.match(emailRegex);
     let inputValid = event.target.value.match(generalInputRegex);
+    let reeval = emailValid != null && inputValid != null;
+    setValidEmail();
+
     console.log(emailValid);
     console.log(inputValid);
+
+    if (reeval){
+      setET("");
+    }
+    else{
+      setET("Ingreso de texto en correo inválido\n");    }
     setEmail(event.target.value);
 
   };
 
   const handlePasswordChange = (event) => {
     let passwordValidate = event.target.value.match(credentialRegex);
-    console.log(passwordValidate);
+    setValidPassword(passwordValidate != null);
+    if (passwordValidate != null){
+      setPT("");
+    }
+    else{
+      setPT("Ingreso de texto en correo inválido\n");
+    }
     setPassword(event.target.value);
   };
 
   const submit = (event) => {
     event.preventDefault();
     setLoading(true);
-    axios.post(Constants.LOGIN,
-      JSON.stringify({email, password}),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    ).then((response) => {
-      login(response.data.token);
-      setLoading(false);
-      history.push('/dashboard/overview');
-    }).catch((response) => {
-      console.log(response)
+    if ({validEmail} && {validPassword}){
+      axios.post(Constants.LOGIN,
+          JSON.stringify({email, password}),
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+      ).then((response) => {
+        login(response.data.token);
+        setLoading(false);
+        history.push('/dashboard/overview');
+      }).catch((response) => {
+        console.log(response)
+        showFormError(true);
+        setLoading(false);
+      });
+    }
+    else{
       showFormError(true);
       setLoading(false);
-    });
+    }
   };
   return (
     <MainContainer maxWidth="xs">
@@ -155,7 +179,7 @@ const Login = ({ login }) => {
           {
             formError &&
             <Typography color="error">
-              Correo electrónico o contraseña incorrectos
+              Correo electrónico o contraseña incorrectos {validEmailText} {validPasswordText}
             </Typography>
           }
 
