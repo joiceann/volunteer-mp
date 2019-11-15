@@ -8,6 +8,18 @@ const createAxiosCancelToken = () => {
     return cancelTokenSource
 }
 
+const updateVolunteerRole = (projectId, userId, role, axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        const standardizedRole = role !== 1 ? 99 : role
+
+        instace.get(`${consts.UPDATE_ROLE}/${projectId}/${userId}/${standardizedRole}`, {
+            cancelToken: axiosCancelTokenSource.token            
+        }).then(response => {
+            resolve(response.data)
+        }).catch(error => reject(error))
+    })
+}
+
 const getAllProjects = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.PROJECTS_LIST, { cancelToken: axiosCancelTokenSource.token })
@@ -26,6 +38,16 @@ const getAllProjectsDummy = (axiosCancelTokenSource) => {
         }
 
         resolve(projects)
+    })
+}
+
+const getUserTypeFromLocalStorage = () => {
+    return new Promise((resolve, reject) => {
+        const userType = localStorage.getItem('V_USER_TYPE') || null
+
+        if (userType) {
+            resolve(userType)
+        } else reject('UNDEFINED_USER_TYPE')
     })
 }
 
@@ -526,5 +548,7 @@ const dummyProject = {
 export {
     getAllProjects,
     createAxiosCancelToken,
-    getAllProjectsDummy
+    getAllProjectsDummy,
+    getUserTypeFromLocalStorage,
+    updateVolunteerRole
 }

@@ -89,7 +89,12 @@ const Login = ({ login }) => {
         },
       },
     ).then((response) => {
+      console.log(response.data)
       login(response.data.token);
+
+      // save user type
+      localStorage.setItem('V_USER_TYPE', response.data.type)
+
       setLoading(false);
       history.push('/dashboard/overview');
     }).catch(() => {
