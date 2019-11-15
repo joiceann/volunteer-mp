@@ -37,13 +37,21 @@ class MyProjects extends Component {
         this.onHandleProjectUpdate = this.onHandleProjectUpdate.bind(this)
     }
 
-    onHandleProjectUpdate = (project) => {
+    onHandleProjectUpdate = (project, optingOut = false) => {
         const { projects } = this.state
-        const newProjects = projects.map(p => {
-            if (p._id !== project._id) {
-                return p
-            } else return project
-        })
+        let newProjects = null
+
+        if (!optingOut) {
+            console.log('entered optingOut false', project)
+            newProjects = projects.map(p => {
+                if (p._id !== project._id) {
+                    return p
+                } else return project
+            })
+        } else {
+            newProjects = projects.filter(p => p._id !== project._id)
+        }
+
         this.setState({ projects: newProjects })
     }
 

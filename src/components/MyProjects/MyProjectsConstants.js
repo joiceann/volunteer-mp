@@ -11,6 +11,12 @@ export const REMOVE_VOLUNTEER_DIALOG_CANCEL_TEXT = 'No, keep this volunteer'
 export const REMOVE_VOLUNTEER_DIALOG_ACCEPT_TEXT = 'Yes, remove this volunteer'
 export const SERVER_ERROR = "We couldn't process your request at this time. Please try again in a few moments."
 
+export const volunteerRemovalSuccess = (volunteerName, type) => {
+    if (type === 'ONG') {
+        return `Successfully removed ${volunteerName} from this project.`
+    } else return `You have successfully opted out from this project.`
+}
+
 export const settingCoordinatorMessage = (volunteerName, type) => {
     return `Successfully ${type === true ? ' assigned' : ' removed'} coordinator role to ${volunteerName}.`
 }

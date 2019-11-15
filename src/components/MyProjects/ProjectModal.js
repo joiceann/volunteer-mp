@@ -18,7 +18,8 @@ import './my_projects.css'
 import colors from '../../colors'
 import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
-import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE } from './MyProjectsConstants';
+import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR } from './MyProjectsConstants';
+import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken } from './MyProjectsProvider';
 
 const CustomAppBar = styled(AppBar)`
   position: relative;
@@ -36,11 +37,35 @@ export default class ProjectModal extends Component {
 
         this.state = {
             editMode: false,
-            volunteers: this.props.project.volunteers
+            volunteers: this.props.project.volunteers,
+            axiosCancelTokenSource: createAxiosCancelToken()
         }
 
         this.onHandleProjectVolunteerRemoval = this.onHandleProjectVolunteerRemoval.bind(this)
         this.onHandleProjectVolunteerRoleChange = this.onHandleProjectVolunteerRoleChange.bind(this)
+    }
+
+    // Possible TODO: add confirmation Dialog
+    handleVolunteerOptOut = () => {     
+        const { axiosCancelTokenSource } = this.state
+
+        getUserInfoByToken(axiosCancelTokenSource).then(userInfo => {
+            console.log(userInfo)
+            enrollOrOptOutFromProject(this.props.project._id, userInfo._id, 2, axiosCancelTokenSource).then(response => {
+                console.log(response)
+                this.onHandleProjectVolunteerRemoval(userInfo._id, true)            
+                const successMessage = volunteerRemovalSuccess(`${userInfo.name} ${userInfo.lname}`, 'NORMAL')
+                this.setState({ openDialogRemoveVolunteer: false, snackBarOpen: true, snackBarMessage: successMessage, })
+                this.props.onClose()
+            }).catch(error => {
+                console.log(error)
+                this.setState({ snackBarOpen: true, snackBarMessage: SERVER_ERROR, openDialogRemoveVolunteer: false })
+            })
+        }).catch(error => {
+            console.log(error)
+            this.setState({ snackBarOpen: true, snackBarMessage: SERVER_ERROR, openDialogRemoveVolunteer: false })
+        })  
+
     }
 
     onHandleProjectVolunteerRoleChange = (volunteer) => {
@@ -56,20 +81,20 @@ export default class ProjectModal extends Component {
         this.setState({ volunteers: newVolunteers })
     }
 
-    onHandleProjectVolunteerRemoval = (volunteerId) => {
+    onHandleProjectVolunteerRemoval = (volunteerId, optingOut = false) => {
         console.log(`removing ${volunteerId}`)
         const { volunteers } = this.state
         const newVolunteers = volunteers.filter(volunteer => volunteer.id !== volunteerId)
 
-        this.updateProjectAfterAction('volunteers', newVolunteers)
+        this.updateProjectAfterAction('volunteers', newVolunteers, optingOut)
 
         this.setState({ volunteers: newVolunteers })
     }
 
-    updateProjectAfterAction = (property, newValue) => {
+    updateProjectAfterAction = (property, newValue, optingOut = false) => {
         const project = this.props.project
         project[property] = newValue
-        this.props.onHandleProjectUpdate(project)
+        this.props.onHandleProjectUpdate(project, optingOut)
     }
 
     render = () => {
@@ -128,10 +153,10 @@ export default class ProjectModal extends Component {
                         </Grid>
                         <Grid item xs={12} sm={12} md={4} lg={4}>
                             {
-                                // USER_TYPE = ONG
+                                // USER_TYPE = NORMAL
                                 userType === '1' &&
                                 <Grid item xs={12} sm={12} md={12} lg={12}>
-                                    <Button onClick={() => {}} variant='contained' className='projects-leave-btn'>{LEAVE_PROJECT}</Button>
+                                    <Button onClick={() => this.handleVolunteerOptOut()} variant='contained' className='projects-leave-btn'>{LEAVE_PROJECT}</Button>
                                 </Grid>
                             }
                             {/* {

@@ -8,6 +8,24 @@ const createAxiosCancelToken = () => {
     return cancelTokenSource
 }
 
+const getUserInfoByToken = (axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        instace.get(consts.USER_PROFILE, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => resolve(response.data))
+            .catch(error => reject(error))
+    })
+}
+
+const enrollOrOptOutFromProject = (projectId, userId, status, axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        instace.get(`${consts.ENROLL}/${projectId}/${userId}/${status}`, {
+            cancelToken: axiosCancelTokenSource.token            
+        }).then(response => {
+            resolve(response.data)
+        }).catch(error => reject(error))
+    })
+}
+
 const updateVolunteerRole = (projectId, userId, role, axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         const standardizedRole = role !== 1 ? 99 : role
@@ -550,5 +568,7 @@ export {
     createAxiosCancelToken,
     getAllProjectsDummy,
     getUserTypeFromLocalStorage,
-    updateVolunteerRole
+    updateVolunteerRole,
+    enrollOrOptOutFromProject,
+    getUserInfoByToken
 }

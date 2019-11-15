@@ -8,7 +8,7 @@ import {
     ListItemText,
     Avatar,
   } from '@material-ui/core'
-import { limitTextToCertainLength, COORDINATOR_LABEL, settingCoordinatorMessage, REMOVE_VOLUNTEER_DIALOG_TITLE, REMOVE_VOLUNTEER_DIALOG_CONTENT, REMOVE_VOLUNTEER_DIALOG_CANCEL_TEXT, REMOVE_VOLUNTEER_DIALOG_ACCEPT_TEXT, SERVER_ERROR } from './MyProjectsConstants';
+import { limitTextToCertainLength, volunteerRemovalSuccess, COORDINATOR_LABEL, settingCoordinatorMessage, REMOVE_VOLUNTEER_DIALOG_TITLE, REMOVE_VOLUNTEER_DIALOG_CONTENT, REMOVE_VOLUNTEER_DIALOG_CANCEL_TEXT, REMOVE_VOLUNTEER_DIALOG_ACCEPT_TEXT, SERVER_ERROR } from './MyProjectsConstants';
 import CloseIcon from '@material-ui/icons/Close';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -17,7 +17,7 @@ import Grid from '@material-ui/core/Grid'
 import Snackbar from '@material-ui/core/Snackbar'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
 import CustomDialog from './CustomDialog';
-import { createAxiosCancelToken, updateVolunteerRole } from './MyProjectsProvider';
+import { createAxiosCancelToken, updateVolunteerRole, enrollOrOptOutFromProject } from './MyProjectsProvider';
 
 export default class ProjectVolunteerItem extends Component {
     constructor(props) {
@@ -47,7 +47,7 @@ export default class ProjectVolunteerItem extends Component {
         volunteer.role = checked ? 1 : 0
         
         updateVolunteerRole(this.props.projectId, volunteer.id, volunteer.role, axiosCancelTokenSource).then(response => {
-            console.log(response)
+            console.log('updateVolunteerRole response', response)
             this.props.onHandleProjectVolunteerRoleChange(volunteer)
             this.setState({ coordinator: checked, snackBarOpen: true, snackBarMessage })
         }).catch(error => {
@@ -61,9 +61,19 @@ export default class ProjectVolunteerItem extends Component {
         this.setState({ snackBarOpen: false })
     }
 
-    handleVolunteerRemoval = () => {        
-        this.props.onHandleProjectVolunteerRemoval(this.props.volunteer.id)
-        this.setState({ openDialogRemoveVolunteer: false })
+    handleVolunteerRemoval = () => {     
+        const { axiosCancelTokenSource } = this.state
+        
+        enrollOrOptOutFromProject(this.props.projectId, this.props.volunteer.id, 2, axiosCancelTokenSource).then(response => {
+            console.log(response)
+            this.props.onHandleProjectVolunteerRemoval(this.props.volunteer.id)
+            const successMessage = volunteerRemovalSuccess(this.props.volunteer.name, 'ONG')
+            this.setState({ openDialogRemoveVolunteer: false, snackBarOpen: true, snackBarMessage: successMessage, })
+        }).catch(error => {
+            console.log(error)
+            this.setState({ snackBarOpen: true, snackBarMessage: SERVER_ERROR, openDialogRemoveVolunteer: false })
+        })
+
     }
 
     componentWillUnmount = () => {
