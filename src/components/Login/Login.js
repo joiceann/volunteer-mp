@@ -62,7 +62,7 @@ const Form = styled.form`
 
 //{8,}
 const generalInputRegex = /^[a-zA-Z0-9¡¿?@.:+]*$/gim;
-const emailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/gim;
+const emailRegex = /^([\w.%+-]+)@([\w-])+(\.+[\w]{2,})*$/gim;
 const credentialRegex  = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[¡¿?@:+]).{8,}$/gim;
 
 const Login = ({ login }) => {
@@ -73,9 +73,11 @@ const Login = ({ login }) => {
   const [isLoading, setLoading] = useState(false);
   const [validEmail, setValidEmail] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
+  const [validTries, setValidTries] = useState(0);
   const history = useHistory();
   const [validEmailText, setET] = useState("");
   const [validPasswordText, setPT] = useState("");
+  const [validTriesText, setTT] = useState("");
 
 
 
@@ -113,7 +115,7 @@ const Login = ({ login }) => {
   const submit = (event) => {
     event.preventDefault();
     setLoading(true);
-    if ({validEmail} && {validPassword}){
+    if ({validEmail} && {validPassword} || 4 < {validTries}){
       axios.post(Constants.LOGIN,
           JSON.stringify({email, password}),
           {
@@ -126,14 +128,20 @@ const Login = ({ login }) => {
         setLoading(false);
         history.push('/dashboard/overview');
       }).catch((response) => {
-        console.log(response)
+        console.log(response);
+        if (response.data == "Invalid Credentials") {
+            setValidTries({validTries} + 1);
+        }
         showFormError(true);
         setLoading(false);
       });
     }
     else{
-      showFormError(true);
-      setLoading(false);
+        if (4 < {validTries}) {
+            setTT("Se alcanzó el maximo de intentos permitido");
+        }
+        showFormError(true);
+        setLoading(false);
     }
   };
   return (
