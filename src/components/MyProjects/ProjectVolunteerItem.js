@@ -8,7 +8,7 @@ import {
     ListItemText,
     Avatar,
   } from '@material-ui/core'
-import { limitTextToCertainLength, volunteerRemovalSuccess, COORDINATOR_LABEL, settingCoordinatorMessage, REMOVE_VOLUNTEER_DIALOG_TITLE, REMOVE_VOLUNTEER_DIALOG_CONTENT, REMOVE_VOLUNTEER_DIALOG_CANCEL_TEXT, REMOVE_VOLUNTEER_DIALOG_ACCEPT_TEXT, SERVER_ERROR } from './MyProjectsConstants';
+import { limitTextToCertainLength, volunteerRemovalSuccess, COORDINATOR_LABEL, settingCoordinatorMessage, REMOVE_VOLUNTEER_DIALOG_TITLE, REMOVE_VOLUNTEER_DIALOG_CONTENT, REMOVE_VOLUNTEER_DIALOG_CANCEL_TEXT, REMOVE_VOLUNTEER_DIALOG_ACCEPT_TEXT, SERVER_ERROR, VOLUNTEER_ITEM_COORDINATOR_PLACEHOLDER, VOLUNTEER_ITEM_ACCEPTED_VOLUNTEER } from './MyProjectsConstants';
 import CloseIcon from '@material-ui/icons/Close';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -107,11 +107,26 @@ export default class ProjectVolunteerItem extends Component {
                         }
                     </Grid>
                     <Grid item xs={4} sm={4} md={4} lg={4}>
-                        <p className='josefin-regular'>{ limitTextToCertainLength(volunteer.name, 30) }</p> 
+                        {
+                            volunteer.name &&
+                            <p className='josefin-regular'>{ limitTextToCertainLength(volunteer.name, 30) }</p> 
+                        }
+                        {
+                            !volunteer.name &&
+                            <p className='josefin-regular'>{ volunteer.id }</p> 
+                        }
                     </Grid>
                     {
                         editMode &&
-                        <Grid item xs={4} sm={4} md={4} lg={4} className='inner-grid'>
+                        <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid'>
+                            <p style={{ fontSize: 8 }}>{VOLUNTEER_ITEM_ACCEPTED_VOLUNTEER}</p>
+                            <Switch checked={false} onChange={(e) => {}} />                            
+                        </Grid>
+                    }
+                    {
+                        editMode &&
+                        <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid'>
+                            <p style={{ fontSize: 8 }}>{VOLUNTEER_ITEM_COORDINATOR_PLACEHOLDER}</p>
                             <Switch checked={coordinator} onChange={(e) => this.handleVolunteerRoleChange(e.target.checked)} />
                             {/* <FormGroup row>
                                 <FormControlLabel

@@ -76,6 +76,18 @@
     background-color: #f72254;
 }
 
+.projects-enroll-btn {    
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #06A10B;
+    color: #fff;
+}
+
+.projects-enroll-btn:hover {
+    background-color: #06A10B;
+}
+
 .projects-edit-btn {    
     width: 100%;
     margin-left: 0;
@@ -175,4 +187,8 @@
     background-color: #fff;
     margin-left: 10px;
     margin-bottom: 2px;    
+}
+
+.icon-btn {
+    margin-right: 10px;
 }

@@ -110,7 +110,7 @@ const Menu = ({ logout }) => {
         </PaddedIconButton>
         }
         <Divider />
-        <RouterLink to="/dashboard/overview">
+        {/* <RouterLink to="/dashboard/overview">
           <StyledListItem
             selected={section === 'overview'}
             button
@@ -121,8 +121,8 @@ const Menu = ({ logout }) => {
             </ListItemIcon>
             <ListItemText primary="Mis noticias" />
           </StyledListItem>
-        </RouterLink>
-        <RouterLink to="/dashboard/projects">
+        </RouterLink> */}
+        {/* <RouterLink to="/dashboard/projects">
           <StyledListItem
             selected={section === 'projects'}
             button
@@ -133,7 +133,7 @@ const Menu = ({ logout }) => {
             </ListItemIcon>
             <ListItemText primary="Proyectos" />
           </StyledListItem>
-        </RouterLink>
+        </RouterLink> */}
 
         {/* MyProjects component router link */}
         <RouterLink to="/dashboard/my-projects">
@@ -145,7 +145,7 @@ const Menu = ({ logout }) => {
             <ListItemIcon>
               <ProjectIcon />
             </ListItemIcon>
-            <ListItemText primary="Mis Proyectos" />
+            <ListItemText primary="My Projects" />
           </StyledListItem>
         </RouterLink>
 
@@ -158,7 +158,7 @@ const Menu = ({ logout }) => {
             <ListItemIcon>
               <FaceIcon />
             </ListItemIcon>
-            <ListItemText primary="Mi perfil" />
+            <ListItemText primary="My Profile" />
           </StyledListItem>
         </RouterLink>
         <Divider />
@@ -170,7 +170,7 @@ const Menu = ({ logout }) => {
           <ListItemIcon>
             <ExitIcon />
           </ListItemIcon>
-          <ListItemText primary="Cerrar sesión" />
+          <ListItemText primary="Log Out" />
         </StyledListItem>
 
       </List>

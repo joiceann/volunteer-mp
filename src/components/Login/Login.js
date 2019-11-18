@@ -96,7 +96,7 @@ const Login = ({ login }) => {
       localStorage.setItem('V_USER_TYPE', response.data.type)
 
       setLoading(false);
-      history.push('/dashboard/overview');
+      history.push('/dashboard/my-projects');
     }).catch(() => {
       showFormError(true);
       setLoading(false);

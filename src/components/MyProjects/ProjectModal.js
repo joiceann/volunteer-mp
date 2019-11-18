@@ -12,13 +12,19 @@ import OfflineBolt from '@material-ui/icons/OfflineBolt'
 import Card from '@material-ui/core/Card'
 import Button from '@material-ui/core/Button'
 import DateRangeIcon from '@material-ui/icons/DateRange'
+import DirectionsRunIcon from '@material-ui/icons/DirectionsRun'
+import BeenhereIcon from '@material-ui/icons/Beenhere'
+import DeleteIcon from '@material-ui/icons/Delete'
+import FlagIcon from '@material-ui/icons/Flag'
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import styled from 'styled-components'
 
 import './my_projects.css'
 import colors from '../../colors'
 import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
-import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR } from './MyProjectsConstants';
+import CustomDialog from './CustomDialog';
+import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT } from './MyProjectsConstants';
 import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken } from './MyProjectsProvider';
 
 const CustomAppBar = styled(AppBar)`
@@ -38,14 +44,68 @@ export default class ProjectModal extends Component {
         this.state = {
             editMode: false,
             volunteers: this.props.project.volunteers,
-            axiosCancelTokenSource: createAxiosCancelToken()
+            axiosCancelTokenSource: createAxiosCancelToken(),
+            openDialog: false,
+            dialogOptions: null,
+            volunteerIsEnroled: false
         }
 
         this.onHandleProjectVolunteerRemoval = this.onHandleProjectVolunteerRemoval.bind(this)
         this.onHandleProjectVolunteerRoleChange = this.onHandleProjectVolunteerRoleChange.bind(this)
     }
 
-    // Possible TODO: add confirmation Dialog
+    componentDidMount = () => {
+        const { volunteers, axiosCancelTokenSource } = this.state
+
+        getUserInfoByToken(axiosCancelTokenSource).then(userInfo => {
+            const volunteerIsEnroled = volunteers.filter(v => v.id === userInfo._id).length === 1
+            console.log('enroled: ', volunteerIsEnroled)
+            this.setState({ volunteerIsEnroled })
+        })
+    }
+
+    setDialogOptions = (onAccept, title, content, cancelText, acceptText) => {        
+        const dialogOptions = {
+            onAccept,
+            title,
+            content,
+            cancelText,
+            acceptText
+        }
+
+        this.setState({ dialogOptions, openDialog: true })        
+    }
+
+    
+    handleVolunteerOptInOrOut = (option) => {
+        const { axiosCancelTokenSource } = this.state
+
+        getUserInfoByToken(axiosCancelTokenSource).then(userInfo => {
+            console.log(userInfo)
+            enrollOrOptOutFromProject(this.props.project._id, userInfo._id, option, axiosCancelTokenSource).then(response => {
+                console.log(response)
+
+                if (option === 2) {
+                    this.onHandleProjectVolunteerRemoval(userInfo._id, true)            
+                    const successMessage = volunteerRemovalSuccess(`${userInfo.name} ${userInfo.lname}`, 'NORMAL')
+                    this.setState({ openDialogRemoveVolunteer: false, snackBarOpen: true, snackBarMessage: successMessage, })
+                    this.props.onClose()
+                } else if (option === 1) {
+                    const successMessage = volunteerEnroledSuccess(`${userInfo.name} ${userInfo.lname}`, 'NORMAL')
+                    this.setState({ openDialogRemoveVolunteer: false, snackBarOpen: true, snackBarMessage: successMessage, })
+                    this.props.onClose()
+                }
+
+            }).catch(error => {
+                console.log(error)
+                this.setState({ snackBarOpen: true, snackBarMessage: SERVER_ERROR, openDialogRemoveVolunteer: false })
+            })
+        }).catch(error => {
+            console.log(error)
+            this.setState({ snackBarOpen: true, snackBarMessage: SERVER_ERROR, openDialogRemoveVolunteer: false })
+        })
+    }
+
     handleVolunteerOptOut = () => {     
         const { axiosCancelTokenSource } = this.state
 
@@ -66,6 +126,16 @@ export default class ProjectModal extends Component {
             this.setState({ snackBarOpen: true, snackBarMessage: SERVER_ERROR, openDialogRemoveVolunteer: false })
         })  
 
+    }
+
+    handleRemoveProject = () => {
+        console.log('removing project')
+        this.setState({ openDialog: false, dialogOptions: null })
+    }
+
+    handleTerminateProject = () => {
+        console.log('finishing project')
+        this.setState({ openDialog: false, dialogOptions: null })
     }
 
     onHandleProjectVolunteerRoleChange = (volunteer) => {
@@ -98,7 +168,7 @@ export default class ProjectModal extends Component {
     }
 
     render = () => {
-        const { editMode, volunteers } = this.state
+        const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled } = this.state
         const { userType } = this.props        
         console.log(userType)
 
@@ -154,20 +224,62 @@ export default class ProjectModal extends Component {
                         <Grid item xs={12} sm={12} md={4} lg={4}>
                             {
                                 // USER_TYPE = NORMAL
-                                userType === '1' &&
+                                userType === '1' && volunteerIsEnroled &&
                                 <Grid item xs={12} sm={12} md={12} lg={12}>
-                                    <Button onClick={() => this.handleVolunteerOptOut()} variant='contained' className='projects-leave-btn'>{LEAVE_PROJECT}</Button>
+                                    <Button onClick={
+                                        () => this.setDialogOptions(
+                                            () => this.handleVolunteerOptInOrOut(2),
+                                            LEAVE_PROJECT_TITLE,
+                                            LEAVE_PROJECT_TEXT,
+                                            DIALOG_GENERIC_NO,
+                                            DIALOG_GENERIC_YES
+                                        )
+                                    } variant='contained' className='projects-leave-btn'><DirectionsRunIcon className='icon-btn' />{LEAVE_PROJECT}</Button>
+                                </Grid>
+                            }
+                            {
+                                // USER_TYPE = NORMAL
+                                userType === '1' && !volunteerIsEnroled &&
+                                <Grid item xs={12} sm={12} md={12} lg={12}>
+                                    <Button onClick={
+                                        () => this.setDialogOptions(
+                                            () => this.handleVolunteerOptInOrOut(1),
+                                            ENROLL_TITLE,
+                                            ENROLL_TEXT,
+                                            DIALOG_GENERIC_NO,
+                                            DIALOG_GENERIC_YES
+                                        )
+                                    } variant='contained' className='projects-enroll-btn'><BeenhereIcon className='icon-btn' />{ENROLL_TO_PROJECT}</Button>
                                 </Grid>
                             }
                             {/* {
                                 userType === '2' &&
                                 ONG
                             } */}
-                            <Grid item xs={12} sm={12} md={12} lg={12}>
-                                <Button onClick={() => {}} variant='contained' className='projects-leave-btn'>{REMOVE_PROJECT}</Button>
+                            <Grid item xs={12} sm={12} md={12} lg={12}>                                
+                                <Button onClick={
+                                    () => this.setDialogOptions(
+                                        () => this.handleRemoveProject(),
+                                        REMOVE_PROJECT_TITLE,
+                                        REMOVE_PROJECT_TEXT,
+                                        DIALOG_GENERIC_NO,
+                                        DIALOG_GENERIC_YES
+                                    )
+                                } variant='contained' className='projects-leave-btn'><DeleteIcon className='icon-btn' />{REMOVE_PROJECT}</Button>
                             </Grid>
                             <Grid item xs={12} sm={12} md={12} lg={12}>
-                                <Button onClick={() => this.setState({ editMode: !editMode })} variant='contained' className='projects-edit-btn'>{ !editMode ? EDIT_PROJECT : EDIT_PROJECT_CLOSE}</Button>
+                                <Button onClick={
+                                    () => this.setDialogOptions(
+                                        () => this.handleTerminateProject(),
+                                        FINISH_PROJECT_TITLE,
+                                        FINISH_PROJECT_TEXT,
+                                        DIALOG_GENERIC_NO,
+                                        DIALOG_GENERIC_YES
+                                    )
+                                } variant='contained' className='projects-leave-btn'><FlagIcon className='icon-btn' />{FINISH_PROJECT}</Button>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12}>
+                                <Button onClick={() => this.setState({ editMode: !editMode })} variant='contained' className='projects-edit-btn'><PeopleAltIcon className='icon-btn' />{ !editMode ? EDIT_PROJECT : EDIT_PROJECT_CLOSE}</Button>
                             </Grid>
                             {/* {
                                 editMode &&
@@ -198,6 +310,21 @@ export default class ProjectModal extends Component {
                         </Card>
                     </Grid>
                 </Grid>
+
+                {
+                    openDialog &&
+                    <CustomDialog 
+                        open={openDialog}
+                        onClose={() => this.setState({ openDialog: false, dialogOptions: null })}
+                        onAccept={dialogOptions.onAccept}
+                        title={dialogOptions.title}
+                        content={dialogOptions.content}
+                        cancelText={dialogOptions.cancelText}
+                        acceptText={dialogOptions.acceptText}
+                    />
+
+                }
+
             </div>
         )
     }
