@@ -126,7 +126,7 @@ const Login = ({ login }) => {
       ).then((response) => {
         login(response.data.token);
         setLoading(false);
-        history.push('/dashboard/overview');
+        history.push('/dashboard/my-projects');
       }).catch((response) => {
         console.log(response);
         if (response.data == "Invalid Credentials") {

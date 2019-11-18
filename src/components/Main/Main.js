@@ -4,6 +4,10 @@ import styled, { createGlobalStyle } from 'styled-components';
 import Overview from '../Overview';
 import Projects from '../Projects';
 import Profile from '../Profile';
+
+/* MyProjects Page import */
+import MyProjects from '../MyProjects/index';
+
 import colors from '../../colors';
 import {
   Route,
@@ -36,7 +40,8 @@ const Main = ({ logout }) => {
       <Menu logout={logout} />
       <Content>
         <Switch>
-          <Route path="/dashboard/projects" render={() => <Projects />}/>
+          <Route path="/dashboard/my-projects" render={() => <MyProjects />} />
+          {/* <Route path="/dashboard/projects" render={() => <Projects />}/> */}
           <Route path="/dashboard/profile" render={() => <Profile />}/>
           <Route render={() => <Overview />}/>
         </Switch>

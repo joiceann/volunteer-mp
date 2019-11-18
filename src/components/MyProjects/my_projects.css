@@ -1,0 +1,194 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,700&display=swap');
+
+.wrapper-flex {
+    display: flex;
+    width: 99%;
+    height: 98vh;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.wrapper-modal-flex {
+    background-color: #13293d;
+    color: #fff;
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 90vh;
+    padding: 20px;
+    margin: 0;
+}
+
+.wrapper-my-projects {
+    background-color: #13293d;
+    width: 99%;    
+    
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;  
+    padding: 5%;   
+}
+
+.project-card-wrapper {
+    width: 100%;
+    max-width: 220px;
+    min-height: 150px;
+    max-height: 250px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: flex-end;
+}
+
+.projects-grid {
+    padding: 20px 20px;
+    flex-grow: 1;
+}
+
+.projects-open-btn {
+    position: absolute;
+    max-width: 220px;
+    min-width: 160px;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #F0AD4E;
+    color: #fff;
+}
+
+.projects-open-btn:hover {
+    background-color: #f7bc68;
+}
+
+.projects-leave-btn {    
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #f72254;
+    color: #fff;
+}
+
+.projects-leave-btn:hover {
+    background-color: #f72254;
+}
+
+.projects-enroll-btn {    
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #06A10B;
+    color: #fff;
+}
+
+.projects-enroll-btn:hover {
+    background-color: #06A10B;
+}
+
+.projects-edit-btn {    
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #F0AD4E;
+    color: #fff;
+}
+
+.projects-edit-btn:hover {
+    background-color: #f7bc68;
+}
+
+.projects-save-btn {    
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #06A10B;
+    color: #fff;
+}
+
+.projects-save-btn:hover {
+    background-color: #06A10B;
+}
+
+.project-name-container {
+    position: absolute;
+    max-width: 200px;
+    min-width: 160px;
+    width: 100%;
+    height: 85px;
+    background-color: rgba(1, 22, 39, 0.5);
+    padding-bottom: 70px;
+    padding-left: 10px;
+    padding-right: 10px;  
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;  
+}
+
+.project-name-container:hover {
+    height: 110px;
+    background-color: rgba(19, 41, 61, 0.8);
+    cursor: pointer;
+}
+
+.project-name-text {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+}
+
+.project-desc-text {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 300;
+    color: #fff;
+    text-align: justify;
+}
+
+.project-desc-text-height {
+    line-height: 25px;
+}
+
+.inner-grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.josefin-regular {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 300;
+}
+
+.josefin-bold {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 700;
+}
+
+.MuiSwitch-colorSecondary.Mui-checked {
+    color: #F0AD4E
+}
+
+.MuiSwitch-colorSecondary.Mui-checked + .MuiSwitch-track {
+    background-color: #f7bc68
+}
+
+.icon-pointer:hover {
+    cursor: pointer
+}
+
+.project-listitem {
+    width: 100%;
+    height: 100px;
+    padding: 20px;
+    background-color: #fff;
+    margin-left: 10px;
+    margin-bottom: 2px;    
+}
+
+.icon-btn {
+    margin-right: 10px;
+}
