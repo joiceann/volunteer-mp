@@ -30,6 +30,8 @@ const updateVolunteerRole = (projectId, userId, role, axiosCancelTokenSource) =>
     return new Promise((resolve, reject) => {
         const standardizedRole = role !== 1 ? 99 : role
 
+        console.log(`${consts.UPDATE_ROLE}/${projectId}/${userId}/${standardizedRole}`)
+
         instace.get(`${consts.UPDATE_ROLE}/${projectId}/${userId}/${standardizedRole}`, {
             cancelToken: axiosCancelTokenSource.token            
         }).then(response => {

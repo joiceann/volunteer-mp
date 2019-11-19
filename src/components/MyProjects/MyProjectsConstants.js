@@ -26,6 +26,7 @@ export const ENROLL_TITLE = 'Enrolling to this project!'
 export const ENROLL_TEXT = 'Are you sure you want to enroll to this project? If so, an application will be sent to the organization and you will have to wait for your approval before you can be a part of this project.'
 export const VOLUNTEER_COMMENTS_DIALOG_TITLE = ' said this about your project'
 export const VOLUNTEER_COMMENTS_DIALOG_OK = 'CLOSE'
+export const LOCATION_FILTER = 'FILTER'
 
 export const starsAverage = (evaluations) => {
     let sum = 0
