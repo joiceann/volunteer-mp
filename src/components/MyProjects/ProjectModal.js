@@ -173,6 +173,7 @@ export default class ProjectModal extends Component {
                     this.setState({ openDialogRemoveVolunteer: false, snackBarOpen: true, snackBarMessage: successMessage, })
                     this.props.onClose()
                 } else if (option === 1) {
+                    this.props.onHandleRefreshProjects()
                     const successMessage = volunteerEnroledSuccess(`${userInfo.name} ${userInfo.lname}`, 'NORMAL')
                     this.setState({ openDialogRemoveVolunteer: false, snackBarOpen: true, snackBarMessage: successMessage, })
                     this.props.onClose()

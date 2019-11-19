@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { createAxiosCancelToken, getAllProjects, getAllProjectsDummy, getUserTypeFromLocalStorage } from './MyProjectsProvider'
+import { createAxiosCancelToken, getAllProjects, getAllProjectsDummy, getUserTypeFromLocalStorage, getONGProjects } from './MyProjectsProvider'
 import ProjectCard from './ProjectCard'
 
 import Grid from '@material-ui/core/Grid'
@@ -35,6 +35,18 @@ class MyProjects extends Component {
         this.onOpenProject = this.onOpenProject.bind(this)
         this.toggleProjectModal = this.toggleProjectModal.bind(this)
         this.onHandleProjectUpdate = this.onHandleProjectUpdate.bind(this)
+        this.onHandleRefreshProjects = this.onHandleRefreshProjects.bind(this)
+    }
+
+    onHandleRefreshProjects = () => {
+        const clearProjects = new Promise((resolve, reject) => {
+            this.setState({ projects: null })
+            resolve('success')
+        })
+
+        clearProjects.then(() => {
+            this.getProjectsAccordingToUserType()
+        })
     }
 
     onHandleProjectUpdate = (project, optingOut = false) => {
@@ -75,7 +87,7 @@ class MyProjects extends Component {
     }
 
     componentDidMount = () => {
-        this.projectFetching()
+        this.getProjectsAccordingToUserType()
     }
 
     changeProjectsView = () => {
@@ -86,46 +98,80 @@ class MyProjects extends Component {
         })
 
         setViewType.then(() => {
-            this.projectFetching()
+            this.getProjectsAccordingToUserType()
         })
     }
 
-    projectFetching = () => {
+    getProjectsAccordingToUserType = () => {
         const { axiosCancelTokenSource, listView } = this.state
 
-        getAllProjects(axiosCancelTokenSource).then(projects => {
-            console.log(projects)  
-            
-            let fixedProjects = null
-
-            if (listView) {
-                fixedProjects = projects
-            } else {
-                fixedProjects = this.normalizeProjectsForGridPlacement(projects)  
-            }
-
-            getUserTypeFromLocalStorage().then(userType => {
-                this.setState({ projects: fixedProjects, userType })
-            }).catch(error => {
-                console.log(error)
+        getUserTypeFromLocalStorage().then(userType => {
+            const fetchedProjects = new Promise((resolve, reject) => {
+                if (userType === '2') {
+                    // this is an ONG
+                    getONGProjects(axiosCancelTokenSource).then(projects => {
+                        resolve(projects)
+                    }).catch(error => reject(error))
+                } else if (userType === '1') {
+                    // this is a normal user
+                    getAllProjects(axiosCancelTokenSource).then(projects => {
+                        resolve(projects)
+                    }).catch(error => reject(error))
+                }
             })
-                        
-        }).catch(error => {
-            console.log(error)
-        })
-        
-        // getAllProjectsDummy(axiosCancelTokenSource).then(projects => {
-        //     const fixedProjects = this.normalizeProjectsForGridPlacement(projects)
 
-        //     getUserTypeFromLocalStorage().then(userType => {
-        //         this.setState({ projects: fixedProjects, userType })
-        //     }).catch(error => {
-        //         console.log(error)
-        //     })
-        // }).catch(error => {
-        //     console.log(error)
-        // })
+            fetchedProjects.then(projects => {
+                let fixedProjects = null
+
+                if (listView) {
+                    fixedProjects = projects
+                } else {
+                    fixedProjects = this.normalizeProjectsForGridPlacement(projects)  
+                }
+
+                this.setState({ projects: fixedProjects, userType })
+            })
+        })
     }
+
+    // OLD PROJECT FETCHING
+
+    // projectFetching = () => {
+    //     const { axiosCancelTokenSource, listView } = this.state
+
+    //     getAllProjects(axiosCancelTokenSource).then(projects => {
+    //         console.log(projects)  
+            
+    //         let fixedProjects = null
+
+    //         if (listView) {
+    //             fixedProjects = projects
+    //         } else {
+    //             fixedProjects = this.normalizeProjectsForGridPlacement(projects)  
+    //         }
+
+    //         getUserTypeFromLocalStorage().then(userType => {
+    //             this.setState({ projects: fixedProjects, userType })
+    //         }).catch(error => {
+    //             console.log(error)
+    //         })
+                        
+    //     }).catch(error => {
+    //         console.log(error)
+    //     })
+        
+    //     // getAllProjectsDummy(axiosCancelTokenSource).then(projects => {
+    //     //     const fixedProjects = this.normalizeProjectsForGridPlacement(projects)
+
+    //     //     getUserTypeFromLocalStorage().then(userType => {
+    //     //         this.setState({ projects: fixedProjects, userType })
+    //     //     }).catch(error => {
+    //     //         console.log(error)
+    //     //     })
+    //     // }).catch(error => {
+    //     //     console.log(error)
+    //     // })
+    // }
 
     normalizeProjectsForGridPlacement = (projects) => {
         let fixedProjects = []
@@ -168,6 +214,7 @@ class MyProjects extends Component {
                             project={currentProject} 
                             onClose={this.toggleProjectModal}
                             onHandleProjectUpdate={this.onHandleProjectUpdate}
+                            onHandleRefreshProjects={this.onHandleRefreshProjects}
                         />
                     </Dialog>
                 }

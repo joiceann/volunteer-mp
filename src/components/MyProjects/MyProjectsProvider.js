@@ -40,6 +40,15 @@ const updateVolunteerRole = (projectId, userId, role, axiosCancelTokenSource) =>
     })
 }
 
+const getONGProjects = (axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        instace.get(consts.GET_PROJECTS_ONG, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
 const getAllProjects = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.PROJECTS_LIST, { cancelToken: axiosCancelTokenSource.token })
@@ -572,5 +581,6 @@ export {
     getUserTypeFromLocalStorage,
     updateVolunteerRole,
     enrollOrOptOutFromProject,
-    getUserInfoByToken
+    getUserInfoByToken,
+    getONGProjects
 }
