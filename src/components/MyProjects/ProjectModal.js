@@ -17,6 +17,9 @@ import BeenhereIcon from '@material-ui/icons/Beenhere'
 import DeleteIcon from '@material-ui/icons/Delete'
 import FlagIcon from '@material-ui/icons/Flag'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
+import EmojiEventsIcon from '@material-ui/icons/EmojiEvents';
+import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
+import FeedbackIcon from '@material-ui/icons/Feedback';
 import styled from 'styled-components'
 
 import './my_projects.css'
@@ -24,8 +27,9 @@ import colors from '../../colors'
 import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
-import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT } from './MyProjectsConstants';
+import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage } from './MyProjectsConstants';
 import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken } from './MyProjectsProvider';
+import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 
 const CustomAppBar = styled(AppBar)`
   position: relative;
@@ -47,7 +51,11 @@ export default class ProjectModal extends Component {
             axiosCancelTokenSource: createAxiosCancelToken(),
             openDialog: false,
             dialogOptions: null,
-            volunteerIsEnroled: false
+            volunteerIsEnroled: false,
+            evaluations: [
+                { volunteer: { name: 'Berta Esquivel' }, stars: 4, comments: 'Me parecio un proyecto agradable, bastante organizado, con buen funding y considero que todo se llevo a cabo de la mejor forma.' },
+                { volunteer: { name: 'Caridad Quiros' }, stars: 3, comments: 'Siento que puede mejorarse mucho todavia en la parte bla bla bla.' }
+            ]
         }
 
         this.onHandleProjectVolunteerRemoval = this.onHandleProjectVolunteerRemoval.bind(this)
@@ -168,7 +176,7 @@ export default class ProjectModal extends Component {
     }
 
     render = () => {
-        const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled } = this.state
+        const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled, evaluations } = this.state
         const { userType } = this.props        
         console.log(userType)
 
@@ -297,12 +305,29 @@ export default class ProjectModal extends Component {
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={6}>
                         <Card style={{ width: '100%' }}>
-                            <h2 style={{ padding: '10%', paddingBottom: '5%', textAlign: 'left', color: '#000' }} className='project-name-text'>Enroled volunteers</h2>                            
+                            <h2 style={{ padding: '10%', paddingBottom: '5%', paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><EmojiPeopleIcon /> Enroled volunteers</h2>
                             <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
                                 {
                                     volunteers.map((volunteer, index) => {
                                         return(
                                             <ProjectVolunteerItem projectId={this.props.project._id} onHandleProjectVolunteerRemoval={this.onHandleProjectVolunteerRemoval} onHandleProjectVolunteerRoleChange={this.onHandleProjectVolunteerRoleChange} key={index} volunteer={volunteer} editMode={editMode} />
+                                        )
+                                    })
+                                }
+                            </List>
+                        </Card>
+                    </Grid>
+
+                    {/* evaluation items */}
+                    <Grid item xs={12} sm={12} md={6} lg={6}>
+                        <Card style={{ width: '100%' }}>
+                            <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><FeedbackIcon /> Evaluation Results</h2>                            
+                            <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><EmojiEventsIcon style={{ fontSize: 14 }}/> Average score: {starsAverage(evaluations)}/5 stars</h5>
+                            <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
+                                {
+                                    evaluations.map((evaluation, index) => {
+                                        return(
+                                            <VolunteerEvaluationItem key={index} volunteer={evaluation.volunteer} stars={evaluation.stars} comments={evaluation.comments} />
                                         )
                                     })
                                 }
