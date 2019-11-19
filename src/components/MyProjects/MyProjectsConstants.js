@@ -27,6 +27,7 @@ export const ENROLL_TEXT = 'Are you sure you want to enroll to this project? If 
 export const VOLUNTEER_COMMENTS_DIALOG_TITLE = ' said this about your project'
 export const VOLUNTEER_COMMENTS_DIALOG_OK = 'CLOSE'
 export const LOCATION_FILTER = 'FILTER'
+export const DOWNLOAD_CSV = 'Download CSV Report'
 
 export const starsAverage = (evaluations) => {
     let sum = 0

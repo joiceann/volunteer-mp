@@ -30,7 +30,7 @@ import colors from '../../colors'
 import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
-import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER } from './MyProjectsConstants';
+import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV } from './MyProjectsConstants';
 import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken } from './MyProjectsProvider';
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
@@ -264,6 +264,25 @@ export default class ProjectModal extends Component {
         this.setState({ locationsVolunteerSelectorSelected: e.target.value, geoLocations })
     }
 
+    handleLocationsCSVDownload = () => {
+        const { geoLocations } = this.state
+
+        const rows = [['volunteer', 'date', 'latitude', 'longitude', 'address']]
+        geoLocations.forEach(location => {
+            const row = [location.volunteer.name || 'Anonymous', location.date, location.coordinates.lat, location.coordinates.long, location.address ]
+            rows.push(row)
+        })
+
+        const csv = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n")
+        var encodedUri = encodeURI(csv)
+        var link = document.createElement("a")
+        link.setAttribute("href", encodedUri)
+        link.setAttribute("download", "locations.csv")
+        document.body.appendChild(link)
+
+        link.click()
+    }
+
     render = () => {
         const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled, evaluations, geoLocations, datePickerEnd, datePickerOrigin, locationsVolunteersSelector, locationsVolunteerSelectorSelected } = this.state
         const { userType } = this.props        
@@ -418,115 +437,123 @@ export default class ProjectModal extends Component {
                     </Grid>
 
                     {/* evaluation items */}
-                    <Grid item xs={12} sm={12} md={6} lg={6}>
-                        <Card style={{ width: '100%' }}>
-                            <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><FeedbackIcon /> Evaluation Results</h2>                            
-                            
-                            {
-                                evaluations.length > 0 &&
-                                <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><EmojiEventsIcon style={{ fontSize: 14 }}/> Average score: {starsAverage(evaluations)}/5 stars</h5>
-                            }
-                            
-                            <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
+                    {
+                        userType === '2' &&
+                        <Grid item xs={12} sm={12} md={6} lg={6}>
+                            <Card style={{ width: '100%' }}>
+                                <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><FeedbackIcon /> Evaluation Results</h2>                            
+                                
                                 {
                                     evaluations.length > 0 &&
-                                    evaluations.map((evaluation, index) => {
-                                        return(
-                                            <VolunteerEvaluationItem key={index} volunteer={evaluation.volunteer} stars={evaluation.stars} comments={evaluation.comments} />
-                                        )
-                                    })
+                                    <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><EmojiEventsIcon style={{ fontSize: 14 }}/> Average score: {starsAverage(evaluations)}/5 stars</h5>
                                 }
-                            </List>
+                                
+                                <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
+                                    {
+                                        evaluations.length > 0 &&
+                                        evaluations.map((evaluation, index) => {
+                                            return(
+                                                <VolunteerEvaluationItem key={index} volunteer={evaluation.volunteer} stars={evaluation.stars} comments={evaluation.comments} />
+                                            )
+                                        })
+                                    }
+                                </List>
 
-                            {
-                                evaluations.length === 0 &&
-                                <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><WarningIcon style={{ fontSize: 14 }}/> By the moment, there are no evaluations.</h5>
-                            }
-                        </Card>
-                    </Grid>
+                                {
+                                    evaluations.length === 0 &&
+                                    <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><WarningIcon style={{ fontSize: 14 }}/> By the moment, there are no evaluations.</h5>
+                                }
+                            </Card>
+                        </Grid>
+                    }
 
                     {/* geolocation items */}
-                    <Grid item xs={12} sm={12} md={6} lg={6}>
-                        <Card style={{ width: '100%' }}>
-                            <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><RoomIcon /> Visited Locations</h2>
-                            
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <Grid container spacing={2} style={{ paddingLeft: '10%', paddingRight: '10%', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Grid item xs={12} sm={12} md={4} lg={4}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-origin"
-                                            label="Fecha inicial"
-                                            format="MM/dd/yyyy"
-                                            value={datePickerOrigin}
-                                            onChange={this.handleOriginDateChange}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
+                    {
+                        userType === '2' &&
+                        <Grid item xs={12} sm={12} md={6} lg={6}>
+                            <Card style={{ width: '100%' }}>
+                                <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><RoomIcon /> Visited Locations</h2>
+                                
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <Grid container spacing={2} style={{ paddingLeft: '10%', paddingRight: '10%', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
+                                        <Grid item xs={12} sm={12} md={4} lg={4}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="date-picker-origin"
+                                                label="Fecha inicial"
+                                                format="MM/dd/yyyy"
+                                                value={datePickerOrigin}
+                                                onChange={this.handleOriginDateChange}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={12} md={4} lg={4}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="date-picker-end"
+                                                label="Fecha final"
+                                                format="MM/dd/yyyy"
+                                                value={datePickerEnd}
+                                                onChange={this.handleEndDateChange}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />                                    
+                                        </Grid>
+                                        <Grid item xs={12} sm={12} md={4} lg={4}>
+                                            <Button onClick={() => this.handleFilterLocations()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{LOCATION_FILTER}</Button>                                    
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={12} sm={12} md={4} lg={4}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="date-picker-end"
-                                            label="Fecha final"
-                                            format="MM/dd/yyyy"
-                                            value={datePickerEnd}
-                                            onChange={this.handleEndDateChange}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />                                    
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={4} lg={4}>
-                                        <Button onClick={() => this.handleFilterLocations()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{LOCATION_FILTER}</Button>                                    
-                                    </Grid>
-                                </Grid>
-                            </MuiPickersUtilsProvider>
+                                </MuiPickersUtilsProvider>
 
-                            {                                
-                                locationsVolunteersSelector &&
-                                <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                    <FormControl style={{ width: '80%' }}>                                    
-                                        <Select
-                                            labelId="vol-select-label"
-                                            id="vol-select"
-                                            value={locationsVolunteerSelectorSelected}
-                                            onChange={(e) => this.handleLocationsSelectorOnSelect(e)}
-                                        >
-                                            <MenuItem value="">
-                                                <em>None</em>
-                                            </MenuItem>
-                                            {
-                                                locationsVolunteersSelector.map((volunteer, index) => {
-                                                    return(
-                                                        <MenuItem key={index} value={volunteer.id}>{volunteer.name}</MenuItem>
-                                                    )
-                                                })
-                                            }
-                                        </Select>
-                                        <FormHelperText>Filter by volunteer on this date range</FormHelperText>
-                                    </FormControl>
-                                </div>
+                                {                                
+                                    locationsVolunteersSelector &&
+                                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                                        <FormControl style={{ width: '80%' }}>                                    
+                                            <Select
+                                                labelId="vol-select-label"
+                                                id="vol-select"
+                                                value={locationsVolunteerSelectorSelected}
+                                                onChange={(e) => this.handleLocationsSelectorOnSelect(e)}
+                                            >
+                                                <MenuItem value="">
+                                                    <em>None</em>
+                                                </MenuItem>
+                                                {
+                                                    locationsVolunteersSelector.map((volunteer, index) => {
+                                                        return(
+                                                            <MenuItem key={index} value={volunteer.id}>{volunteer.name}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                            <FormHelperText>Filter by volunteer on this date range</FormHelperText>
+                                        </FormControl>
 
-                            }
-                            
-                            <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
-                                {
-                                    geoLocations.length > 0 &&
-                                    geoLocations.map((location, index) => {
-                                        return(
-                                            <GeoLocationItem key={index} location={location} />
-                                        )
-                                    })
+                                        <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleLocationsCSVDownload()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{DOWNLOAD_CSV}</Button>
+                                    </div>
+
                                 }
-                                {
-                                    geoLocations.length === 0 &&
-                                    <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><WarningIcon style={{ fontSize: 14 }}/> No locations registered.</h5>
-                                }
-                            </List>
-                        </Card>
-                    </Grid>                
+                                
+                                <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
+                                    {
+                                        geoLocations.length > 0 &&
+                                        geoLocations.map((location, index) => {
+                                            return(
+                                                <GeoLocationItem key={index} location={location} />
+                                            )
+                                        })
+                                    }
+                                    {
+                                        geoLocations.length === 0 &&
+                                        <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><WarningIcon style={{ fontSize: 14 }}/> No locations registered.</h5>
+                                    }
+                                </List>
+                            </Card>
+                        </Grid>
+                    }
                 </Grid>
 
                 {
