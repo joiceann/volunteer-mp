@@ -24,6 +24,18 @@ export const FINISH_PROJECT_TEXT = 'Are you sure you want to end this project? T
 export const FINISH_PROJECT_TITLE = 'Closing project'
 export const ENROLL_TITLE = 'Enrolling to this project!'
 export const ENROLL_TEXT = 'Are you sure you want to enroll to this project? If so, an application will be sent to the organization and you will have to wait for your approval before you can be a part of this project.'
+export const VOLUNTEER_COMMENTS_DIALOG_TITLE = ' said this about your project'
+export const VOLUNTEER_COMMENTS_DIALOG_OK = 'CLOSE'
+
+export const starsAverage = (evaluations) => {
+    let sum = 0
+
+    evaluations.forEach(evaluation => {
+        sum += evaluation.stars
+    })
+
+    return sum / evaluations.length
+}
 
 export const volunteerRemovalSuccess = (volunteerName, type) => {
     if (type === 'ONG') {
