@@ -264,31 +264,41 @@ export default class ProjectModal extends Component {
                                 userType === '2' &&
                                 ONG
                             } */}
-                            <Grid item xs={12} sm={12} md={12} lg={12}>                                
-                                <Button onClick={
-                                    () => this.setDialogOptions(
-                                        () => this.handleRemoveProject(),
-                                        REMOVE_PROJECT_TITLE,
-                                        REMOVE_PROJECT_TEXT,
-                                        DIALOG_GENERIC_NO,
-                                        DIALOG_GENERIC_YES
-                                    )
-                                } variant='contained' className='projects-leave-btn'><DeleteIcon className='icon-btn' />{REMOVE_PROJECT}</Button>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12}>
-                                <Button onClick={
-                                    () => this.setDialogOptions(
-                                        () => this.handleTerminateProject(),
-                                        FINISH_PROJECT_TITLE,
-                                        FINISH_PROJECT_TEXT,
-                                        DIALOG_GENERIC_NO,
-                                        DIALOG_GENERIC_YES
-                                    )
-                                } variant='contained' className='projects-leave-btn'><FlagIcon className='icon-btn' />{FINISH_PROJECT}</Button>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12}>
-                                <Button onClick={() => this.setState({ editMode: !editMode })} variant='contained' className='projects-edit-btn'><PeopleAltIcon className='icon-btn' />{ !editMode ? EDIT_PROJECT : EDIT_PROJECT_CLOSE}</Button>
-                            </Grid>
+                            {
+                                userType === '2' &&
+                                <Grid item xs={12} sm={12} md={12} lg={12}>                                
+                                    <Button onClick={
+                                        () => this.setDialogOptions(
+                                            () => this.handleRemoveProject(),
+                                            REMOVE_PROJECT_TITLE,
+                                            REMOVE_PROJECT_TEXT,
+                                            DIALOG_GENERIC_NO,
+                                            DIALOG_GENERIC_YES
+                                        )
+                                    } variant='contained' className='projects-leave-btn'><DeleteIcon className='icon-btn' />{REMOVE_PROJECT}</Button>
+                                </Grid>
+
+                            }
+                            {
+                                userType === '2' &&
+                                <Grid item xs={12} sm={12} md={12} lg={12}>
+                                    <Button onClick={
+                                        () => this.setDialogOptions(
+                                            () => this.handleTerminateProject(),
+                                            FINISH_PROJECT_TITLE,
+                                            FINISH_PROJECT_TEXT,
+                                            DIALOG_GENERIC_NO,
+                                            DIALOG_GENERIC_YES
+                                        )
+                                    } variant='contained' className='projects-leave-btn'><FlagIcon className='icon-btn' />{FINISH_PROJECT}</Button>
+                                </Grid>
+                            }
+                            {
+                                userType === '2' &&
+                                <Grid item xs={12} sm={12} md={12} lg={12}>
+                                    <Button onClick={() => this.setState({ editMode: !editMode })} variant='contained' className='projects-edit-btn'><PeopleAltIcon className='icon-btn' />{ !editMode ? EDIT_PROJECT : EDIT_PROJECT_CLOSE}</Button>
+                                </Grid>
+                            }
                             {/* {
                                 editMode &&
                                 <Grid item xs={12} sm={12} md={12} lg={12}>
