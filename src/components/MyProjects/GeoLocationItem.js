@@ -28,7 +28,6 @@ import Slide from '@material-ui/core/Slide';
 
 
 import { limitTextToCertainLength, VOLUNTEER_COMMENTS_DIALOG_TITLE, VOLUNTEER_COMMENTS_DIALOG_OK } from './MyProjectsConstants';
-import { GOOGLE_MAPS_API_KEY } from '../../constants';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -50,13 +49,6 @@ export default class GeoLocationItem extends Component {
         return(
             <ListItem style={{ width: '100%', paddingLeft: '10%', paddingRight: '10%' }} className='icon-pointer'>
                 <Grid container spacing={2} onClick={() => this.setState({ showLocation: true })}>
-                    <Grid item xs={2} sm={2} md={2} lg={2}>
-                        <ListItemAvatar>
-                            <Avatar>
-                                {`${location.volunteer.name && location.volunteer.name[0]}`}
-                            </Avatar>
-                        </ListItemAvatar>
-                    </Grid>
                     <Grid item xs={4} sm={4} md={4} lg={4} className='inner-grid'>
                         {
                             location.volunteer.name &&
@@ -67,12 +59,17 @@ export default class GeoLocationItem extends Component {
                             <p className='josefin-regular'>{ location.volunteer.id }</p> 
                         }
                     </Grid>
-                    <Grid item xs={5} sm={5} md={5} lg={5} className='inner-grid' style={{ flexDirection: 'row' }}>
+                    <Grid item xs={7} sm={7} md={7} lg={7} className='inner-grid' style={{ flexDirection: 'row' }}>
                         { location.address && <MapIcon /> }
 
                         {
                             location.address &&
-                            limitTextToCertainLength(location.address, 30)
+                            limitTextToCertainLength(location.address, 25)
+                        }
+
+                        {
+                            !location.address &&
+                            limitTextToCertainLength(`(${location.coordinates.lat}, ${location.coordinates.long})`, 25)
                         }
                     </Grid>                    
                     <Grid item xs={1} sm={1} md={1} lg={1} className='inner-grid'>
@@ -82,13 +79,26 @@ export default class GeoLocationItem extends Component {
                 {
                     showLocation &&                    
                     <Dialog TransitionComponent={Transition} open={showLocation} onClose={() => this.setState({ showLocation: false })}>
-                        <iframe
-                            width="600"
-                            height="450"
-                            frameBorder="0" style={{ border: 0 }}
-                            src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${location.address.replace(/\s+/g, '+')}`} 
-                            allowFullScreen>
-                        </iframe>
+                        {
+                            location &&
+                            <div style={{ width: 600, height: 600 }}>
+                                <iframe 
+                                    width="600" 
+                                    height="100%"                             
+                                    src={`https://maps.google.com/maps?q=${location.coordinates.lat}+${location.coordinates.long}&t=&z=13&ie=UTF8&iwloc=&output=embed`} 
+                                    frameborder="0" 
+                                    scrolling="no" 
+                                    marginheight="0" 
+                                    marginwidth="0"
+                                >                                
+                                </iframe>
+                                {
+                                    location.address &&
+                                    <p className='josefin-bold' style={{ textAlign: 'center', position: 'absolute', padding: '2%', top: 100, left: 10, width: 280, backgroundColor: '#fff', color: '#000', zIndex: 30 }}>{location.address}</p>
+                                }
+                            </div>
+
+                        }                        
                     </Dialog>
                 }
                 {/* {

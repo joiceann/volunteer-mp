@@ -35,6 +35,12 @@ import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken }
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
 
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
@@ -73,14 +79,48 @@ export default class ProjectModal extends Component {
                 { volunteer: { name: 'Berta Esquivel' }, stars: 4, comments: 'Me parecio un proyecto agradable, bastante organizado, con buen funding y considero que todo se llevo a cabo de la mejor forma.' },
                 { volunteer: { name: 'Caridad Quiros' }, stars: 3, comments: 'Siento que puede mejorarse mucho todavia en la parte bla bla bla.' }
             ],
+            initialGeoLocations: [
+                { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-19', coordinates: { lat: 14.636100, long: -90.523556 }, address: '1a Avenida A, Guatemala 01003, Guatemala' },
+                { volunteer: { name: 'Caridad Quiros', id: "5dc76b5ca6d3306ba4f724a5" }, date: '2019-10-12', coordinates: { lat: 14.635459, long: -90.514853 }, address: '6A Av (Paseo de la Sexta) 440, Guatemala' },
+                { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-15', coordinates: { lat: 14.631392, long: -90.523726 }, address: '19 Calle 21, Guatemala' }
+            ],
             geoLocations: [
-                { volunteer: { name: 'Berta Esquivel' }, date: '2019-11-19', coordinates: { lat: 14.636100, long: -90.523556 }, address: '1a Avenida A, Guatemala 01003, Guatemala' },
-                { volunteer: { name: 'Caridad Quiros' }, date: '2019-10-12', coordinates: { lat: 14.635459, long: -90.514853 }, address: '6A Av (Paseo de la Sexta) 440, Guatemala' }
-            ]
+                { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-19', coordinates: { lat: 14.636100, long: -90.523556 }, address: '1a Avenida A, Guatemala 01003, Guatemala' },
+                { volunteer: { name: 'Caridad Quiros', id: "5dc76b5ca6d3306ba4f724a5" }, date: '2019-10-12', coordinates: { lat: 14.635459, long: -90.514853 }, address: '6A Av (Paseo de la Sexta) 440, Guatemala' },
+                { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-15', coordinates: { lat: 14.631392, long: -90.523726 }, address: '19 Calle 21, Guatemala' }
+            ],
+
+            locationsVolunteersSelector: null,
+            locationsVolunteerSelectorSelected: ""
         }
 
         this.onHandleProjectVolunteerRemoval = this.onHandleProjectVolunteerRemoval.bind(this)
         this.onHandleProjectVolunteerRoleChange = this.onHandleProjectVolunteerRoleChange.bind(this)
+    }
+
+    setVolunteersFromLocations = (geoLocations) => {                
+        if (geoLocations.size !== null) {
+            const volunteersIds = geoLocations.map(location => {
+                return location.volunteer.id
+            })            
+
+            const uniqueVolunteersIds = [...new Set(volunteersIds)] 
+            console.log(uniqueVolunteersIds)           
+            const locationsVolunteersSelector = uniqueVolunteersIds.map(id => {
+                let vol = null
+                geoLocations.forEach(loc => {
+                    if (loc.volunteer.id === id) {                        
+                        vol = { id: id, name: loc.volunteer.name !== null ? loc.volunteer.name : id }
+                    }
+                })
+
+                return vol
+            })
+            
+            console.log('locationsVolunteersSelector', locationsVolunteersSelector)
+            this.setState({ locationsVolunteersSelector })
+
+        } else this.setState({ locationsVolunteersSelector: null })
     }
 
     componentDidMount = () => {
@@ -88,9 +128,12 @@ export default class ProjectModal extends Component {
 
         getUserInfoByToken(axiosCancelTokenSource).then(userInfo => {
             const volunteerIsEnroled = volunteers.filter(v => v.id === userInfo._id).length === 1
-            console.log('enroled: ', volunteerIsEnroled)
+            console.log('enroled: ', volunteerIsEnroled)            
             this.setState({ volunteerIsEnroled })
         })
+
+        this.setVolunteersFromLocations(this.state.geoLocations)
+
     }
 
     setDialogOptions = (onAccept, title, content, cancelText, acceptText) => {        
@@ -208,12 +251,23 @@ export default class ProjectModal extends Component {
 
     handleFilterLocations = () => {
         this.setState({ geoLocations: [] })
+    }    
+
+    handleLocationsSelectorOnSelect = (e) => {
+        const { initialGeoLocations } = this.state
+        let geoLocations = initialGeoLocations
+
+        if (e.target.value !== "") {
+            geoLocations = initialGeoLocations.filter(location => location.volunteer.id === e.target.value)
+        }
+
+        this.setState({ locationsVolunteerSelectorSelected: e.target.value, geoLocations })
     }
 
     render = () => {
-        const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled, evaluations, geoLocations, datePickerEnd, datePickerOrigin } = this.state
+        const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled, evaluations, geoLocations, datePickerEnd, datePickerOrigin, locationsVolunteersSelector, locationsVolunteerSelectorSelected } = this.state
         const { userType } = this.props        
-        console.log(userType)
+        console.log(locationsVolunteersSelector)
 
         return(
             <div>
@@ -429,6 +483,33 @@ export default class ProjectModal extends Component {
                                     </Grid>
                                 </Grid>
                             </MuiPickersUtilsProvider>
+
+                            {                                
+                                locationsVolunteersSelector &&
+                                <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                                    <FormControl style={{ width: '80%' }}>                                    
+                                        <Select
+                                            labelId="vol-select-label"
+                                            id="vol-select"
+                                            value={locationsVolunteerSelectorSelected}
+                                            onChange={(e) => this.handleLocationsSelectorOnSelect(e)}
+                                        >
+                                            <MenuItem value="">
+                                                <em>None</em>
+                                            </MenuItem>
+                                            {
+                                                locationsVolunteersSelector.map((volunteer, index) => {
+                                                    return(
+                                                        <MenuItem key={index} value={volunteer.id}>{volunteer.name}</MenuItem>
+                                                    )
+                                                })
+                                            }
+                                        </Select>
+                                        <FormHelperText>Filter by volunteer on this date range</FormHelperText>
+                                    </FormControl>
+                                </div>
+
+                            }
                             
                             <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
                                 {
