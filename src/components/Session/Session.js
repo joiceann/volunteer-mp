@@ -10,16 +10,18 @@ const Session = () => {
 
   const history = useHistory();
 
-  const login = (token) => {
+  const login = (token, type) => {
     if (token === undefined) {
       return;
     }
     localStorage.setItem('token', token);
+    localStorage.setItem('V_USER_TYPE', type);
     setAuth(token);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('V_USER_TYPE');
     setAuth('');
     history.push('/login');
   };

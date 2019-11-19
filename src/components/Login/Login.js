@@ -124,7 +124,8 @@ const Login = ({ login }) => {
             },
           },
       ).then((response) => {
-        login(response.data.token);
+        console.log('user logged in: ', response)
+        login(response.data.token, response.data.type);
         setLoading(false);
         history.push('/dashboard/my-projects');
       }).catch((response) => {
