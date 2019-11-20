@@ -47,6 +47,7 @@ import {
     KeyboardTimePicker,
     KeyboardDatePicker,
   } from '@material-ui/pickers';
+import EditProject from '../Projects/EditProject';
 
 const CustomAppBar = styled(AppBar)`
   position: relative;
@@ -323,7 +324,10 @@ export default class ProjectModal extends Component {
                             </Grid>
                             <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <Home style={{ marginRight: 20}}/>
-                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.organinfo.name}</p>
+                                {
+                                    this.props.project.organinfo &&
+                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.organinfo.name}</p>
+                                }
                             </Grid>
                             <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <LocationOn style={{ marginRight: 20}}/>
@@ -569,7 +573,7 @@ export default class ProjectModal extends Component {
                         acceptText={dialogOptions.acceptText}
                     />
 
-                }
+                }                
 
             </div>
         )

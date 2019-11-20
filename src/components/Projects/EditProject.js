@@ -28,6 +28,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import colors from '../../colors';
 import styled from 'styled-components';
 import { createMuiTheme, makeStyles } from '@material-ui/core/styles';
+import { getONGInfo, createProject } from '../MyProjects/MyProjectsProvider';
 
 const theme = createMuiTheme();
 
@@ -61,9 +62,42 @@ const DatePicker = styled(MyDatePicker)`
   margin-left: ${theme.spacing(5)}px;
 `;
 
-const EditProject = ({ open, project, title, onClose }) => {
+const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClose }) => {
   const classes = useStyles();
   const [projectData, setProjectData] = useState({});
+
+  const createOrUpdateProject = () => {
+    if (!edit) {
+      // so we are creating
+      getONGInfo(axiosCancelTokenSource).then(ongInfo => {
+        console.log(ongInfo)
+        console.log(projectData)
+
+        const newProject = {
+          organid: ongInfo._id,
+          lastupt: (new Date()).toISOString().substring(0, 10),
+          ...projectData
+        }
+
+        delete newProject.organinfo
+
+        newProject.fdate = projectData.fdate.toISOString().substring(0, 10)
+        newProject.fdatei = projectData.fdatei.toISOString().substring(0, 10)
+        newProject.sdate = projectData.sdate.toISOString().substring(0, 10)
+        newProject.sdatei = projectData.sdatei.toISOString().substring(0, 10)
+
+        console.log('newProject will be: ', newProject)
+
+        createProject(axiosCancelTokenSource, newProject).then(response => {
+          console.log(response)
+          onClose()
+        }).catch(error => {
+          console.log(error)
+        })
+
+      })
+    }
+  }
 
   useEffect(() => {
     if (project != null) {
@@ -123,7 +157,7 @@ const EditProject = ({ open, project, title, onClose }) => {
             value={projectData.state}
             onChange={(e) => setProjectData({
               ...projectData,
-              state: e.target.value
+              state: parseInt(e.target.value)
             })}
             name="state"
             className={classes.selectEmpty}
@@ -145,7 +179,7 @@ const EditProject = ({ open, project, title, onClose }) => {
             value={projectData.mage}
             onChange={(e) => setProjectData({
               ...projectData,
-              mage: e.target.value
+              mage: parseInt(e.target.value)
             })}
             name="mage"
             className={classes.selectEmpty}
@@ -171,7 +205,7 @@ const EditProject = ({ open, project, title, onClose }) => {
             value={projectData.type}
             onChange={(e) => setProjectData({
               ...projectData,
-              type: e.target.value
+              type: parseInt(e.target.value)
             })}
             name="type"
             className={classes.selectEmpty}
@@ -279,8 +313,8 @@ const EditProject = ({ open, project, title, onClose }) => {
         <ClearButton onClick={() => onClose(false)} color="primary">
           Cancel
         </ClearButton>
-        <ClearButton onClick={() => onClose(true)} color="primary" autoFocus>
-          Create Project
+        <ClearButton onClick={() => createOrUpdateProject()} color="primary" autoFocus>
+          { edit === true ? 'Edit' : 'Create' } Project
         </ClearButton>
       </DialogActions>
     </Dialog>

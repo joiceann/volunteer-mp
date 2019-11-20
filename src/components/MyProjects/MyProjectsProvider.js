@@ -49,6 +49,23 @@ const getONGProjects = (axiosCancelTokenSource) => {
     })
 }
 
+const getONGInfo = (axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        instace.get(consts.ONG_PROFILE_INFORMATION, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
+const createProject = (axiosCancelTokenSource, project) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.CREATE_PROJECT, project, { cancelToken: axiosCancelTokenSource.token }).then(response => {
+            resolve(response.data)
+        }).catch(error => reject(error))
+    })
+}
+
 const getAllProjects = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.PROJECTS_LIST, { cancelToken: axiosCancelTokenSource.token })
@@ -582,5 +599,7 @@ export {
     updateVolunteerRole,
     enrollOrOptOutFromProject,
     getUserInfoByToken,
-    getONGProjects
+    getONGProjects,
+    getONGInfo,
+    createProject
 }

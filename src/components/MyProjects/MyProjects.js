@@ -35,10 +35,12 @@ class MyProjects extends Component {
             userType: null,
             listView: true,
 
-            showingCreateProject: false
+            showingCreateProject: false,
+            openEditProject: false
         }
 
         this.onOpenProject = this.onOpenProject.bind(this)
+        this.onEditProject = this.onEditProject.bind(this)
         this.toggleProjectModal = this.toggleProjectModal.bind(this)
         this.onHandleProjectUpdate = this.onHandleProjectUpdate.bind(this)
         this.onHandleRefreshProjects = this.onHandleRefreshProjects.bind(this)
@@ -83,6 +85,15 @@ class MyProjects extends Component {
         })
 
         setNewProject.then(() => { this.toggleProjectModal() })        
+    }
+
+    onEditProject = (project) => {
+        const setNewProject = new Promise((resolve, reject) => {
+            this.setState({ currentProject: project })
+            resolve()
+        })
+
+        setNewProject.then(() => this.setState({ openEditProject: true }))
     }
 
     toggleProjectModal = () => {
@@ -135,6 +146,8 @@ class MyProjects extends Component {
                 } else {
                     fixedProjects = this.normalizeProjectsForGridPlacement(projects)  
                 }
+
+                console.log(fixedProjects)
 
                 this.setState({ projects: fixedProjects, initialProjects: fixedProjects, userType })
             })
@@ -217,7 +230,7 @@ class MyProjects extends Component {
 
     render = () => {
         console.log(this.state)
-        const { projects, showingProject, currentProject, userType, listView, showingCreateProject } = this.state
+        const { axiosCancelTokenSource, projects, showingProject, currentProject, userType, listView, showingCreateProject, openEditProject } = this.state
 
         return(
             <div className="wrapper-my-projects">
@@ -233,10 +246,29 @@ class MyProjects extends Component {
                         />
                     </Dialog>
                 }
+
+                {
+                    currentProject &&
+                    openEditProject && 
+                    <Dialog TransitionComponent={Transition} maxWidth='xl' open={openEditProject} onClose={() => this.setState({ openEditProject: false })}>
+                        <EditProject
+                            axiosCancelTokenSource={axiosCancelTokenSource}
+                            edit={true}
+                            open={openEditProject}
+                            onClose={() => this.setState({ openEditProject: false, currentProject: null })}
+                            onCompleteEditing={() => {}}
+                            project={currentProject}
+                            title='Edit Project'
+                        />
+                    </Dialog>
+                }
+
                 {
                     showingCreateProject &&
                     <Dialog TransitionComponent={Transition} maxWidth='xl' open={showingCreateProject} onClose={() => this.setState({ showingCreateProject: false })}>
                         <EditProject
+                            axiosCancelTokenSource={axiosCancelTokenSource}
+                            edit={false}
                             open={showingCreateProject}
                             onClose={() => this.setState({ showingCreateProject: false })}
                             project={{
@@ -306,7 +338,7 @@ class MyProjects extends Component {
                         {
                             projects.map((project, index) => {
                                 return(
-                                    <ProjectListItem key={index} project={project} onOpenProject={this.onOpenProject} />
+                                    <ProjectListItem key={index} onEditProject={this.onEditProject} editOption={userType === '2' ? true : false} project={project} onOpenProject={this.onOpenProject} />
                                 )
                             })
                         }
@@ -320,25 +352,25 @@ class MyProjects extends Component {
                                 {
                                     projectRow[0] &&
                                     <Grid item xs={12} sm={12} md={6} lg={3} className='inner-grid'>
-                                        <ProjectCard project={projectRow[0]} onOpenProject={this.onOpenProject}/>
+                                        <ProjectCard editOption={userType === '2' ? true : false} project={projectRow[0]} onOpenProject={this.onOpenProject}/>
                                     </Grid>
                                 }
                                 {
                                     projectRow[1] &&
                                     <Grid item xs={12} sm={12} md={6} lg={3} className='inner-grid'>
-                                        <ProjectCard project={projectRow[1]} onOpenProject={this.onOpenProject}/>
+                                        <ProjectCard editOption={userType === '2' ? true : false} project={projectRow[1]} onOpenProject={this.onOpenProject}/>
                                     </Grid>
                                 }
                                 {
                                     projectRow[2] &&
                                     <Grid item xs={12} sm={12} md={6} lg={3} className='inner-grid'>
-                                        <ProjectCard project={projectRow[2]} onOpenProject={this.onOpenProject}/>
+                                        <ProjectCard editOption={userType === '2' ? true : false} project={projectRow[2]} onOpenProject={this.onOpenProject}/>
                                     </Grid>
                                 }
                                 {
                                     projectRow[3] &&
                                     <Grid item xs={12} sm={12} md={6} lg={3} className='inner-grid'>
-                                        <ProjectCard project={projectRow[3]} onOpenProject={this.onOpenProject}/>
+                                        <ProjectCard editOption={userType === '2' ? true : false} project={projectRow[3]} onOpenProject={this.onOpenProject}/>
                                     </Grid>
                                 }
                             </Grid>                        

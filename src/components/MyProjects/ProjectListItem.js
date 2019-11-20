@@ -13,6 +13,7 @@ import {
     Avatar,
   } from '@material-ui/core'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
+import EditIcon from '@material-ui/icons/Edit';
 
 import * as consts from './MyProjectsConstants'
 
@@ -21,16 +22,20 @@ export default class ProjectListItem extends Component {
         super(props)
 
         this.state = {}
+
+        this.onOpen = this.onOpen.bind(this)
     }
 
-    render = () => {
-        const { project } = this.props
+    onOpen = () => { this.props.onOpenProject(this.props.project) }
+
+    render = () => {        
+        const { project, editOption } = this.props
 
         return(
             <Fade in={true}>
-                <ListItem className='project-listitem icon-pointer' onClick={() => this.props.onOpenProject(project)}>
+                <ListItem className='project-listitem icon-pointer'>
                     <Grid container spacing={2}>
-                        <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid'>
+                        <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid' onClick={this.onOpen}>
                             {
                                 project.photo[0] &&
                                 <ListItemAvatar>
@@ -46,14 +51,20 @@ export default class ProjectListItem extends Component {
                                 </ListItemAvatar>
                             }
                         </Grid>
-                        <Grid item xs={8} sm={8} md={8} lg={8}>
+                        <Grid item xs={editOption ? 6 : 8} sm={editOption ? 6 : 8} md={editOption ? 6 : 8} lg={editOption ? 6 : 8} onClick={this.onOpen}>
                             <p className='josefin-regular'>{ consts.limitTextToCertainLength(project.name, 45) }</p> 
                         </Grid>
-                        <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid'>
+                        <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid' onClick={this.onOpen}>
                             <ArrowForwardIosIcon className='icon-pointer'/>
                         </Grid>
+                        {
+                            editOption &&
+                            <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid' onClick={() => this.props.onEditProject(project)}>
+                                <EditIcon className='icon-pointer'/>
+                            </Grid>
+                        }
                     </Grid>                    
-                </ListItem>
+                </ListItem>                
             </Fade>
         )
     }
