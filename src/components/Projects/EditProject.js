@@ -8,6 +8,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Select,
+  NativeSelect,
+  InputLabel,
+  FormHelperText,
+  FormControl  
 } from '@material-ui/core';
 
 import {
@@ -22,9 +27,19 @@ import DateFnsUtils from '@date-io/date-fns';
 
 import colors from '../../colors';
 import styled from 'styled-components';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createMuiTheme, makeStyles } from '@material-ui/core/styles';
 
 const theme = createMuiTheme();
+
+const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 const CustomDialogTitle = styled(DialogTitle)`
   color: ${colors.main};
@@ -46,7 +61,8 @@ const DatePicker = styled(MyDatePicker)`
   margin-left: ${theme.spacing(5)}px;
 `;
 
-const EditProject = ({ open, project, onClose }) => {
+const EditProject = ({ open, project, title, onClose }) => {
+  const classes = useStyles();
   const [projectData, setProjectData] = useState({});
 
   useEffect(() => {
@@ -60,7 +76,7 @@ const EditProject = ({ open, project, onClose }) => {
       maxWidth="xl"
     >
       <CustomDialogTitle>
-        Editar proyecto
+        {title}
       </CustomDialogTitle>
       <DialogContent>
         <div>
@@ -71,7 +87,7 @@ const EditProject = ({ open, project, onClose }) => {
             fullWidth
             id="name"
             name="name"
-            label="Nombre"
+            label="Project Name"
             value={projectData.name}
             onChange={(event) => setProjectData({
               ...projectData,
@@ -82,6 +98,7 @@ const EditProject = ({ open, project, onClose }) => {
           />
         </div>
         <TextField
+          fullWidth
           variant="outlined"
           margin="normal"
           required
@@ -92,10 +109,89 @@ const EditProject = ({ open, project, onClose }) => {
             address: event.target.value,
           })
           }
-          label="Dirección"
+          label="Project Location"
           value={projectData.address}
           autoFocus
         />
+
+        <FormControl variant="outlined" className={classes.formControl}>
+          <Select
+            autoFocus
+            required
+            style={{ marginTop: 8 }}
+            native
+            value={projectData.state}
+            onChange={(e) => setProjectData({
+              ...projectData,
+              state: e.target.value
+            })}
+            name="state"
+            className={classes.selectEmpty}
+            inputProps={{ 'aria-label': 'state' }}
+          >
+            <option value="">Project status</option>
+            <option value={1}>ACTIVE</option>
+            <option value={2}>INACTIVE</option>
+            <option value={3}>RECRUITING</option>
+          </Select>          
+        </FormControl>
+
+        <FormControl variant="outlined" className={classes.formControl}>
+          <Select
+            autoFocus
+            required
+            style={{ marginTop: 8 }}
+            native
+            value={projectData.mage}
+            onChange={(e) => setProjectData({
+              ...projectData,
+              mage: e.target.value
+            })}
+            name="mage"
+            className={classes.selectEmpty}
+            inputProps={{ 'aria-label': 'mage' }}
+          >
+            <option value="">Minimum age</option>
+            {
+              [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25].map((age, index) => {
+                return(
+                  <option key={index} value={age}>{age}</option>
+                )
+              })
+            }                      
+          </Select>          
+        </FormControl>
+
+        <FormControl variant="outlined" className={classes.formControl}>
+          <Select
+            autoFocus
+            required
+            style={{ marginTop: 8 }}
+            native
+            value={projectData.type}
+            onChange={(e) => setProjectData({
+              ...projectData,
+              type: e.target.value
+            })}
+            name="type"
+            className={classes.selectEmpty}
+            inputProps={{ 'aria-label': 'type' }}
+          >
+            <option value="">Project Type</option>
+            {
+              [
+                { value: 1, type: 'Education' },
+                { value: 2, type: 'Health' },
+                { value: 3, type: 'Environment' },
+              ].map((typeOption, index) => {
+                return(
+                  <option key={index} value={typeOption.value}>{typeOption.type}</option>
+                )
+              })
+            }                      
+          </Select>          
+        </FormControl>
+
         <Description
           variant="outlined"
           margin="normal"
@@ -110,9 +206,9 @@ const EditProject = ({ open, project, onClose }) => {
           })
           }
           multiline
-          rows={3}
-          rowsMax={3}
-          label="Descripción"
+          rows={4}
+          rowsMax={4}
+          label="Project Description"
           autoFocus
         />
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -124,7 +220,36 @@ const EditProject = ({ open, project, onClose }) => {
               margin="normal"
               id="init-project"
               name="init-project"
-              label="Inicio del proyecto"
+              label="Enrolling Start Date"
+              value={projectData.sdate}
+              onChange={(date) => setProjectData({...projectData, sdate: date})}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+            <DatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="end-project"
+              name="end-project"
+              label="Enrolling End Date"
+              value={projectData.sdatei}
+              onChange={(date) => setProjectData({...projectData, sdatei: date})}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+
+            <DatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="init-project"
+              name="init-project"
+              label="Start Date"
               value={projectData.fdate}
               onChange={(date) => setProjectData({...projectData, fdate: date})}
               KeyboardButtonProps={{
@@ -138,7 +263,7 @@ const EditProject = ({ open, project, onClose }) => {
               margin="normal"
               id="end-project"
               name="end-project"
-              label="Fin del proyecto"
+              label="Ending Date"
               value={projectData.fdatei}
               onChange={(date) => setProjectData({...projectData, fdatei: date})}
               KeyboardButtonProps={{
@@ -152,10 +277,10 @@ const EditProject = ({ open, project, onClose }) => {
       </DialogContent>
       <DialogActions>
         <ClearButton onClick={() => onClose(false)} color="primary">
-          Cancelar
+          Cancel
         </ClearButton>
         <ClearButton onClick={() => onClose(true)} color="primary" autoFocus>
-          Aceptar
+          Create Project
         </ClearButton>
       </DialogActions>
     </Dialog>

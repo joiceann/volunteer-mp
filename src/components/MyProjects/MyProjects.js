@@ -11,9 +11,12 @@ import List from '@material-ui/core/List'
 import './my_projects.css'
 import ProjectModal from './ProjectModal';
 import ProjectListItem from './ProjectListItem';
+import AddCircleIcon from '@material-ui/icons/AddCircle'
 import Typography from '@material-ui/core/Typography'
 import ViewModuleIcon from '@material-ui/icons/ViewModule'
 import ViewListIcon from '@material-ui/icons/ViewList'
+import { SearchBar, Fab } from '../CommonComponents';
+import EditProject from '../Projects/EditProject';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -26,16 +29,20 @@ class MyProjects extends Component {
         this.state = {
             axiosCancelTokenSource: createAxiosCancelToken(),
             projects: null,
+            initialProjects: null,
             showingProject: false,
             currentProject: null,
             userType: null,
-            listView: true
+            listView: true,
+
+            showingCreateProject: false
         }
 
         this.onOpenProject = this.onOpenProject.bind(this)
         this.toggleProjectModal = this.toggleProjectModal.bind(this)
         this.onHandleProjectUpdate = this.onHandleProjectUpdate.bind(this)
         this.onHandleRefreshProjects = this.onHandleRefreshProjects.bind(this)
+        this.handleOnLocalSearch = this.handleOnLocalSearch.bind(this)
     }
 
     onHandleRefreshProjects = () => {
@@ -64,7 +71,7 @@ class MyProjects extends Component {
             newProjects = projects.filter(p => p._id !== project._id)
         }
 
-        this.setState({ projects: newProjects })
+        this.setState({ projects: newProjects, initialProjects: newProjects })
     }
 
     onOpenProject = (project) => {
@@ -93,7 +100,7 @@ class MyProjects extends Component {
     changeProjectsView = () => {
         const setViewType = new Promise((resolve, reject) => {
             const { listView } = this.state
-            this.setState({ listView: !listView, projects: null })
+            this.setState({ listView: !listView, projects: null, initialProjects: null })
             resolve()
         })
 
@@ -129,7 +136,7 @@ class MyProjects extends Component {
                     fixedProjects = this.normalizeProjectsForGridPlacement(projects)  
                 }
 
-                this.setState({ projects: fixedProjects, userType })
+                this.setState({ projects: fixedProjects, initialProjects: fixedProjects, userType })
             })
         })
     }
@@ -200,9 +207,17 @@ class MyProjects extends Component {
         axiosCancelTokenSource.cancel()
     }
 
+    handleOnLocalSearch = (query) => {
+        const { initialProjects } = this.state
+        console.log(query)
+
+        const projects = query !== '' ? initialProjects.filter(project => project.name.toLowerCase().includes(query.toLowerCase())) : initialProjects
+        this.setState({ projects })
+    }
+
     render = () => {
         console.log(this.state)
-        const { projects, showingProject, currentProject, userType, listView } = this.state
+        const { projects, showingProject, currentProject, userType, listView, showingCreateProject } = this.state
 
         return(
             <div className="wrapper-my-projects">
@@ -219,6 +234,31 @@ class MyProjects extends Component {
                     </Dialog>
                 }
                 {
+                    showingCreateProject &&
+                    <Dialog TransitionComponent={Transition} maxWidth='xl' open={showingCreateProject} onClose={() => this.setState({ showingCreateProject: false })}>
+                        <EditProject
+                            open={showingCreateProject}
+                            onClose={() => this.setState({ showingCreateProject: false })}
+                            project={{
+                                organinfo: {},
+                                name: '',
+                                desc: '',
+                                address: '',
+                                fdate: new Date(),
+                                fdatei: new Date(),
+                                volunteers: [],
+                                photo: [],
+                                news: [],
+                                state: undefined,
+                                mage: undefined,
+                                sdate: new Date(),
+                                sdatei: new Date()
+                            }}
+                            title='Create New Project'
+                        />
+                    </Dialog>
+                }
+                {
                     !projects &&
                     <div className='wrapper-flex'>
                         <CircularProgress style={{ color: '#fff' }} />
@@ -228,12 +268,12 @@ class MyProjects extends Component {
                 {
                     projects &&
                     <Grid container className='projects-grid' spacing={2}>
-                        <Grid item xs={10} sm={10} md={10} lg={10}>
+                        <Grid item xs={userType === '2' ? 8 : 10} sm={userType === '2' ? 8 : 10} md={userType === '2' ? 8 : 10} lg={userType === '2' ? 8 : 10}>
                             <Typography variant="h3" className='josefin-bold' style={{ color: '#fff', marginBottom: 20 }}>
                                 My projects
                             </Typography> 
                         </Grid>
-                        <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid'>
+                        <Grid style={{ flexDirection: 'row', justifyContent: 'flex-end' }} item xs={userType === '2' ? 4 : 2} sm={userType === '2' ? 4 : 2} md={userType === '2' ? 4 : 2} lg={userType === '2' ? 4 : 2} className='inner-grid'>
                             {
                                 listView &&
                                 <ViewModuleIcon className='icon-pointer' style={{ color: '#fff', fontSize: 50, marginTop: 0 }} onClick={() => this.changeProjectsView()} />
@@ -242,8 +282,22 @@ class MyProjects extends Component {
                                 !listView &&
                                 <ViewListIcon className='icon-pointer' style={{ color: '#fff', fontSize: 40, marginTop: 0 }} onClick={() => this.changeProjectsView()} />
                             }
+                            {
+                                userType === '2' &&
+                                <Fab onClick={() => this.setState({ showingCreateProject: true })} />
+                                // <AddCircleIcon className='icon-pointer' style={{ color: '#F0AD4E', fontSize: 40, marginTop: 0, marginLeft: 10 }} onClick={() => this.setState({ showingCreateProject: true })}/>
+                            }
                         </Grid>
                     </Grid>
+                }
+
+                {
+                    projects &&
+                    <SearchBar                        
+                        placeholder="Search in your projects"
+                        value={undefined}
+                        onChange={this.handleOnLocalSearch}
+                    />
                 }
 
                 {
