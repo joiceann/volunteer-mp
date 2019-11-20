@@ -28,6 +28,7 @@ export const VOLUNTEER_COMMENTS_DIALOG_TITLE = ' said this about your project'
 export const VOLUNTEER_COMMENTS_DIALOG_OK = 'CLOSE'
 export const LOCATION_FILTER = 'FILTER'
 export const DOWNLOAD_CSV = 'Download CSV Report'
+export const DOWNLOAD_CSV_USER_LIST ='Download volunteers list'
 
 export const starsAverage = (evaluations) => {
     let sum = 0

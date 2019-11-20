@@ -30,7 +30,7 @@ import colors from '../../colors'
 import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
-import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV } from './MyProjectsConstants';
+import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV, DOWNLOAD_CSV_USER_LIST } from './MyProjectsConstants';
 import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken } from './MyProjectsProvider';
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
@@ -285,6 +285,25 @@ export default class ProjectModal extends Component {
         link.click()
     }
 
+    handleVolunteersInfoCSVDownload = () => {
+        const { volunteers } = this.state
+
+        const rows = [['name', 'nationality', 'role', 'phone']]
+        volunteers.forEach(volunteer => {
+            const row = [volunteer.name, volunteer.nationality, volunteer.role === 1 ? 'coordinator' : 'volunteer', volunteer.phone]
+            rows.push(row)
+        })
+        
+        const csv = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n")
+        var encodedUri = encodeURI(csv)
+        var link = document.createElement("a")
+        link.setAttribute("href", encodedUri)
+        link.setAttribute("download", "volunteers.csv")
+        document.body.appendChild(link)
+
+        link.click()
+    }
+
     render = () => {
         const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled, evaluations, geoLocations, datePickerEnd, datePickerOrigin, locationsVolunteersSelector, locationsVolunteerSelectorSelected } = this.state
         const { userType } = this.props        
@@ -426,9 +445,19 @@ export default class ProjectModal extends Component {
                             <p style={{ color: '#000', padding: '10%' }} className='project-desc-text project-desc-text-height'>{this.props.project.desc}</p>
                         </Card>
                     </Grid>
+
+                    {/* volunteers */}
                     <Grid item xs={12} sm={12} md={6} lg={6}>
                         <Card style={{ width: '100%' }}>
                             <h2 style={{ padding: '10%', paddingBottom: '5%', paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><EmojiPeopleIcon /> Enroled volunteers</h2>
+                            
+                            {
+                                userType === '2' &&
+                                <div className='inner-grid' style={{ width: '100%' }}>
+                                    <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleVolunteersInfoCSVDownload()} variant='contained' className='projects-enroll-btn'><PeopleAltIcon className='icon-btn' />{DOWNLOAD_CSV_USER_LIST}</Button>                            
+                                </div>
+                            }
+
                             <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
                                 {
                                     volunteers.map((volunteer, index) => {
@@ -444,8 +473,8 @@ export default class ProjectModal extends Component {
                     {/* evaluation items */}
                     {
                         userType === '2' &&
-                        <Grid item xs={12} sm={12} md={6} lg={6}>
-                            <Card style={{ width: '100%' }}>
+                        <Grid item xs={12} sm={12} md={12} lg={12}>
+                            <Card style={{ width: '100%', paddingBottom: '2%' }}>
                                 <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><FeedbackIcon /> Evaluation Results</h2>                            
                                 
                                 {
@@ -475,8 +504,8 @@ export default class ProjectModal extends Component {
                     {/* geolocation items */}
                     {
                         userType === '2' &&
-                        <Grid item xs={12} sm={12} md={6} lg={6}>
-                            <Card style={{ width: '100%' }}>
+                        <Grid item xs={12} sm={12} md={12} lg={12}>
+                            <Card style={{ width: '100%', paddingBottom: '2%' }}>
                                 <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><RoomIcon /> Visited Locations</h2>
                                 
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
