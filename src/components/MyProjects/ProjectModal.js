@@ -48,6 +48,7 @@ import {
     KeyboardDatePicker,
   } from '@material-ui/pickers';
 import EditProject from '../Projects/EditProject';
+import ProjectVolunteerServiceHours from './ProjectVolunteerServiceHours';
 
 const CustomAppBar = styled(AppBar)`
   position: relative;
@@ -75,6 +76,8 @@ export default class ProjectModal extends Component {
 
             datePickerOrigin: new Date(),
             datePickerEnd: new Date(),
+            datePickerOriginServiceHours: new Date(),
+            datePickerEndServiceHours: new Date(),
 
             evaluations: [
                 { volunteer: { name: 'Berta Esquivel' }, stars: 4, comments: 'Me parecio un proyecto agradable, bastante organizado, con buen funding y considero que todo se llevo a cabo de la mejor forma.' },
@@ -89,6 +92,10 @@ export default class ProjectModal extends Component {
                 { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-19', coordinates: { lat: 14.636100, long: -90.523556 }, address: '1a Avenida A, Guatemala 01003, Guatemala' },
                 { volunteer: { name: 'Caridad Quiros', id: "5dc76b5ca6d3306ba4f724a5" }, date: '2019-10-12', coordinates: { lat: 14.635459, long: -90.514853 }, address: '6A Av (Paseo de la Sexta) 440, Guatemala' },
                 { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-15', coordinates: { lat: 14.631392, long: -90.523726 }, address: '19 Calle 21, Guatemala' }
+            ],
+            volunteerHours: [
+                { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, serviceHours: 40 },
+                { volunteer: { name: 'Caridad Quiros', id: "5dc76b5ca6d3306ba4f724a5" }, serviceHours: 30 }
             ],
 
             locationsVolunteersSelector: null,
@@ -150,14 +157,24 @@ export default class ProjectModal extends Component {
         
         this.handleEndDateChange = this.handleEndDateChange.bind(this)
         this.handleOriginDateChange = this.handleOriginDateChange.bind(this)
+        this.handleEndDateChangeServiceHours = this.handleEndDateChangeServiceHours.bind(this)
+        this.handleOriginDateChangeServiceHours = this.handleOriginDateChangeServiceHours.bind(this)
     }
 
-    handleOriginDateChange = (datePickerOrigin) => {
+    handleOriginDateChange = (datePickerOrigin) => {        
         this.setState({ datePickerOrigin })
     }
 
     handleEndDateChange = (datePickerEnd) => {
         this.setState({ datePickerEnd })
+    }
+
+    handleOriginDateChangeServiceHours = (datePickerOriginServiceHours) => {        
+        this.setState({ datePickerOriginServiceHours })
+    }
+
+    handleEndDateChangeServiceHours = (datePickerEndServiceHours) => {
+        this.setState({ datePickerEndServiceHours })
     }
     
     handleVolunteerOptInOrOut = (option) => {
@@ -253,7 +270,11 @@ export default class ProjectModal extends Component {
 
     handleFilterLocations = () => {
         this.setState({ geoLocations: [] })
-    }    
+    } 
+    
+    handleFilterServiceHours = () => {
+        this.setState({ volunteerHours: [] })
+    }
 
     handleLocationsSelectorOnSelect = (e) => {
         const { initialGeoLocations } = this.state
@@ -304,8 +325,27 @@ export default class ProjectModal extends Component {
         link.click()
     }
 
+    handleServiceHoursCSVDownload = () => {
+        const { volunteerHours } = this.state
+
+        const rows = [['name', 'hours']]
+        volunteerHours.forEach(volunteer => {
+            const row = [volunteer.volunteer.name, volunteer.serviceHours]
+            rows.push(row)
+        })
+        
+        const csv = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n")
+        var encodedUri = encodeURI(csv)
+        var link = document.createElement("a")
+        link.setAttribute("href", encodedUri)
+        link.setAttribute("download", "volunteer-service-hours.csv")
+        document.body.appendChild(link)
+
+        link.click()
+    }
+
     render = () => {
-        const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled, evaluations, geoLocations, datePickerEnd, datePickerOrigin, locationsVolunteersSelector, locationsVolunteerSelectorSelected } = this.state
+        const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled, evaluations, geoLocations, datePickerEnd, datePickerOrigin, datePickerEndServiceHours, datePickerOriginServiceHours, locationsVolunteersSelector, locationsVolunteerSelectorSelected, volunteerHours } = this.state
         const { userType } = this.props        
         console.log(locationsVolunteersSelector)
 
@@ -456,7 +496,7 @@ export default class ProjectModal extends Component {
                                 <div className='inner-grid' style={{ width: '100%' }}>
                                     <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleVolunteersInfoCSVDownload()} variant='contained' className='projects-enroll-btn'><PeopleAltIcon className='icon-btn' />{DOWNLOAD_CSV_USER_LIST}</Button>                            
                                 </div>
-                            }
+                            }                            
 
                             <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
                                 {
@@ -469,6 +509,66 @@ export default class ProjectModal extends Component {
                             </List>
                         </Card>
                     </Grid>
+
+                    {/* serviceHours items */}
+                    {
+                        userType === '2' &&
+                        <Grid item xs={12} sm={12} md={12} lg={12}>
+                            <Card style={{ width: '100%', paddingBottom: '2%' }}>
+                                <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><PeopleAltIcon /> Volunteer Service Hours</h2>
+
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <Grid container spacing={2} style={{ paddingLeft: '10%', paddingRight: '10%', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
+                                        <Grid item xs={12} sm={12} md={4} lg={4}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="date-picker-origin"
+                                                label="Fecha inicial"
+                                                format="MM/dd/yyyy"
+                                                value={datePickerOriginServiceHours}
+                                                onChange={this.handleOriginDateChangeServiceHours}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={12} md={4} lg={4}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="date-picker-end"
+                                                label="Fecha final"
+                                                format="MM/dd/yyyy"
+                                                value={datePickerEndServiceHours}
+                                                onChange={this.handleEndDateChangeServiceHours}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />                                    
+                                        </Grid>
+                                        <Grid item xs={12} sm={12} md={4} lg={4}>
+                                            <Button onClick={() => this.handleFilterServiceHours()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{LOCATION_FILTER}</Button>                                    
+                                        </Grid>
+                                    </Grid>
+                                </MuiPickersUtilsProvider>
+
+                                <div className='inner-grid' style={{ width: '100%' }}>
+                                    <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleServiceHoursCSVDownload()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{DOWNLOAD_CSV}</Button>                            
+                                </div>
+
+                                <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
+                                    {
+                                        volunteerHours.length > 0 &&
+                                        volunteerHours.map((data, index) => {
+                                            return(
+                                                <ProjectVolunteerServiceHours key={index} volunteer={data.volunteer} serviceHours={data.serviceHours} />
+                                            )
+                                        })
+                                    }
+                                </List>
+                            
+                            </Card>
+                        </Grid>
+                    }
 
                     {/* evaluation items */}
                     {
