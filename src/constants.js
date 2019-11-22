@@ -9,3 +9,4 @@ export const USER_PROFILE = '/users';
 export const ONG_PROFILE_INFORMATION = '/organizations';
 export const NEW_LIST= '/news/list';
 export const GET_PROJECTS_ONG = '/organizations/myprojects'
+export const UPLOAD_IMAGE = '/images/upload'

@@ -8,6 +8,14 @@ const createAxiosCancelToken = () => {
     return cancelTokenSource
 }
 
+const uploadImage = (axiosCancelTokenSource, image) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.UPLOAD_IMAGE, { image }, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => resolve(response.data))
+            .catch(error => reject(error))
+    })
+}
+
 const getUserInfoByToken = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.USER_PROFILE, { cancelToken: axiosCancelTokenSource.token })
@@ -601,5 +609,6 @@ export {
     getUserInfoByToken,
     getONGProjects,
     getONGInfo,
-    createProject
+    createProject,
+    uploadImage
 }

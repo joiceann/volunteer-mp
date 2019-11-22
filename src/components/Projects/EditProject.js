@@ -28,7 +28,8 @@ import DateFnsUtils from '@date-io/date-fns';
 import colors from '../../colors';
 import styled from 'styled-components';
 import { createMuiTheme, makeStyles } from '@material-ui/core/styles';
-import { getONGInfo, createProject } from '../MyProjects/MyProjectsProvider';
+import { getONGInfo, createProject, uploadImage } from '../MyProjects/MyProjectsProvider';
+import ImageUpload from '../MyProjects/ImageUpload';
 
 const theme = createMuiTheme();
 
@@ -66,6 +67,16 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
   const classes = useStyles();
   const [projectData, setProjectData] = useState({});
 
+  console.log(projectData)
+
+  const handleImageChange = (imageFile) => {
+    console.log(imageFile)
+    setProjectData({
+      ...projectData,
+      photo: [imageFile]
+    })
+  }
+
   const createOrUpdateProject = () => {
     if (!edit) {
       // so we are creating
@@ -87,6 +98,11 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
         newProject.sdatei = projectData.sdatei.toISOString().substring(0, 10)
 
         console.log('newProject will be: ', newProject)
+
+        // first upload project image
+        // uploadImage(axiosCancelTokenSource, projectData.photo[0]).then(response => {
+        //   console.log(response)
+        // }).catch(error => console.log(error))
 
         createProject(axiosCancelTokenSource, newProject).then(response => {
           console.log(response)
@@ -114,6 +130,9 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
       </CustomDialogTitle>
       <DialogContent>
         <div>
+          <ImageUpload 
+            handleImageChange={handleImageChange}
+          />
           <TextField
             variant="outlined"
             margin="normal"
