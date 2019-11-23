@@ -45,6 +45,27 @@ class MyProjects extends Component {
         this.onHandleProjectUpdate = this.onHandleProjectUpdate.bind(this)
         this.onHandleRefreshProjects = this.onHandleRefreshProjects.bind(this)
         this.handleOnLocalSearch = this.handleOnLocalSearch.bind(this)
+        this.onSuccessfullClose = this.onSuccessfullClose.bind(this)
+    }
+
+    onSuccessfullClose = () => {
+        console.log('closing')
+        const closingProjectDialog = new Promise((resolve, reject) => {
+            this.setState({ showingCreateProject: false, currentProject: null, showingProject: false, openEditProject: false })
+            resolve()
+        })
+
+        closingProjectDialog.then(() => {
+            const clearProjects = new Promise((resolve, reject) => {
+                this.setState({ projects: null })
+                resolve('success')
+            })
+    
+            clearProjects.then(() => {
+                this.getProjectsAccordingToUserType()
+            })
+        })
+
     }
 
     onHandleRefreshProjects = () => {
@@ -256,6 +277,7 @@ class MyProjects extends Component {
                             edit={true}
                             open={openEditProject}
                             onClose={() => this.setState({ openEditProject: false, currentProject: null })}
+                            onSuccessfullClose={this.onSuccessfullClose}
                             onCompleteEditing={() => {}}
                             project={currentProject}
                             title='Edit Project'
@@ -271,6 +293,7 @@ class MyProjects extends Component {
                             edit={false}
                             open={showingCreateProject}
                             onClose={() => this.setState({ showingCreateProject: false })}
+                            onSuccessfullClose={this.onSuccessfullClose}
                             project={{
                                 organinfo: {},
                                 name: '',

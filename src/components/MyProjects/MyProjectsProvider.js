@@ -74,6 +74,14 @@ const createProject = (axiosCancelTokenSource, project) => {
     })
 }
 
+const editProject = (axiosCancelTokenSource, projectId, project) => {
+    return new Promise((resolve, reject) => {
+        instace.post(`${consts.CREATE_PROJECT}/${projectId}`, project, { cancelToken: axiosCancelTokenSource.token }).then(response => {
+            resolve(response.data)
+        }).catch(error => reject(error))
+    })
+}
+
 const getAllProjects = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.PROJECTS_LIST, { cancelToken: axiosCancelTokenSource.token })
@@ -610,5 +618,6 @@ export {
     getONGProjects,
     getONGInfo,
     createProject,
-    uploadImage
+    uploadImage,
+    editProject
 }

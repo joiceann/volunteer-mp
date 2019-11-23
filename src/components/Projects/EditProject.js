@@ -28,7 +28,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import colors from '../../colors';
 import styled from 'styled-components';
 import { createMuiTheme, makeStyles } from '@material-ui/core/styles';
-import { getONGInfo, createProject, uploadImage } from '../MyProjects/MyProjectsProvider';
+import { getONGInfo, createProject, uploadImage, editProject } from '../MyProjects/MyProjectsProvider';
 import ImageUpload from '../MyProjects/ImageUpload';
 
 const theme = createMuiTheme();
@@ -63,7 +63,7 @@ const DatePicker = styled(MyDatePicker)`
   margin-left: ${theme.spacing(5)}px;
 `;
 
-const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClose }) => {
+const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClose, onSuccessfullClose }) => {
   const classes = useStyles();
   const [projectData, setProjectData] = useState({});
 
@@ -106,17 +106,41 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
 
         createProject(axiosCancelTokenSource, newProject).then(response => {
           console.log(response)
-          onClose()
+          onSuccessfullClose()
         }).catch(error => {
           console.log(error)
         })
 
       })
+    } else {
+        const projectId = projectData._id
+
+        const newProject = {
+          ...projectData
+        }
+
+        delete newProject.lastupt
+        delete newProject.volunteers
+        delete newProject._v
+        delete newProject._id
+
+        delete newProject.organinfo
+        newProject.organid = projectData.organinfo.id
+
+        // console.log('to edit: ', newProject)
+
+        editProject(axiosCancelTokenSource, projectId, newProject).then(response => {
+          console.log(response)
+          onSuccessfullClose()
+        }).catch(error => {
+          console.log(error)
+        })
     }
   }
 
   useEffect(() => {
     if (project != null) {
+      console.log(project)
       setProjectData(project);
     }
   }, [project]);
