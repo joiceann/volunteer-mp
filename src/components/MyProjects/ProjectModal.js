@@ -31,7 +31,7 @@ import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
 import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV, DOWNLOAD_CSV_USER_LIST } from './MyProjectsConstants';
-import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken } from './MyProjectsProvider';
+import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject } from './MyProjectsProvider';
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
 
@@ -231,7 +231,14 @@ export default class ProjectModal extends Component {
 
     handleRemoveProject = () => {
         console.log('removing project')
-        this.setState({ openDialog: false, dialogOptions: null })
+        const { axiosCancelTokenSource } = this.state
+
+        deleteProject(axiosCancelTokenSource, this.props.project._id).then(response => {
+            console.log(response)
+            this.props.onHandleRefreshProjects()
+            this.props.onClose()
+            this.setState({ openDialog: false, dialogOptions: null })
+        })
     }
 
     handleTerminateProject = () => {
