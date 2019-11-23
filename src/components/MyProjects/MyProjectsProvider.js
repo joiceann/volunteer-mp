@@ -108,6 +108,15 @@ const getAllProjects = (axiosCancelTokenSource) => {
     })
 }
 
+const getAllProjectsPublic = (axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        instace.get(consts.GET_PROJECTS_PUBLIC_ROUTE, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
 const getAllProjectsDummy = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         const projects = []
@@ -638,5 +647,6 @@ export {
     uploadImage,
     editProject,
     deleteProject,
-    getUserProjects
+    getUserProjects,
+    getAllProjectsPublic
 }

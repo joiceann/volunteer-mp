@@ -32,6 +32,15 @@
     padding: 5%;   
 }
 
+.wrapper-public-projects {
+    background-color: #13293d;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;  
+    padding: 5%; 
+}
+
 .project-card-wrapper {
     width: 100%;
     max-width: 220px;

@@ -30,7 +30,7 @@ import colors from '../../colors'
 import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
-import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV, DOWNLOAD_CSV_USER_LIST } from './MyProjectsConstants';
+import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV, DOWNLOAD_CSV_USER_LIST, ENROLL_TEXT_NOT_LOGGED } from './MyProjectsConstants';
 import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject } from './MyProjectsProvider';
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
@@ -49,6 +49,8 @@ import {
   } from '@material-ui/pickers';
 import EditProject from '../Projects/EditProject';
 import ProjectVolunteerServiceHours from './ProjectVolunteerServiceHours';
+
+import { Redirect } from "react-router-dom"
 
 const CustomAppBar = styled(AppBar)`
   position: relative;
@@ -356,8 +358,14 @@ export default class ProjectModal extends Component {
         const { userType } = this.props        
         console.log(locationsVolunteersSelector)
 
+        console.log(`userType from modal is ${userType}`)
+
         return(
             <div>
+                {
+                    this.state.redirectToLogin === true &&
+                    <Redirect to={{ pathname: '/login' }} />
+                }
                 <CustomAppBar>
                     <Toolbar> 
                     <Typography variant="h6" className='josefin-bold'>
@@ -380,7 +388,7 @@ export default class ProjectModal extends Component {
                             {
                                 this.props.project.photo[0] &&
                                 <div style={{ width: '100%', height: '100%' }}>
-                                    <img src={this.props.project.photo[0]} width="100%" height="100%" />
+                                    <img src={this.props.project.photo[0]} width="100%" />
                                 </div>
                             }
                         </Grid>
@@ -481,6 +489,21 @@ export default class ProjectModal extends Component {
                                             ENROLL_TEXT,
                                             DIALOG_GENERIC_NO,
                                             DIALOG_GENERIC_YES
+                                        )
+                                    } variant='contained' className='projects-enroll-btn'><BeenhereIcon className='icon-btn' />{ENROLL_TO_PROJECT}</Button>
+                                </Grid>
+                            }
+                            {
+                                // USER_TYPE = NOT_LOGGED
+                                userType === 'NOT_LOGGED' &&
+                                <Grid item xs={12} sm={12} md={12} lg={12}>
+                                    <Button onClick={
+                                        () => this.setDialogOptions(
+                                            () => this.setState({ redirectToLogin: true }),
+                                            ENROLL_TITLE,
+                                            ENROLL_TEXT_NOT_LOGGED,
+                                            DIALOG_GENERIC_NO,
+                                            'OK'
                                         )
                                     } variant='contained' className='projects-enroll-btn'><BeenhereIcon className='icon-btn' />{ENROLL_TO_PROJECT}</Button>
                                 </Grid>

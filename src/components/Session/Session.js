@@ -50,7 +50,7 @@ const Session = () => {
         component={Main}
       />
       <Route exact path="/" render={() => <HomePageComponent />} /> 
-      <Route path='/search-all-projects' render={() => <ProjectsSearchComponent />} />       
+      <Route path='/search' render={() => <ProjectsSearchComponent />} />       
     </Switch>
   );
 };
