@@ -21,7 +21,14 @@ class ProjectCard extends Component {
                     <img src={project.photo[0]} style={{ height: '100%' }}/>
                     <div onClick={() => this.props.onOpenProject(project)} className='project-name-container'>
                         <h3 className='project-name-text'>{consts.limitTextToCertainLength(project.name, 100)}</h3>
-                        <p className='project-desc-text'>{consts.limitTextToCertainLength(project.desc, 55)}</p>
+                        {
+                            project.desc &&
+                            <p className='project-desc-text'>{consts.limitTextToCertainLength(project.desc, 55)}</p>                        
+                        }
+                        {
+                            project.description &&
+                            <p className='project-desc-text'>{consts.limitTextToCertainLength(project.description, 55)}</p>                        
+                        }
                     </div>
                     <Button onClick={() => this.props.onOpenProject(project)} variant='contained' className='projects-open-btn'>{consts.OPEN_PROJECT}</Button>
                 </Card>

@@ -63,10 +63,17 @@ const DatePicker = styled(MyDatePicker)`
   margin-left: ${theme.spacing(5)}px;
 `;
 
+const agesSelectorOptions = () => {
+  const ages = []
+  for (var i = 12; i < 76; i++) { ages.push(i) }
+  return ages
+}
+
 const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClose, onSuccessfullClose }) => {
   const classes = useStyles();
   const [projectData, setProjectData] = useState({});
 
+  console.log('project: ', project)
   console.log(projectData)
 
   const handleImageChange = (imageFile) => {
@@ -81,23 +88,29 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
     if (!edit) {
       // so we are creating
       getONGInfo(axiosCancelTokenSource).then(ongInfo => {
-        console.log(ongInfo)
-        console.log(projectData)
+        const newProject = {}
 
-        const newProject = {
-          organid: ongInfo._id,
-          lastupt: (new Date()).toISOString().substring(0, 10),
-          ...projectData
+        newProject.organizationInfo = {
+          id: ongInfo._id,
+          name: ongInfo.name
         }
 
-        delete newProject.organinfo
-
-        newProject.fdate = projectData.fdate.toISOString().substring(0, 10)
-        newProject.fdatei = projectData.fdatei.toISOString().substring(0, 10)
-        newProject.sdate = projectData.sdate.toISOString().substring(0, 10)
-        newProject.sdatei = projectData.sdatei.toISOString().substring(0, 10)
+        newProject.address = projectData.address
+        newProject.minAge = projectData.minAge
+        newProject.maxAge = projectData.maxAge
+        newProject.startDate = projectData.startDate.toISOString().substring(0, 10)
+        newProject.finalDate = projectData.finalDate.toISOString().substring(0, 10)
+        newProject.startDateInscription = projectData.startDateInscription.toISOString().substring(0, 10)
+        newProject.finalDateInscription = projectData.finalDateInscription.toISOString().substring(0, 10)
+        newProject.description = projectData.description
+        newProject.lastUpdated = (new Date()).toISOString().substring(0, 10)        
+        newProject.name = projectData.name
+        newProject.state = projectData.state
+        newProject.type = projectData.type        
+        newProject.news = projectData.news                
 
         console.log('newProject will be: ', newProject)
+        // console.log('newProject string will be: ', JSON.stringify(newProject))
 
         // first upload project image
         // uploadImage(axiosCancelTokenSource, projectData.photo[0]).then(response => {
@@ -108,32 +121,43 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
           console.log(response)
           onSuccessfullClose()
         }).catch(error => {
-          console.log(error)
+          console.log(error.response.data)
         })
 
       })
     } else {
-        const projectId = projectData._id
+        getONGInfo(axiosCancelTokenSource).then(ongInfo => {
+          const projectId = projectData._id
+  
+          const newProject = {}
+  
+          console.log('projectData is: ', projectData)
+          newProject.organizationInfo = {
+            id: ongInfo._id,
+            name: ongInfo.name
+          }
+  
+          newProject.address = projectData.address
+          newProject.minAge = projectData.minAge
+          newProject.maxAge = projectData.maxAge
+          newProject.startDate = projectData.startDate.toISOString().substring(0, 10)
+          newProject.finalDate = projectData.finalDate.toISOString().substring(0, 10)
+          newProject.startDateInscription = projectData.startDateInscription.toISOString().substring(0, 10)
+          newProject.finalDateInscription = projectData.finalDateInscription.toISOString().substring(0, 10)
+          newProject.description = projectData.description
+          newProject.lastUpdated = (new Date()).toISOString().substring(0, 10)        
+          newProject.name = projectData.name
+          newProject.state = projectData.state
+          newProject.type = projectData.type        
+          newProject.news = projectData.news 
+  
+          editProject(axiosCancelTokenSource, projectId, newProject).then(response => {
+            console.log(response)
+            onSuccessfullClose()
+          }).catch(error => {
+            console.log(error)
+          })
 
-        const newProject = {
-          ...projectData
-        }
-
-        delete newProject.lastupt
-        delete newProject.volunteers
-        delete newProject._v
-        delete newProject._id
-
-        delete newProject.organinfo
-        newProject.organid = projectData.organinfo.id
-
-        // console.log('to edit: ', newProject)
-
-        editProject(axiosCancelTokenSource, projectId, newProject).then(response => {
-          console.log(response)
-          onSuccessfullClose()
-        }).catch(error => {
-          console.log(error)
         })
     }
   }
@@ -141,6 +165,54 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
   useEffect(() => {
     if (project != null) {
       console.log(project)
+
+      const newProject = {...project}
+
+      // to find out if project has old or new structure
+      if (project.finalDateInscription) {
+        // has new structure
+        newProject.organizationInfo = {
+          id: project.organizationInfo.id,
+          name: project.organizationInfo.name
+        }
+
+        newProject.address = project.address
+        newProject.minAge = project.minAge
+        newProject.maxAge = project.maxAge
+        newProject.startDate = new Date(project.startDate)
+        newProject.finalDate = new Date(project.finalDate)
+        newProject.startDateInscription = new Date(project.startDateInscription)
+        newProject.finalDateInscription = new Date(project.finalDateInscription)
+        newProject.description = project.description
+        newProject.lastUpdated = new Date()       
+        newProject.name = project.name
+        newProject.state = project.state
+        newProject.type = project.type        
+        newProject.news = project.news
+      } else {
+        // has old structure        
+        newProject.organizationInfo = {
+          id: project.organinfo.id,
+          name: project.organinfo.name
+        }
+
+        newProject.address = project.address
+        newProject.minAge = project.mage
+        newProject.maxAge = project.mage
+        newProject.startDate = new Date(project.sdate)
+        newProject.finalDate = new Date(project.fdate)
+        newProject.startDateInscription = new Date(project.sdatei)
+        newProject.finalDateInscription = new Date(project.fdatei)
+        newProject.description = project.desc
+        newProject.lastUpdated = new Date()        
+        newProject.name = project.name
+        newProject.state = project.state
+        newProject.type = project.type        
+        newProject.news = project.news
+      }
+
+      project = newProject
+
       setProjectData(project);
     }
   }, [project]);
@@ -207,9 +279,10 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
             inputProps={{ 'aria-label': 'state' }}
           >
             <option value="">Project status</option>
-            <option value={1}>ACTIVE</option>
-            <option value={2}>INACTIVE</option>
-            <option value={3}>RECRUITING</option>
+            <option value={4}>New</option>
+            <option value={1}>Active</option>
+            <option value={2}>Ended</option>
+            <option value={3}>Canceled</option>
           </Select>          
         </FormControl>
 
@@ -222,7 +295,9 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
             value={projectData.mage}
             onChange={(e) => setProjectData({
               ...projectData,
-              mage: parseInt(e.target.value)
+              mage: parseInt(e.target.value),
+              minAge: parseInt(e.target.value),
+              maxAge: parseInt(e.target.value),
             })}
             name="mage"
             className={classes.selectEmpty}
@@ -230,7 +305,7 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
           >
             <option value="">Minimum age</option>
             {
-              [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25].map((age, index) => {
+              agesSelectorOptions().map((age, index) => {
                 return(
                   <option key={index} value={age}>{age}</option>
                 )
@@ -257,9 +332,9 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
             <option value="">Project Type</option>
             {
               [
+                { value: 0, type: 'Health' },
                 { value: 1, type: 'Education' },
-                { value: 2, type: 'Health' },
-                { value: 3, type: 'Environment' },
+                { value: 2, type: 'Environment' },
               ].map((typeOption, index) => {
                 return(
                   <option key={index} value={typeOption.value}>{typeOption.type}</option>
@@ -280,6 +355,7 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
           onChange={(event) => setProjectData({
             ...projectData,
             desc: event.target.value,
+            description: event.target.value,
           })
           }
           multiline
@@ -298,8 +374,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
               id="init-project"
               name="init-project"
               label="Enrolling Start Date"
-              value={projectData.sdate}
-              onChange={(date) => setProjectData({...projectData, sdate: date})}
+              value={projectData.sdatei ? projectData.sdatei : projectData.startDateInscription}
+              onChange={(date) => setProjectData({...projectData, sdatei: date, startDateInscription: date})}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
@@ -312,8 +388,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
               id="end-project"
               name="end-project"
               label="Enrolling End Date"
-              value={projectData.sdatei}
-              onChange={(date) => setProjectData({...projectData, sdatei: date})}
+              value={projectData.fdatei ? projectData.fdatei : projectData.finalDateInscription}
+              onChange={(date) => setProjectData({...projectData, fdatei: date, finalDateInscription: date})}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
@@ -327,8 +403,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
               id="init-project"
               name="init-project"
               label="Start Date"
-              value={projectData.fdate}
-              onChange={(date) => setProjectData({...projectData, fdate: date})}
+              value={projectData.sdate ? projectData.sdate : projectData.startDate}
+              onChange={(date) => setProjectData({...projectData, sdate: date, startDate: date})}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
@@ -341,8 +417,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
               id="end-project"
               name="end-project"
               label="Ending Date"
-              value={projectData.fdatei}
-              onChange={(date) => setProjectData({...projectData, fdatei: date})}
+              value={projectData.fdate ? projectData.fdate : projectData.finalDate}
+              onChange={(date) => setProjectData({...projectData, fdate: date, finalDate: date})}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}

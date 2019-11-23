@@ -394,6 +394,26 @@ export default class ProjectModal extends Component {
                                     this.props.project.organinfo &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.organinfo.name}</p>
                                 }
+                                {
+                                    this.props.project.organizationInfo &&
+                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.organizationInfo.name}</p>
+                                }
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
+                                <EmojiPeopleIcon style={{ marginRight: 20}}/>
+                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>Minimum Age: </p>
+                                {
+                                    this.props.project.mage &&
+                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.mage}</p>
+                                }
+                                {
+                                    this.props.project.minAge &&
+                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.minAge}</p>
+                                }
+                                {
+                                    this.props.project.maxAge &&
+                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.maxAge}</p>
+                                }
                             </Grid>
                             <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <LocationOn style={{ marginRight: 20}}/>
@@ -401,11 +421,37 @@ export default class ProjectModal extends Component {
                             </Grid>                            
                             <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <OfflineBolt style={{ marginRight: 20}}/>
-                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.state === 1 ? 'Currently active' : 'Currently inactive'}</p>
+                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>
+                                    {
+                                        this.props.project.state === 1 ? 'Active' :
+                                        this.props.project.state === 2 ? 'Ended' :
+                                        this.props.project.state === 3 ? 'Canceled' :
+                                        this.props.project.state === 4 ? 'New and recruiting' : ''
+                                    }
+                                </p>
                             </Grid>
                             <Grid item xs={12} sm={12} md={8} lg={8} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <DateRangeIcon style={{ marginRight: 20}}/>
-                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.fdate)).toDateString()} through ${(new Date(this.props.project.fdatei)).toDateString()}`}</p>
+                                {
+                                    this.props.project.fdate &&
+                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.sdate)).toDateString()} through ${(new Date(this.props.project.fdate)).toDateString()}`}</p>
+                                }
+                                {
+                                    this.props.project.finalDate &&
+                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.startDate)).toDateString()} through ${(new Date(this.props.project.finalDate)).toDateString()}`}</p>
+                                }
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                                <DateRangeIcon style={{ marginRight: 20}}/> 
+                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>Inscription period: </p>
+                                {
+                                    this.props.project.fdatei &&
+                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.sdatei)).toDateString()} through ${(new Date(this.props.project.fdatei)).toDateString()}`}</p>
+                                }
+                                {
+                                    this.props.project.finalDateInscription &&
+                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.startDateInscription)).toDateString()} through ${(new Date(this.props.project.finalDateInscription)).toDateString()}`}</p>
+                                }
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={12} md={4} lg={4}>
@@ -489,7 +535,14 @@ export default class ProjectModal extends Component {
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={6}>
                         <Card>
-                            <p style={{ color: '#000', padding: '10%' }} className='project-desc-text project-desc-text-height'>{this.props.project.desc}</p>
+                            {
+                                this.props.project.desc &&
+                                <p style={{ color: '#000', padding: '10%' }} className='project-desc-text project-desc-text-height'>{this.props.project.desc}</p>
+                            }
+                            {
+                                this.props.project.description &&
+                                <p style={{ color: '#000', padding: '10%' }} className='project-desc-text project-desc-text-height'>{this.props.project.description}</p>
+                            }
                         </Card>
                     </Grid>
 

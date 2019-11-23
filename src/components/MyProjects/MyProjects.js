@@ -303,19 +303,20 @@ class MyProjects extends Component {
                             onClose={() => this.setState({ showingCreateProject: false })}
                             onSuccessfullClose={this.onSuccessfullClose}
                             project={{
-                                organinfo: {},
+                                organizationInfo: {},
                                 name: '',
-                                desc: '',
+                                description: '',
                                 address: '',
-                                fdate: new Date(),
-                                fdatei: new Date(),
+                                finalDate: new Date(),
+                                finalDateInscription: new Date(),
                                 volunteers: [],
                                 photo: [],
                                 news: [],
                                 state: undefined,
-                                mage: undefined,
-                                sdate: new Date(),
-                                sdatei: new Date()
+                                minAge: undefined,
+                                maxAge: undefined,
+                                startDate: new Date(),
+                                startDateInscription: new Date()
                             }}
                             title='Create New Project'
                         />
