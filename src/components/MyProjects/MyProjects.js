@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { createAxiosCancelToken, getAllProjects, getAllProjectsDummy, getUserTypeFromLocalStorage, getONGProjects } from './MyProjectsProvider'
+import { createAxiosCancelToken, getAllProjects, getAllProjectsDummy, getUserTypeFromLocalStorage, getONGProjects, getUserProjects } from './MyProjectsProvider'
 import ProjectCard from './ProjectCard'
 
 import Grid from '@material-ui/core/Grid'
@@ -153,6 +153,14 @@ class MyProjects extends Component {
                     }).catch(error => reject(error))
                 } else if (userType === '1') {
                     // this is a normal user
+
+                    // UNCOMMENT THIS WHEN USER PROJECTS ENDPOINT WORKS
+                    // getUserProjects(axiosCancelTokenSource).then(projects => {
+                    //     console.log('enrolled projects are: ', projects)
+                    //     resolve(projects)
+                    // }).catch(error => reject(error))
+
+                    // COMMENT THIS WHEN USER PROJECTS ENDPOINT WORKS
                     getAllProjects(axiosCancelTokenSource).then(projects => {
                         resolve(projects)
                     }).catch(error => reject(error))

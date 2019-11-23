@@ -6,6 +6,7 @@ export const UPDATE_ROLE = '/projects/updaterole'
 export const ENROLL = '/projects/enroll'
 export const CREATE_PROJECT = '/projects/project';
 export const USER_PROFILE = '/users';
+export const USER_PROJECTS = '/users/myprojects'
 export const ONG_PROFILE_INFORMATION = '/organizations';
 export const NEW_LIST= '/news/list';
 export const GET_PROJECTS_ONG = '/organizations/myprojects'

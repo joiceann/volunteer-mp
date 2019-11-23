@@ -48,6 +48,15 @@ const updateVolunteerRole = (projectId, userId, role, axiosCancelTokenSource) =>
     })
 }
 
+const getUserProjects = (axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        instace.get(consts.USER_PROJECTS, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
 const getONGProjects = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.GET_PROJECTS_ONG, { cancelToken: axiosCancelTokenSource.token })
@@ -628,5 +637,6 @@ export {
     createProject,
     uploadImage,
     editProject,
-    deleteProject
+    deleteProject,
+    getUserProjects
 }
