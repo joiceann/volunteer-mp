@@ -21,7 +21,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const MainContainer = styled(Container)`
-  height: 130%;
+  height: 180%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,7 +30,7 @@ const MainContainer = styled(Container)`
 const StyledPaper = styled(Paper)`
   position: relative;
   display: flex;
-  width: 80%;
+  width: 70%;
   margin-top: 30%;
   align-items: center;
   justify-content: center;
@@ -296,6 +296,7 @@ const Register = ({ login }) => {
               autoFocus
             />
           </div>
+          <InputLabel id="label">Select your birth date</InputLabel>
           <TextField
             variant="outlined"
             margin="normal"
@@ -310,6 +311,7 @@ const Register = ({ login }) => {
             name="BirthDate"
             autoFocus
           />
+
           <div style={{ display: "flex", flexDirection: "row" }}>
             <TextField
               variant="outlined"
@@ -339,86 +341,7 @@ const Register = ({ login }) => {
             />
           </div>
           <div style={{ display: "flex", flexDirection: "row" }}>
-            <InputLabel id="label">Civil Status</InputLabel>
-            <Select labelId="civilStatus" id="civilStatus" value={civilStatus} onChange={handleCivilStatusChange}>
-            <MenuItem value="1">Soltero</MenuItem>
-              <MenuItem value="2">Casado</MenuItem>
-              <MenuItem value="3">Viudo</MenuItem>
-              <MenuItem value="4">Divorciado</MenuItem>
-              <MenuItem value="5">Union libre</MenuItem>
-            </Select>
- 
-          </div>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            value={biography}
-            onChange={handleBiographyChange}
-            fullWidth
-            id="bio"
-            label="Biography"
-            name="Biography"
-            autoComplete="Biography"
-            autoFocus
-          />
-          <div style={{ display: "flex", flexDirection: "row" ,marginBottom:"10%"}}>
-              <InputLabel id="label">Gender</InputLabel>
-            <Select labelId="gender" id="gender" value={gender} onChange={handleGenderChange}>
-            <MenuItem value="0">Prefiero no decir</MenuItem>
-            <MenuItem value="1">Femenino</MenuItem>
-              <MenuItem value="2">Masculino</MenuItem>
-            </Select>
-          </div>
-          <div style={{ display: "flex", flexDirection: "row",marginBottom:"10%"  }}>
-               <InputLabel id="label">Education Level</InputLabel>
-            <Select labelId="educationLevel" id="educationLevel" value={educationLevel} onChange={handleEducationLevelChange}>
-            <MenuItem value="1">Primaria</MenuItem>
-            <MenuItem value="2">Secundaria</MenuItem>
-              <MenuItem value="3">Licenciatura</MenuItem>
-              <MenuItem value="4">Maestra</MenuItem>
-              <MenuItem value="5">Doctorado</MenuItem>
-            </Select>
-            <InputLabel id="label">Time to travel</InputLabel>
-            <Select labelId="educationLevel" id="educationLevel" value={educationLevel} onChange={handleEducationLevelChange}>
-            <MenuItem value="1">1 semana</MenuItem>
-            <MenuItem value="2">2 semanas</MenuItem>
-              <MenuItem value="3">4 semanas</MenuItem>
-              <MenuItem value="4">6 o mas semanas</MenuItem>
-            </Select>
-       
-          </div>
-          <div style={{ display: "flex", flexDirection: "row", marginBottom:"10%" }}>
-              <InputLabel id="label">¿Do you know Guatemala?¿Do you know Spanish?</InputLabel>
-            <Select labelId="knowCountry" id="knowCountry" value={knowCountry} onChange={handleKnowCountryChange}>
-            <MenuItem value="1">Yes,Yes</MenuItem>
-            <MenuItem value="2">Yes,No</MenuItem>
-              <MenuItem value="3">No,Yes</MenuItem>
-              <MenuItem value="4">No,No</MenuItem>
-            </Select>
-  
-          </div>
-          <div style={{ display: "flex", flexDirection: "row" }}>
-          <InputLabel id="label">Which projects do you prefer?</InputLabel>
-            <Select labelId="projectInterest" id="projectInterest" value={projectInterest} onChange={handleProjectInterestChange}>
-            <MenuItem value="1">Education</MenuItem>
-            <MenuItem value="2">Health</MenuItem>
-              <MenuItem value="3">Environment</MenuItem>
-              <MenuItem value="4">All</MenuItem>
-            </Select>
-
-             </div>
-             <div style={{ display: "flex", flexDirection: "row" }}>
-          <InputLabel id="label">Type of food</InputLabel>
-            <Select labelId="foodInfo" id="foodInfo" value={foodInfo} onChange={handleFoodInfoChange}>
-            <MenuItem value="0">Nothing in especial</MenuItem>
-            <MenuItem value="1">Vegetarian</MenuItem>
-              <MenuItem value="2">Vegan</MenuItem>
-            </Select>
-
-             </div>
-             <div style={{ display: "flex", flexDirection: "row" }}>
-          <TextField
+            <TextField
               variant="outlined"
               margin="normal"
               required
@@ -431,10 +354,7 @@ const Register = ({ login }) => {
               autoComplete="email"
               autoFocus
             />
-          
-           
           </div>
-          
 
           <div style={{ display: "flex", flexDirection: "row" }}></div>
           <div>
@@ -452,12 +372,171 @@ const Register = ({ login }) => {
               autoComplete="current-password"
             />
           </div>
-             <Typography variant="h6">Emergency Contact</Typography>
-             <div style={{ display: "flex", flexDirection: "row" }}>
-          <InputLabel id="label">Role</InputLabel>
-            <Select labelId="foodInfo" id="foodInfo" value={foodInfo} onChange={handleFoodInfoChange}>
-            <MenuItem value="0">Other</MenuItem>
-            <MenuItem value="1">Mother</MenuItem>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            value={biography}
+            onChange={handleBiographyChange}
+            fullWidth
+            id="bio"
+            label="Biography"
+            name="Biography"
+            autoComplete="Biography"
+            autoFocus
+          />
+          <div
+            style={{ display: "flex", flexDirection: "row", marginTop: "5%" }}
+          >
+            <InputLabel id="label" style={{ marginRight: "5%" }}>
+              Civil Status
+            </InputLabel>
+            <Select
+              labelId="civilStatus"
+              id="civilStatus"
+              value={civilStatus}
+              onChange={handleCivilStatusChange}
+            >
+              <MenuItem value="1">Soltero</MenuItem>
+              <MenuItem value="2">Casado</MenuItem>
+              <MenuItem value="3">Viudo</MenuItem>
+              <MenuItem value="4">Divorciado</MenuItem>
+              <MenuItem value="5">Union libre</MenuItem>
+            </Select>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginBottom: "10%",
+              marginTop: "5%"
+            }}
+          >
+            <InputLabel id="label" style={{ marginRight: "5%" }}>
+              Gender
+            </InputLabel>
+            <Select
+              labelId="gender"
+              id="gender"
+              value={gender}
+              onChange={handleGenderChange}
+            >
+              <MenuItem value="0">Prefiero no decir</MenuItem>
+              <MenuItem value="1">Femenino</MenuItem>
+              <MenuItem value="2">Masculino</MenuItem>
+            </Select>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginBottom: "10%"
+            }}
+          >
+            <InputLabel id="label" style={{ marginRight: "5%" }}>
+              Education Level
+            </InputLabel>
+            <Select
+              labelId="educationLevel"
+              id="educationLevel"
+              value={educationLevel}
+              onChange={handleEducationLevelChange}
+              style={{ marginRight: "5%" }}
+            >
+              <MenuItem value="1">Primaria</MenuItem>
+              <MenuItem value="2">Secundaria</MenuItem>
+              <MenuItem value="3">Licenciatura</MenuItem>
+              <MenuItem value="4">Maestra</MenuItem>
+              <MenuItem value="5">Doctorado</MenuItem>
+            </Select>
+            <InputLabel id="label" style={{ marginRight: "5%" }}>
+              Time to travel
+            </InputLabel>
+            <Select
+              labelId="educationLevel"
+              id="educationLevel"
+              value={educationLevel}
+              onChange={handleEducationLevelChange}
+            >
+              <MenuItem value="1">1 semana</MenuItem>
+              <MenuItem value="2">2 semanas</MenuItem>
+              <MenuItem value="3">4 semanas</MenuItem>
+              <MenuItem value="4">6 o mas semanas</MenuItem>
+            </Select>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginBottom: "10%"
+            }}
+          >
+            <InputLabel id="label" style={{ marginRight: "5%" }}>
+              ¿Do you know Guatemala?¿Do you know Spanish?
+            </InputLabel>
+            <Select
+              labelId="knowCountry"
+              id="knowCountry"
+              value={knowCountry}
+              onChange={handleKnowCountryChange}
+            >
+              <MenuItem value="1">Yes,Yes</MenuItem>
+              <MenuItem value="2">Yes,No</MenuItem>
+              <MenuItem value="3">No,Yes</MenuItem>
+              <MenuItem value="4">No,No</MenuItem>
+            </Select>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <InputLabel id="label" style={{ marginRight: "5%" }}>
+              Which projects do you prefer?
+            </InputLabel>
+            <Select
+              labelId="projectInterest"
+              id="projectInterest"
+              value={projectInterest}
+              onChange={handleProjectInterestChange}
+            >
+              <MenuItem value="1">Education</MenuItem>
+              <MenuItem value="2">Health</MenuItem>
+              <MenuItem value="3">Environment</MenuItem>
+              <MenuItem value="4">All</MenuItem>
+            </Select>
+          </div>
+          <div
+            style={{ display: "flex", flexDirection: "row", marginTop: "10%" }}
+          >
+            <InputLabel id="label" style={{ marginRight: "5%" }}>
+              Type of food
+            </InputLabel>
+            <Select
+              labelId="foodInfo"
+              id="foodInfo"
+              value={foodInfo}
+              onChange={handleFoodInfoChange}
+            >
+              <MenuItem value="0">Nothing in especial</MenuItem>
+              <MenuItem value="1">Vegetarian</MenuItem>
+              <MenuItem value="2">Vegan</MenuItem>
+            </Select>
+          </div>
+
+          <Typography variant="h6">Emergency Contact</Typography>
+          <div
+            style={{ display: "flex", flexDirection: "row", marginTop: "5%" }}
+          >
+            <InputLabel id="label" style={{ marginRight: "5%" }}>
+              Role
+            </InputLabel>
+            <Select
+              labelId="foodInfo"
+              id="foodInfo"
+              value={foodInfo}
+              onChange={handleFoodInfoChange}
+              style={{ marginRight: "5%" }}
+            >
+              <MenuItem value="0">Other</MenuItem>
+              <MenuItem value="1">Mother</MenuItem>
               <MenuItem value="2">Father</MenuItem>
             </Select>
             <TextField
@@ -473,9 +552,9 @@ const Register = ({ login }) => {
               autoComplete="name"
               autoFocus
             />
-             </div>
-             <div style={{ display: "flex", flexDirection: "row" }}>
-             <TextField
+          </div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <TextField
               variant="outlined"
               margin="normal"
               required
@@ -488,7 +567,7 @@ const Register = ({ login }) => {
               autoComplete="email"
               autoFocus
             />
-               <TextField
+            <TextField
               variant="outlined"
               margin="normal"
               required
@@ -501,14 +580,24 @@ const Register = ({ login }) => {
               autoComplete="Phone"
               autoFocus
             />
-             </div>
-             
-             <Typography variant="h6">Health Info</Typography>
-             <div style={{ display: "flex", flexDirection: "row" }}>
-          <InputLabel id="label">Blood type</InputLabel>
-            <Select labelId="foodInfo" id="foodInfo" value={foodInfo} onChange={handleFoodInfoChange}>
-            <MenuItem value="0">Dont know</MenuItem>
-            <MenuItem value="1">O-</MenuItem>
+          </div>
+
+          <Typography variant="h6">Health Info</Typography>
+          <div
+            style={{ display: "flex", flexDirection: "row", marginTop: "5%" }}
+          >
+            <InputLabel id="label" style={{ marginRight: "5%" }}>
+              Blood type
+            </InputLabel>
+            <Select
+              labelId="foodInfo"
+              id="foodInfo"
+              value={foodInfo}
+              onChange={handleFoodInfoChange}
+              style={{ marginRight: "5%" }}
+            >
+              <MenuItem value="0">Dont know</MenuItem>
+              <MenuItem value="1">O-</MenuItem>
               <MenuItem value="2">O+</MenuItem>
               <MenuItem value="3">A+</MenuItem>
               <MenuItem value="4">A-</MenuItem>
@@ -530,7 +619,7 @@ const Register = ({ login }) => {
               autoComplete="name"
               autoFocus
             />
-             </div>
+          </div>
           {formError && (
             <Typography color="error">
               Correo electrónico o contraseña incorrectos {validEmailText}{" "}
