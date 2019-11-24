@@ -197,14 +197,15 @@ class ProjectsSearchComponent extends Component {
         console.log(this.state)
         const { axiosCancelTokenSource, projects, showingProject, currentProject, userType, listView, showingCreateProject, openEditProject } = this.state
 
-        console.log(`userType is ${userType}`)
-
+        console.log(`userType is ${userType}`)        
+        
         return(
-            <div className="wrapper-public-projects">
+            <div className={this.props.main ? 'wrapper-my-projects' : 'wrapper-public-projects'}>
                 {
                     currentProject &&
                     <Dialog TransitionComponent={Transition} fullScreen open={showingProject} onClose={this.toggleProjectModal}>
                         <ProjectModal 
+                            publicMode
                             userType={userType} 
                             project={currentProject} 
                             onClose={this.toggleProjectModal}

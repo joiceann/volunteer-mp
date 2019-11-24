@@ -155,15 +155,15 @@ class MyProjects extends Component {
                     // this is a normal user
 
                     // UNCOMMENT THIS WHEN USER PROJECTS ENDPOINT WORKS
-                    // getUserProjects(axiosCancelTokenSource).then(projects => {
-                    //     console.log('enrolled projects are: ', projects)
-                    //     resolve(projects)
-                    // }).catch(error => reject(error))
-
-                    // COMMENT THIS WHEN USER PROJECTS ENDPOINT WORKS
-                    getAllProjects(axiosCancelTokenSource).then(projects => {
+                    getUserProjects(axiosCancelTokenSource).then(projects => {
+                        console.log('enrolled projects are: ', projects)
                         resolve(projects)
                     }).catch(error => reject(error))
+
+                    // COMMENT THIS WHEN USER PROJECTS ENDPOINT WORKS
+                    // getAllProjects(axiosCancelTokenSource).then(projects => {
+                    //     resolve(projects)
+                    // }).catch(error => reject(error))
                 }
             })
 

@@ -15,6 +15,7 @@ import ProjectIcon from '@material-ui/icons/Assignment';
 import ExitIcon from '@material-ui/icons/ExitToApp';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
+import SearchIcon from '@material-ui/icons/Search';
 import devices from '../../devices';
 import { RouterLink } from '../CommonComponents';
 import { useParams } from 'react-router-dom';
@@ -146,6 +147,19 @@ const Menu = ({ logout }) => {
               <ProjectIcon />
             </ListItemIcon>
             <ListItemText primary="My Projects" />
+          </StyledListItem>
+        </RouterLink>
+
+        <RouterLink to="/dashboard/search">
+          <StyledListItem
+            selected={section === 'search'}
+            button
+            alignItems="center"
+          >
+            <ListItemIcon>
+              <SearchIcon />
+            </ListItemIcon>
+            <ListItemText primary="Search Projects" />
           </StyledListItem>
         </RouterLink>
 

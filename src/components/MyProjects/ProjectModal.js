@@ -31,7 +31,7 @@ import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
 import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV, DOWNLOAD_CSV_USER_LIST, ENROLL_TEXT_NOT_LOGGED } from './MyProjectsConstants';
-import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject } from './MyProjectsProvider';
+import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject, getProjectEvaluations } from './MyProjectsProvider';
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
 
@@ -81,10 +81,7 @@ export default class ProjectModal extends Component {
             datePickerOriginServiceHours: new Date(),
             datePickerEndServiceHours: new Date(),
 
-            evaluations: [
-                { volunteer: { name: 'Berta Esquivel' }, stars: 4, comments: 'Me parecio un proyecto agradable, bastante organizado, con buen funding y considero que todo se llevo a cabo de la mejor forma.' },
-                { volunteer: { name: 'Caridad Quiros' }, stars: 3, comments: 'Siento que puede mejorarse mucho todavia en la parte bla bla bla.' }
-            ],
+            evaluations: [],
             initialGeoLocations: [
                 { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-19', coordinates: { lat: 14.636100, long: -90.523556 }, address: '1a Avenida A, Guatemala 01003, Guatemala' },
                 { volunteer: { name: 'Caridad Quiros', id: "5dc76b5ca6d3306ba4f724a5" }, date: '2019-10-12', coordinates: { lat: 14.635459, long: -90.514853 }, address: '6A Av (Paseo de la Sexta) 440, Guatemala' },
@@ -141,6 +138,14 @@ export default class ProjectModal extends Component {
             console.log('enroled: ', volunteerIsEnroled)            
             this.setState({ volunteerIsEnroled })
         })
+
+        getProjectEvaluations(axiosCancelTokenSource, this.props.project._id)
+            .then(response => {
+                console.log(response)
+                this.setState({ evaluations: response })
+            }).catch(error => {
+                console.log(error)
+            })
 
         this.setVolunteersFromLocations(this.state.geoLocations)
 
@@ -237,6 +242,11 @@ export default class ProjectModal extends Component {
 
         deleteProject(axiosCancelTokenSource, this.props.project._id).then(response => {
             console.log(response)
+            this.props.onHandleRefreshProjects()
+            this.props.onClose()
+            this.setState({ openDialog: false, dialogOptions: null })
+        }).catch(error => {
+            console.log(error.response)
             this.props.onHandleRefreshProjects()
             this.props.onClose()
             this.setState({ openDialog: false, dialogOptions: null })
@@ -398,10 +408,10 @@ export default class ProjectModal extends Component {
                             </Grid>
                             <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <Home style={{ marginRight: 20}}/>
-                                {
+                                {/* {
                                     this.props.project.organinfo &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.organinfo.name}</p>
-                                }
+                                } */}
                                 {
                                     this.props.project.organizationInfo &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.organizationInfo.name}</p>
@@ -410,18 +420,18 @@ export default class ProjectModal extends Component {
                             <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <EmojiPeopleIcon style={{ marginRight: 20}}/>
                                 <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>Minimum Age: </p>
-                                {
+                                {/* {
                                     this.props.project.mage &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.mage}</p>
-                                }
+                                } */}
                                 {
                                     this.props.project.minAge &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.minAge}</p>
                                 }
-                                {
+                                {/* {
                                     this.props.project.maxAge &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.maxAge}</p>
-                                }
+                                } */}
                             </Grid>
                             <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <LocationOn style={{ marginRight: 20}}/>
@@ -440,10 +450,10 @@ export default class ProjectModal extends Component {
                             </Grid>
                             <Grid item xs={12} sm={12} md={8} lg={8} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <DateRangeIcon style={{ marginRight: 20}}/>
-                                {
+                                {/* {
                                     this.props.project.fdate &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.sdate)).toDateString()} through ${(new Date(this.props.project.fdate)).toDateString()}`}</p>
-                                }
+                                } */}
                                 {
                                     this.props.project.finalDate &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.startDate)).toDateString()} through ${(new Date(this.props.project.finalDate)).toDateString()}`}</p>
@@ -452,10 +462,10 @@ export default class ProjectModal extends Component {
                             <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', flexDirection: 'row' }}>
                                 <DateRangeIcon style={{ marginRight: 20}}/> 
                                 <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>Inscription period: </p>
-                                {
+                                {/* {
                                     this.props.project.fdatei &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.sdatei)).toDateString()} through ${(new Date(this.props.project.fdatei)).toDateString()}`}</p>
-                                }
+                                } */}
                                 {
                                     this.props.project.finalDateInscription &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.startDateInscription)).toDateString()} through ${(new Date(this.props.project.finalDateInscription)).toDateString()}`}</p>
@@ -556,12 +566,12 @@ export default class ProjectModal extends Component {
                             
                         </Grid>                        
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={6}>
+                    <Grid item xs={12} sm={12} md={!this.props.publicMode ? 6 : 12} lg={!this.props.publicMode ? 6 : 12}>
                         <Card>
-                            {
+                            {/* {
                                 this.props.project.desc &&
                                 <p style={{ color: '#000', padding: '10%' }} className='project-desc-text project-desc-text-height'>{this.props.project.desc}</p>
-                            }
+                            } */}
                             {
                                 this.props.project.description &&
                                 <p style={{ color: '#000', padding: '10%' }} className='project-desc-text project-desc-text-height'>{this.props.project.description}</p>
@@ -570,28 +580,31 @@ export default class ProjectModal extends Component {
                     </Grid>
 
                     {/* volunteers */}
-                    <Grid item xs={12} sm={12} md={6} lg={6}>
-                        <Card style={{ width: '100%' }}>
-                            <h2 style={{ padding: '10%', paddingBottom: '5%', paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><EmojiPeopleIcon /> Enroled volunteers</h2>
-                            
-                            {
-                                userType === '2' &&
-                                <div className='inner-grid' style={{ width: '100%' }}>
-                                    <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleVolunteersInfoCSVDownload()} variant='contained' className='projects-enroll-btn'><PeopleAltIcon className='icon-btn' />{DOWNLOAD_CSV_USER_LIST}</Button>                            
-                                </div>
-                            }                            
-
-                            <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
+                    {
+                        !this.props.publicMode &&
+                        <Grid item xs={12} sm={12} md={6} lg={6}>
+                            <Card style={{ width: '100%' }}>
+                                <h2 style={{ padding: '10%', paddingBottom: '5%', paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><EmojiPeopleIcon /> Enroled volunteers</h2>
+                                
                                 {
-                                    volunteers.map((volunteer, index) => {
-                                        return(
-                                            <ProjectVolunteerItem projectId={this.props.project._id} onHandleProjectVolunteerRemoval={this.onHandleProjectVolunteerRemoval} onHandleProjectVolunteerRoleChange={this.onHandleProjectVolunteerRoleChange} key={index} volunteer={volunteer} editMode={editMode} />
-                                        )
-                                    })
-                                }
-                            </List>
-                        </Card>
-                    </Grid>
+                                    userType === '2' &&
+                                    <div className='inner-grid' style={{ width: '100%' }}>
+                                        <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleVolunteersInfoCSVDownload()} variant='contained' className='projects-enroll-btn'><PeopleAltIcon className='icon-btn' />{DOWNLOAD_CSV_USER_LIST}</Button>                            
+                                    </div>
+                                }                            
+
+                                <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
+                                    {
+                                        volunteers.map((volunteer, index) => {
+                                            return(
+                                                <ProjectVolunteerItem projectId={this.props.project._id} onHandleProjectVolunteerRemoval={this.onHandleProjectVolunteerRemoval} onHandleProjectVolunteerRoleChange={this.onHandleProjectVolunteerRoleChange} key={index} volunteer={volunteer} editMode={editMode} />
+                                            )
+                                        })
+                                    }
+                                </List>
+                            </Card>
+                        </Grid>
+                    }
 
                     {/* serviceHours items */}
                     {

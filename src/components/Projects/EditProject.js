@@ -137,6 +137,7 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
             name: ongInfo.name
           }
   
+          // newProject._id = projectData._id
           newProject.address = projectData.address
           newProject.minAge = projectData.minAge
           newProject.maxAge = projectData.maxAge
@@ -150,6 +151,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
           newProject.state = projectData.state
           newProject.type = projectData.type        
           newProject.news = projectData.news 
+
+          console.log('ABOUT TO UPDATE: ', newProject)
   
           editProject(axiosCancelTokenSource, projectId, newProject).then(response => {
             console.log(response)
@@ -168,48 +171,24 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
 
       const newProject = {...project}
 
-      // to find out if project has old or new structure
-      if (project.finalDateInscription) {
-        // has new structure
-        newProject.organizationInfo = {
-          id: project.organizationInfo.id,
-          name: project.organizationInfo.name
-        }
-
-        newProject.address = project.address
-        newProject.minAge = project.minAge
-        newProject.maxAge = project.maxAge
-        newProject.startDate = new Date(project.startDate)
-        newProject.finalDate = new Date(project.finalDate)
-        newProject.startDateInscription = new Date(project.startDateInscription)
-        newProject.finalDateInscription = new Date(project.finalDateInscription)
-        newProject.description = project.description
-        newProject.lastUpdated = new Date()       
-        newProject.name = project.name
-        newProject.state = project.state
-        newProject.type = project.type        
-        newProject.news = project.news
-      } else {
-        // has old structure        
-        newProject.organizationInfo = {
-          id: project.organinfo.id,
-          name: project.organinfo.name
-        }
-
-        newProject.address = project.address
-        newProject.minAge = project.mage
-        newProject.maxAge = project.mage
-        newProject.startDate = new Date(project.sdate)
-        newProject.finalDate = new Date(project.fdate)
-        newProject.startDateInscription = new Date(project.sdatei)
-        newProject.finalDateInscription = new Date(project.fdatei)
-        newProject.description = project.desc
-        newProject.lastUpdated = new Date()        
-        newProject.name = project.name
-        newProject.state = project.state
-        newProject.type = project.type        
-        newProject.news = project.news
+      newProject.organizationInfo = {
+        id: project.organizationInfo.id,
+        name: project.organizationInfo.name
       }
+
+      newProject.address = project.address
+      newProject.minAge = project.minAge
+      newProject.maxAge = project.maxAge
+      newProject.startDate = new Date(project.startDate)
+      newProject.finalDate = new Date(project.finalDate)
+      newProject.startDateInscription = new Date(project.startDateInscription)
+      newProject.finalDateInscription = new Date(project.finalDateInscription)
+      newProject.description = project.description
+      newProject.lastUpdated = new Date()       
+      newProject.name = project.name
+      newProject.state = project.state
+      newProject.type = project.type        
+      newProject.news = project.news
 
       project = newProject
 
@@ -351,7 +330,7 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
           id="desc"
           name="dec"
           required
-          value={projectData.desc}
+          value={projectData.description}
           onChange={(event) => setProjectData({
             ...projectData,
             desc: event.target.value,

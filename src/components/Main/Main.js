@@ -13,6 +13,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
+import ProjectsSearchComponent from '../HomePageComponent/ProjectsSearchComponent';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -43,6 +44,7 @@ const Main = ({ logout }) => {
           <Route path="/dashboard/my-projects" render={() => <MyProjects />} />
           {/* <Route path="/dashboard/projects" render={() => <Projects />}/> */}
           <Route path="/dashboard/profile" render={() => <Profile />}/>
+          <Route path="/dashboard/search" render={() => <ProjectsSearchComponent main />} />
           <Route render={() => <Overview />}/>
         </Switch>
       </Content>

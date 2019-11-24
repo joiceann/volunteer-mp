@@ -12,3 +12,4 @@ export const NEW_LIST= '/news/list';
 export const GET_PROJECTS_ONG = '/organizations/myprojects'
 export const UPLOAD_IMAGE = '/images/upload'
 export const GET_PROJECTS_PUBLIC_ROUTE = '/projects/list/open'
+export const GET_PROJECT_EVALUATIONS = '/ratings/myratings'
