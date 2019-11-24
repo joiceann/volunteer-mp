@@ -69,6 +69,22 @@ const agesSelectorOptions = () => {
   return ages
 }
 
+const isFormComplete = (project) => {
+  return project.address !== null && project.address !== '' &&
+  project.minAge !== null && project.minAge !== '' && project.minAge !== NaN && project.minAge !== undefined &&
+  project.startDate !== null && project.startDate !== '' &&
+  project.finalDate !== null && project.finalDate !== '' &&
+  project.startDateInscription !== null && project.startDateInscription !== '' &&
+  project.finalDateInscription !== null && project.finalDateInscription !== '' &&
+  project.description !== null && project.description !== '' &&
+  project.lastUpdated !== null && project.lastUpdated !== '' &&
+  project.name !== null && project.name !== '' &&
+  project.state !== null && project.state !== '' && project.state !== NaN && project.state !== undefined &&
+  project.type !== null && project.type !== '' && project.type !== NaN && project.type !== undefined &&
+  project.news !== null && project.news !== '' &&
+  project.photo !== null && project.photo.length > 0 
+}
+
 const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClose, onSuccessfullClose }) => {
   const classes = useStyles();
   const [projectData, setProjectData] = useState({});
@@ -92,69 +108,17 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
   }
 
   const createOrUpdateProject = () => {
-    if (!edit) {
-      // so we are creating
-      getONGInfo(axiosCancelTokenSource).then(ongInfo => {
-        const newProject = {}
-
-        newProject.organizationInfo = {
-          id: ongInfo._id,
-          name: ongInfo.name
-        }
-
-        newProject.address = projectData.address
-        newProject.minAge = projectData.minAge
-        newProject.maxAge = projectData.maxAge
-        newProject.startDate = projectData.startDate.toISOString().substring(0, 10)
-        newProject.finalDate = projectData.finalDate.toISOString().substring(0, 10)
-        newProject.startDateInscription = projectData.startDateInscription.toISOString().substring(0, 10)
-        newProject.finalDateInscription = projectData.finalDateInscription.toISOString().substring(0, 10)
-        newProject.description = projectData.description
-        newProject.lastUpdated = (new Date()).toISOString().substring(0, 10)        
-        newProject.name = projectData.name
-        newProject.state = projectData.state
-        newProject.type = projectData.type        
-        newProject.news = projectData.news
-        newProject.photo = projectData.photo                
-
-        console.log('newProject will be: ', newProject)
-        // console.log('newProject string will be: ', JSON.stringify(newProject))
-
-        // first upload project image
-        // uploadImage(axiosCancelTokenSource, projectData.photo[0]).then(response => {
-        //   console.log(response)
-        //   newProject.photo = [response.imageURL]
-
-        //   createProject(axiosCancelTokenSource, newProject).then(response => {
-        //     console.log(response)
-        //     onSuccessfullClose()
-        //   }).catch(error => {
-        //     console.log(error.response.data)
-        //   })
-
-        // }).catch(error => console.log(error.response))
-
-        createProject(axiosCancelTokenSource, newProject).then(response => {
-          console.log(response)
-          onSuccessfullClose()
-        }).catch(error => {
-          console.log(error.response.data)
-        })
-
-      })
-    } else {
+    if (isFormComplete(projectData)) {      
+      if (!edit) {
+        // so we are creating
         getONGInfo(axiosCancelTokenSource).then(ongInfo => {
-          const projectId = projectData._id
-  
           const newProject = {}
   
-          console.log('projectData is: ', projectData)
           newProject.organizationInfo = {
             id: ongInfo._id,
             name: ongInfo.name
           }
   
-          // newProject._id = projectData._id
           newProject.address = projectData.address
           newProject.minAge = projectData.minAge
           newProject.maxAge = projectData.maxAge
@@ -168,19 +132,75 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
           newProject.state = projectData.state
           newProject.type = projectData.type        
           newProject.news = projectData.news
-          newProject.photo = projectData.photo 
-
-          console.log('ABOUT TO UPDATE: ', newProject)
+          newProject.photo = projectData.photo                
   
-          editProject(axiosCancelTokenSource, projectId, newProject).then(response => {
+          console.log('newProject will be: ', newProject)
+          // console.log('newProject string will be: ', JSON.stringify(newProject))
+  
+          // first upload project image
+          // uploadImage(axiosCancelTokenSource, projectData.photo[0]).then(response => {
+          //   console.log(response)
+          //   newProject.photo = [response.imageURL]
+  
+          //   createProject(axiosCancelTokenSource, newProject).then(response => {
+          //     console.log(response)
+          //     onSuccessfullClose()
+          //   }).catch(error => {
+          //     console.log(error.response.data)
+          //   })
+  
+          // }).catch(error => console.log(error.response))
+  
+          createProject(axiosCancelTokenSource, newProject).then(response => {
             console.log(response)
             onSuccessfullClose()
           }).catch(error => {
-            console.log(error)
+            console.log(error.response.data)
+            alert('We could not process this transaction by the moment. Please try again later')
           })
-
+  
         })
-    }
+      } else {
+          getONGInfo(axiosCancelTokenSource).then(ongInfo => {
+            const projectId = projectData._id
+    
+            const newProject = {}
+    
+            console.log('projectData is: ', projectData)
+            newProject.organizationInfo = {
+              id: ongInfo._id,
+              name: ongInfo.name
+            }
+    
+            // newProject._id = projectData._id
+            newProject.address = projectData.address
+            newProject.minAge = projectData.minAge
+            newProject.maxAge = projectData.maxAge
+            newProject.startDate = projectData.startDate.toISOString().substring(0, 10)
+            newProject.finalDate = projectData.finalDate.toISOString().substring(0, 10)
+            newProject.startDateInscription = projectData.startDateInscription.toISOString().substring(0, 10)
+            newProject.finalDateInscription = projectData.finalDateInscription.toISOString().substring(0, 10)
+            newProject.description = projectData.description
+            newProject.lastUpdated = (new Date()).toISOString().substring(0, 10)        
+            newProject.name = projectData.name
+            newProject.state = projectData.state
+            newProject.type = projectData.type        
+            newProject.news = projectData.news
+            newProject.photo = projectData.photo 
+  
+            console.log('ABOUT TO UPDATE: ', newProject)
+    
+            editProject(axiosCancelTokenSource, projectId, newProject).then(response => {
+              console.log(response)
+              onSuccessfullClose()
+            }).catch(error => {
+              console.log(error)
+              alert('We could not process this transaction by the moment. Please try again later')
+            })
+  
+          })
+      }
+    } else alert('Form is incomplete')
   }
 
   useEffect(() => {
