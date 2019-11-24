@@ -25,6 +25,7 @@ export default class ProjectVolunteerItem extends Component {
 
         this.state = {
             coordinator: this.props.volunteer.role === 1 ? true : false,
+            accepted: this.props.volunteer.accepted ? true : false,
             snackBarOpen: false,
             snackBarMessage: '',
             openDialogRemoveVolunteer: false,
@@ -57,6 +58,16 @@ export default class ProjectVolunteerItem extends Component {
 
     }
 
+    handleVolunteerAcceptance = (checked) => {
+        const { axiosCancelTokenSource } = this.state
+
+        const volunteer = this.props.volunteer
+        volunteer.accepted = checked ? true : false
+
+        this.props.onHandleProjectVolunteerRoleChange(volunteer)
+        this.setState({ accepted: checked })
+    }
+
     handleSnackBarOpen = (event) => {
         this.setState({ snackBarOpen: false })
     }
@@ -84,7 +95,7 @@ export default class ProjectVolunteerItem extends Component {
     }
 
     render = () => {
-        const { coordinator, snackBarOpen, snackBarMessage, openDialogRemoveVolunteer } = this.state
+        const { coordinator, snackBarOpen, snackBarMessage, openDialogRemoveVolunteer, accepted } = this.state
         const { volunteer, editMode } = this.props
 
         return(
@@ -120,7 +131,7 @@ export default class ProjectVolunteerItem extends Component {
                         editMode &&
                         <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid'>
                             <p style={{ fontSize: 8 }}>{VOLUNTEER_ITEM_ACCEPTED_VOLUNTEER}</p>
-                            <Switch checked={false} onChange={(e) => {}} />                            
+                            <Switch checked={accepted} onChange={(e) => this.handleVolunteerAcceptance(e.target.checked)} />                            
                         </Grid>
                     }
                     {

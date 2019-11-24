@@ -75,6 +75,7 @@ export default class ProjectModal extends Component {
             openDialog: false,
             dialogOptions: null,
             volunteerIsEnroled: false,
+            volunteerAccepted: null,
 
             datePickerOrigin: new Date(),
             datePickerEnd: new Date(),
@@ -134,9 +135,13 @@ export default class ProjectModal extends Component {
         const { volunteers, axiosCancelTokenSource } = this.state
 
         getUserInfoByToken(axiosCancelTokenSource).then(userInfo => {
-            const volunteerIsEnroled = volunteers.filter(v => v.id === userInfo._id).length === 1
-            console.log('enroled: ', volunteerIsEnroled)            
-            this.setState({ volunteerIsEnroled })
+            const searchVolunteer  = volunteers.filter(v => v.id === userInfo._id)
+            const volunteerIsEnroled = searchVolunteer.length === 1
+            const volunteerAccepted = volunteerIsEnroled ? searchVolunteer[0].accepted ? true : false : null
+                
+            console.log('enroled: ', volunteerIsEnroled)      
+            console.log('accepted: ', volunteerAccepted)            
+            this.setState({ volunteerIsEnroled, volunteerAccepted })
         })
 
         getProjectEvaluations(axiosCancelTokenSource, this.props.project._id)
@@ -376,11 +381,30 @@ export default class ProjectModal extends Component {
     }
 
     render = () => {
-        const { editMode, volunteers, openDialog, dialogOptions, volunteerIsEnroled, evaluations, geoLocations, datePickerEnd, datePickerOrigin, datePickerEndServiceHours, datePickerOriginServiceHours, locationsVolunteersSelector, locationsVolunteerSelectorSelected, volunteerHours } = this.state
+        const { 
+            editMode, 
+            volunteers, 
+            openDialog, 
+            dialogOptions, 
+            volunteerIsEnroled, 
+            evaluations, 
+            geoLocations, 
+            datePickerEnd, 
+            datePickerOrigin, 
+            datePickerEndServiceHours, 
+            datePickerOriginServiceHours, 
+            locationsVolunteersSelector, 
+            locationsVolunteerSelectorSelected, 
+            volunteerHours,
+            volunteerAccepted 
+        } = this.state
         const { userType } = this.props        
         console.log(locationsVolunteersSelector)
 
         console.log(`userType from modal is ${userType}`)
+
+        const showVolunteers = userType === '2' ? true :
+            volunteerAccepted === true 
 
         return(
             <div>
@@ -483,6 +507,20 @@ export default class ProjectModal extends Component {
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.startDateInscription)).toDateString()} through ${(new Date(this.props.project.finalDateInscription)).toDateString()}`}</p>
                                 }
                             </Grid>
+                            {
+                                volunteerAccepted !== null &&
+                                <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <DateRangeIcon style={{ marginRight: 20}}/> 
+                                    {
+                                        volunteerAccepted === true &&
+                                        <p style={{ padding: 5, margin: 0 }} className='project-desc-text josefin-bold'>You have been accepted to form part of this project!: </p>
+                                    }
+                                    {
+                                        volunteerAccepted === false &&
+                                        <p style={{ padding: 5, margin: 0 }} className='project-desc-text josefin-bold'>Your application for this project is yet being evaluated.</p>
+                                    }
+                                </Grid>
+                            }
                         </Grid>
                         <Grid item xs={12} sm={12} md={4} lg={4}>
                             {
@@ -594,6 +632,7 @@ export default class ProjectModal extends Component {
                     {/* volunteers */}
                     {
                         !this.props.publicMode &&
+                        showVolunteers && 
                         <Grid item xs={12} sm={12} md={6} lg={6}>
                             <Card style={{ width: '100%' }}>
                                 <h2 style={{ padding: '10%', paddingBottom: '5%', paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><EmojiPeopleIcon /> Enroled volunteers</h2>
