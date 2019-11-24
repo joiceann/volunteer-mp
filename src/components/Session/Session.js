@@ -5,7 +5,7 @@ import { PrivateRoute } from '../Routes';
 import { Route, Switch, Redirect } from "react-router-dom";
 import { useHistory } from 'react-router-dom';
 import { setAuth } from '../../axios';
-
+import Register from '../Register';
 const Session = () => {
 
   const history = useHistory();
@@ -41,6 +41,7 @@ const Session = () => {
         exact
         render={() => <Login login={login}/>}
       />
+      <Route path="/register" render={() => <Register/>}/>
       <PrivateRoute
         path="/dashboard/:section"
         login={login}
