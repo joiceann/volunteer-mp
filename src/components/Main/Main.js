@@ -40,12 +40,12 @@ const Main = ({ logout }) => {
       <GlobalStyle />
       <Menu logout={logout} />
       <Content>
-        <Switch>
+        <Switch>          
           <Route path="/dashboard/my-projects" render={() => <MyProjects />} />
           {/* <Route path="/dashboard/projects" render={() => <Projects />}/> */}
           <Route path="/dashboard/profile" render={() => <Profile />}/>
           <Route path="/dashboard/search" render={() => <ProjectsSearchComponent main />} />
-          <Route render={() => <Overview />}/>
+          <Route render={() => <MyProjects />}/>
         </Switch>
       </Content>
     </MainContainer>
