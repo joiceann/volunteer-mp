@@ -118,9 +118,11 @@ const Login = ({ login }) => {
   };
 
   const submit = event => {
+    console.log(email);
     event.preventDefault();
     setLoading(true);
     if (({ validEmail } && { validPassword }) || 4 < { validTries }) {
+      console.log(email);
       axios
         .post(Constants.LOGIN, JSON.stringify({ email, password }), {
           headers: {
@@ -206,7 +208,7 @@ const Login = ({ login }) => {
       
       <StyledPaper2>
       <Typography variant="h6">¿Quieres ser voluntario?</Typography>
-      <Typography variant="h6"> <Link to="/Register" >Crea una cuenta</Link></Typography>
+      <Typography variant="h6"> <Link to="/register" >Crea una cuenta</Link></Typography>
       </StyledPaper2>
     </MainContainer>
     
