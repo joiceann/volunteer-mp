@@ -9,8 +9,16 @@ const createAxiosCancelToken = () => {
 }
 
 const uploadImage = (axiosCancelTokenSource, image) => {
+    console.log('sending image File: ', image)
     return new Promise((resolve, reject) => {
-        instace.post(consts.UPLOAD_IMAGE, { image }, { cancelToken: axiosCancelTokenSource.token })
+        const form = new FormData()
+        form.append('image', image)
+        instace.post(consts.UPLOAD_IMAGE, form, {
+            cancelToken: axiosCancelTokenSource.token,
+            headers: {
+                'Content-Type': `application/json`
+            }
+        })
             .then(response => resolve(response.data))
             .catch(error => reject(error))
     })

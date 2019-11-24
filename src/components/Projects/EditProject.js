@@ -78,10 +78,17 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
 
   const handleImageChange = (imageFile) => {
     console.log(imageFile)
-    setProjectData({
-      ...projectData,
-      photo: [imageFile]
-    })
+
+    uploadImage(axiosCancelTokenSource, imageFile).then(response => {
+      console.log(response)
+      
+      setProjectData({
+        ...projectData,
+        photo: [response.imageURL]
+      })
+
+    }).catch(error => console.log(error.response))
+
   }
 
   const createOrUpdateProject = () => {
@@ -107,7 +114,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
         newProject.name = projectData.name
         newProject.state = projectData.state
         newProject.type = projectData.type        
-        newProject.news = projectData.news                
+        newProject.news = projectData.news
+        newProject.photo = projectData.photo                
 
         console.log('newProject will be: ', newProject)
         // console.log('newProject string will be: ', JSON.stringify(newProject))
@@ -115,7 +123,16 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
         // first upload project image
         // uploadImage(axiosCancelTokenSource, projectData.photo[0]).then(response => {
         //   console.log(response)
-        // }).catch(error => console.log(error))
+        //   newProject.photo = [response.imageURL]
+
+        //   createProject(axiosCancelTokenSource, newProject).then(response => {
+        //     console.log(response)
+        //     onSuccessfullClose()
+        //   }).catch(error => {
+        //     console.log(error.response.data)
+        //   })
+
+        // }).catch(error => console.log(error.response))
 
         createProject(axiosCancelTokenSource, newProject).then(response => {
           console.log(response)
@@ -150,7 +167,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
           newProject.name = projectData.name
           newProject.state = projectData.state
           newProject.type = projectData.type        
-          newProject.news = projectData.news 
+          newProject.news = projectData.news
+          newProject.photo = projectData.photo 
 
           console.log('ABOUT TO UPDATE: ', newProject)
   
@@ -189,6 +207,7 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
       newProject.state = project.state
       newProject.type = project.type        
       newProject.news = project.news
+      newProject.photo = project.photo
 
       project = newProject
 
@@ -207,6 +226,7 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
         <div>
           <ImageUpload 
             handleImageChange={handleImageChange}
+            imagePreviewUrl={projectData.photo ? projectData.photo[0] : null}
           />
           <TextField
             variant="outlined"
