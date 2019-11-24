@@ -116,6 +116,14 @@ const deleteProject = (axiosCancelTokenSource, projectId) => {
     })
 }
 
+const updateProjectState = (axiosCancelTokenSource, projectId, state) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.PROJECTS_UPDATE_STATE, { projectId, state })
+            .then(response => resolve(response.data))
+            .catch(error => reject(error))
+    })
+}
+
 const getAllProjects = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.PROJECTS_LIST, { cancelToken: axiosCancelTokenSource.token })
@@ -666,5 +674,6 @@ export {
     deleteProject,
     getUserProjects,
     getAllProjectsPublic,
-    getProjectEvaluations
+    getProjectEvaluations,
+    updateProjectState
 }

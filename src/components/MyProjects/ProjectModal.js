@@ -31,7 +31,7 @@ import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
 import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV, DOWNLOAD_CSV_USER_LIST, ENROLL_TEXT_NOT_LOGGED } from './MyProjectsConstants';
-import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject, getProjectEvaluations } from './MyProjectsProvider';
+import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject, updateProjectState, getProjectEvaluations } from './MyProjectsProvider';
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
 
@@ -255,7 +255,19 @@ export default class ProjectModal extends Component {
 
     handleTerminateProject = () => {
         console.log('finishing project')
-        this.setState({ openDialog: false, dialogOptions: null })
+        const { axiosCancelTokenSource } = this.state
+
+        updateProjectState(axiosCancelTokenSource, this.props.project._id, 2).then(response => {
+            console.log(response)
+            this.props.onHandleRefreshProjects()
+            this.props.onClose()
+            this.setState({ openDialog: false, dialogOptions: null })
+        }).catch(error => {
+            console.log(error.response)
+            this.props.onHandleRefreshProjects()
+            this.props.onClose()
+            this.setState({ openDialog: false, dialogOptions: null })
+        })        
     }
 
     onHandleProjectVolunteerRoleChange = (volunteer) => {
