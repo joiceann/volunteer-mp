@@ -19,6 +19,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent'
 import CustomDialog from './CustomDialog';
 import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
+import MoreIcon from '@material-ui/icons/More';
 import { createAxiosCancelToken, updateVolunteerRole, enrollOrOptOutFromProject, acceptVolunteer, getUserInfoById } from './MyProjectsProvider';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -148,7 +149,11 @@ export default class ProjectVolunteerItem extends Component {
                             </ListItemAvatar>
                         }
                     </Grid>
-                    <Grid onClick={ editMode ? () => this.setState({ showVolunteerInfo: true }) : () => {} } item xs={4} sm={4} md={4} lg={4} className={`${editMode ? 'icon-pointer' : ''}`}>
+                    <Grid style={{ flexDirection: 'row' }} onClick={ editMode ? () => this.setState({ showVolunteerInfo: true }) : () => {} } item xs={4} sm={4} md={4} lg={4} className={`${editMode ? 'icon-pointer inner-grid' : 'inner-grid'}`}>
+                        {
+                            editMode &&
+                            <MoreIcon style={{ marginRight: 10 }}/>
+                        }
                         {
                             volunteer.name &&
                             <p className='josefin-regular'>{ limitTextToCertainLength(volunteer.name, 30) }</p> 
@@ -219,6 +224,17 @@ export default class ProjectVolunteerItem extends Component {
                     volunteerFetchedInfo &&
                     <Dialog TransitionComponent={Transition} maxWidth='lg' open={showVolunteerInfo} onClose={() => this.setState({ showVolunteerInfo: false })}>
                         <div style={{ padding: '10%', backgroundColor: '#fff', width: '75%', height: '75%', display: 'flex', flexDirection: 'column' }}>
+                            {
+                                volunteer.photo &&
+                                <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '2%' }}>
+                                    <img src={volunteer.photo} width={200} style={{ borderRadius: '50%' }}/>
+                                </div>
+                            }
+
+                            <Typography variant="h4" className='josefin-bold'>
+                                {volunteer.name}
+                            </Typography>
+
                             <p className='josefin-regular'>
                                 Nationality: {volunteerFetchedInfo.nationality}
                             </p>
