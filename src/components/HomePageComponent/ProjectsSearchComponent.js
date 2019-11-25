@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { createAxiosCancelToken, getAllProjects, getAllProjectsDummy, getUserTypeFromLocalStorage, getONGProjects, getUserProjects, getAllProjectsPublic } from '../MyProjects/MyProjectsProvider'
+import { createAxiosCancelToken, getAllProjects, getAllProjectsDummy, getUserTypeFromLocalStorage, getONGProjects, getUserProjects, getAllProjectsPublic, searchProjects } from '../MyProjects/MyProjectsProvider'
 import ProjectCard from '../MyProjects/ProjectCard'
 
 import Grid from '@material-ui/core/Grid'
@@ -186,11 +186,19 @@ class ProjectsSearchComponent extends Component {
     }
 
     handleOnLocalSearch = (query) => {
-        const { initialProjects } = this.state
+        const { initialProjects, axiosCancelTokenSource } = this.state
         console.log(query)
 
-        const projects = query !== '' ? initialProjects.filter(project => project.name.toLowerCase().includes(query.toLowerCase())) : initialProjects
-        this.setState({ projects })
+        if (query !== '') {
+            searchProjects(axiosCancelTokenSource, query).then(projects => {
+                this.setState({ projects })
+            }).catch(error => console.log(error))
+        } else {
+            this.setState({ projects: initialProjects })
+        }
+
+        // const projects = query !== '' ? initialProjects.filter(project => project.name.toLowerCase().includes(query.toLowerCase())) : initialProjects
+        // this.setState({ projects })
     }
 
     render = () => {
