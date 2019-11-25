@@ -265,10 +265,11 @@ const Register = ({ login }) => {
       bio:biography,
       nationality,
       ncode: nationalCode,
-      password
+      password,
+      photo:""
 
     }
-    alert(JSON.stringify(req));
+    //alert(JSON.stringify(req));
     setLoading(true);
     axios
         .post(Constants.REGISTER, JSON.stringify(req), {
@@ -277,12 +278,15 @@ const Register = ({ login }) => {
           }
         })
         .then(response => {
-          alert(response)
+          //alert(response)
           console.log("user logged in: ", response);
+          alert("Su usuario ha sido registrado")
+          history.push('/login');
         })
         .catch(response => {
           console.log(response);
-          alert(response)
+        
+          //alert(response)
           if (response.data == "Invalid Credentials") {
             setValidTries({ validTries } + 1);
           }

@@ -834,14 +834,14 @@ const ProfileCard = ({ user, updateUser }) => {
                       label="Special Previous Conditions"
                       name="pcondition"
                       onChange={event => handleUpdateProperty(event.target.value, 'pcondition')}
-                      value={state.user.hinfo.pcondition}
+                      value={state.user.healthInfo.pcondition}
                       variant="outlined"
                     />
                   ) :
                   (
                     <ListItemText
                       primary="Special Previous Conditions"
-                      secondary={user.hinfo.pcondition}
+                      secondary={user.healthInfo.pcondition}
                     />
                   )
                 }
