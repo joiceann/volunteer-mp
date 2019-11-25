@@ -28,7 +28,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import colors from '../../colors';
 import styled from 'styled-components';
 import { createMuiTheme, makeStyles } from '@material-ui/core/styles';
-import { getONGInfo, createProject, uploadImage } from '../MyProjects/MyProjectsProvider';
+import { getONGInfo, createProject, uploadImage, editProject } from '../MyProjects/MyProjectsProvider';
 import ImageUpload from '../MyProjects/ImageUpload';
 
 const theme = createMuiTheme();
@@ -63,60 +63,174 @@ const DatePicker = styled(MyDatePicker)`
   margin-left: ${theme.spacing(5)}px;
 `;
 
-const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClose }) => {
+const agesSelectorOptions = () => {
+  const ages = []
+  for (var i = 12; i < 76; i++) { ages.push(i) }
+  return ages
+}
+
+const isFormComplete = (project) => {
+  return project.address !== null && project.address !== '' &&
+  project.minAge !== null && project.minAge !== '' && project.minAge !== NaN && project.minAge !== undefined &&
+  project.startDate !== null && project.startDate !== '' &&
+  project.finalDate !== null && project.finalDate !== '' &&
+  project.startDateInscription !== null && project.startDateInscription !== '' &&
+  project.finalDateInscription !== null && project.finalDateInscription !== '' &&
+  project.description !== null && project.description !== '' &&
+  project.lastUpdated !== null && project.lastUpdated !== '' &&
+  project.name !== null && project.name !== '' &&
+  project.state !== null && project.state !== '' && project.state !== NaN && project.state !== undefined &&
+  project.type !== null && project.type !== '' && project.type !== NaN && project.type !== undefined &&
+  project.news !== null && project.news !== '' &&
+  project.photo !== null && project.photo.length > 0 
+}
+
+const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClose, onSuccessfullClose }) => {
   const classes = useStyles();
   const [projectData, setProjectData] = useState({});
 
+  console.log('project: ', project)
   console.log(projectData)
 
   const handleImageChange = (imageFile) => {
     console.log(imageFile)
-    setProjectData({
-      ...projectData,
-      photo: [imageFile]
-    })
+
+    uploadImage(axiosCancelTokenSource, imageFile).then(response => {
+      console.log(response)
+      
+      setProjectData({
+        ...projectData,
+        photo: [response.imageURL]
+      })
+
+    }).catch(error => console.log(error.response))
+
   }
 
   const createOrUpdateProject = () => {
-    if (!edit) {
-      // so we are creating
-      getONGInfo(axiosCancelTokenSource).then(ongInfo => {
-        console.log(ongInfo)
-        console.log(projectData)
-
-        const newProject = {
-          organid: ongInfo._id,
-          lastupt: (new Date()).toISOString().substring(0, 10),
-          ...projectData
-        }
-
-        delete newProject.organinfo
-
-        newProject.fdate = projectData.fdate.toISOString().substring(0, 10)
-        newProject.fdatei = projectData.fdatei.toISOString().substring(0, 10)
-        newProject.sdate = projectData.sdate.toISOString().substring(0, 10)
-        newProject.sdatei = projectData.sdatei.toISOString().substring(0, 10)
-
-        console.log('newProject will be: ', newProject)
-
-        // first upload project image
-        // uploadImage(axiosCancelTokenSource, projectData.photo[0]).then(response => {
-        //   console.log(response)
-        // }).catch(error => console.log(error))
-
-        createProject(axiosCancelTokenSource, newProject).then(response => {
-          console.log(response)
-          onClose()
-        }).catch(error => {
-          console.log(error)
+    if (isFormComplete(projectData)) {      
+      if (!edit) {
+        // so we are creating
+        getONGInfo(axiosCancelTokenSource).then(ongInfo => {
+          const newProject = {}
+  
+          newProject.organizationInfo = {
+            id: ongInfo._id,
+            name: ongInfo.name
+          }
+  
+          newProject.address = projectData.address
+          newProject.minAge = projectData.minAge
+          newProject.maxAge = projectData.maxAge
+          newProject.startDate = projectData.startDate.toISOString().substring(0, 10)
+          newProject.finalDate = projectData.finalDate.toISOString().substring(0, 10)
+          newProject.startDateInscription = projectData.startDateInscription.toISOString().substring(0, 10)
+          newProject.finalDateInscription = projectData.finalDateInscription.toISOString().substring(0, 10)
+          newProject.description = projectData.description
+          newProject.lastUpdated = (new Date()).toISOString().substring(0, 10)        
+          newProject.name = projectData.name
+          newProject.state = projectData.state
+          newProject.type = projectData.type        
+          newProject.news = projectData.news
+          newProject.photo = projectData.photo                
+  
+          console.log('newProject will be: ', newProject)
+          // console.log('newProject string will be: ', JSON.stringify(newProject))
+  
+          // first upload project image
+          // uploadImage(axiosCancelTokenSource, projectData.photo[0]).then(response => {
+          //   console.log(response)
+          //   newProject.photo = [response.imageURL]
+  
+          //   createProject(axiosCancelTokenSource, newProject).then(response => {
+          //     console.log(response)
+          //     onSuccessfullClose()
+          //   }).catch(error => {
+          //     console.log(error.response.data)
+          //   })
+  
+          // }).catch(error => console.log(error.response))
+  
+          createProject(axiosCancelTokenSource, newProject).then(response => {
+            console.log(response)
+            onSuccessfullClose()
+          }).catch(error => {
+            console.log(error.response.data)
+            alert('We could not process this transaction by the moment. Please try again later')
+          })
+  
         })
-
-      })
-    }
+      } else {
+          getONGInfo(axiosCancelTokenSource).then(ongInfo => {
+            const projectId = projectData._id
+    
+            const newProject = {}
+    
+            console.log('projectData is: ', projectData)
+            newProject.organizationInfo = {
+              id: ongInfo._id,
+              name: ongInfo.name
+            }
+    
+            // newProject._id = projectData._id
+            newProject.address = projectData.address
+            newProject.minAge = projectData.minAge
+            newProject.maxAge = projectData.maxAge
+            newProject.startDate = projectData.startDate.toISOString().substring(0, 10)
+            newProject.finalDate = projectData.finalDate.toISOString().substring(0, 10)
+            newProject.startDateInscription = projectData.startDateInscription.toISOString().substring(0, 10)
+            newProject.finalDateInscription = projectData.finalDateInscription.toISOString().substring(0, 10)
+            newProject.description = projectData.description
+            newProject.lastUpdated = (new Date()).toISOString().substring(0, 10)        
+            newProject.name = projectData.name
+            newProject.state = projectData.state
+            newProject.type = projectData.type        
+            newProject.news = projectData.news
+            newProject.photo = projectData.photo 
+  
+            console.log('ABOUT TO UPDATE: ', newProject)
+    
+            editProject(axiosCancelTokenSource, projectId, newProject).then(response => {
+              console.log(response)
+              onSuccessfullClose()
+            }).catch(error => {
+              console.log(error)
+              alert('We could not process this transaction by the moment. Please try again later')
+            })
+  
+          })
+      }
+    } else alert('Form is incomplete')
   }
 
   useEffect(() => {
     if (project != null) {
+      console.log(project)
+
+      const newProject = {...project}
+
+      newProject.organizationInfo = {
+        id: project.organizationInfo.id,
+        name: project.organizationInfo.name
+      }
+
+      newProject.address = project.address
+      newProject.minAge = project.minAge
+      newProject.maxAge = project.maxAge
+      newProject.startDate = new Date(project.startDate)
+      newProject.finalDate = new Date(project.finalDate)
+      newProject.startDateInscription = new Date(project.startDateInscription)
+      newProject.finalDateInscription = new Date(project.finalDateInscription)
+      newProject.description = project.description
+      newProject.lastUpdated = new Date()       
+      newProject.name = project.name
+      newProject.state = project.state
+      newProject.type = project.type        
+      newProject.news = project.news
+      newProject.photo = project.photo
+
+      project = newProject
+
       setProjectData(project);
     }
   }, [project]);
@@ -132,6 +246,7 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
         <div>
           <ImageUpload 
             handleImageChange={handleImageChange}
+            imagePreviewUrl={projectData.photo ? projectData.photo[0] : null}
           />
           <TextField
             variant="outlined"
@@ -183,9 +298,10 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
             inputProps={{ 'aria-label': 'state' }}
           >
             <option value="">Project status</option>
-            <option value={1}>ACTIVE</option>
-            <option value={2}>INACTIVE</option>
-            <option value={3}>RECRUITING</option>
+            <option value={4}>New</option>
+            <option value={1}>Active</option>
+            <option value={2}>Ended</option>
+            <option value={3}>Canceled</option>
           </Select>          
         </FormControl>
 
@@ -198,7 +314,9 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
             value={projectData.mage}
             onChange={(e) => setProjectData({
               ...projectData,
-              mage: parseInt(e.target.value)
+              mage: parseInt(e.target.value),
+              minAge: parseInt(e.target.value),
+              maxAge: parseInt(e.target.value),
             })}
             name="mage"
             className={classes.selectEmpty}
@@ -206,7 +324,7 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
           >
             <option value="">Minimum age</option>
             {
-              [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25].map((age, index) => {
+              agesSelectorOptions().map((age, index) => {
                 return(
                   <option key={index} value={age}>{age}</option>
                 )
@@ -233,9 +351,9 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
             <option value="">Project Type</option>
             {
               [
+                { value: 0, type: 'Health' },
                 { value: 1, type: 'Education' },
-                { value: 2, type: 'Health' },
-                { value: 3, type: 'Environment' },
+                { value: 2, type: 'Environment' },
               ].map((typeOption, index) => {
                 return(
                   <option key={index} value={typeOption.value}>{typeOption.type}</option>
@@ -252,10 +370,11 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
           id="desc"
           name="dec"
           required
-          value={projectData.desc}
+          value={projectData.description}
           onChange={(event) => setProjectData({
             ...projectData,
             desc: event.target.value,
+            description: event.target.value,
           })
           }
           multiline
@@ -274,8 +393,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
               id="init-project"
               name="init-project"
               label="Enrolling Start Date"
-              value={projectData.sdate}
-              onChange={(date) => setProjectData({...projectData, sdate: date})}
+              value={projectData.sdatei ? projectData.sdatei : projectData.startDateInscription}
+              onChange={(date) => setProjectData({...projectData, sdatei: date, startDateInscription: date})}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
@@ -288,8 +407,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
               id="end-project"
               name="end-project"
               label="Enrolling End Date"
-              value={projectData.sdatei}
-              onChange={(date) => setProjectData({...projectData, sdatei: date})}
+              value={projectData.fdatei ? projectData.fdatei : projectData.finalDateInscription}
+              onChange={(date) => setProjectData({...projectData, fdatei: date, finalDateInscription: date})}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
@@ -303,8 +422,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
               id="init-project"
               name="init-project"
               label="Start Date"
-              value={projectData.fdate}
-              onChange={(date) => setProjectData({...projectData, fdate: date})}
+              value={projectData.sdate ? projectData.sdate : projectData.startDate}
+              onChange={(date) => setProjectData({...projectData, sdate: date, startDate: date})}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
@@ -317,8 +436,8 @@ const EditProject = ({ open, project, title, edit, axiosCancelTokenSource, onClo
               id="end-project"
               name="end-project"
               label="Ending Date"
-              value={projectData.fdatei}
-              onChange={(date) => setProjectData({...projectData, fdatei: date})}
+              value={projectData.fdate ? projectData.fdate : projectData.finalDate}
+              onChange={(date) => setProjectData({...projectData, fdate: date, finalDate: date})}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}

@@ -9,8 +9,16 @@ const createAxiosCancelToken = () => {
 }
 
 const uploadImage = (axiosCancelTokenSource, image) => {
+    console.log('sending image File: ', image)
     return new Promise((resolve, reject) => {
-        instace.post(consts.UPLOAD_IMAGE, { image }, { cancelToken: axiosCancelTokenSource.token })
+        const form = new FormData()
+        form.append('image', image)
+        instace.post(consts.UPLOAD_IMAGE, form, {
+            cancelToken: axiosCancelTokenSource.token,
+            headers: {
+                'Content-Type': `application/json`
+            }
+        })
             .then(response => resolve(response.data))
             .catch(error => reject(error))
     })
@@ -19,6 +27,14 @@ const uploadImage = (axiosCancelTokenSource, image) => {
 const getUserInfoByToken = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.USER_PROFILE, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => resolve(response.data))
+            .catch(error => reject(error))
+    })
+}
+
+const getUserInfoById = (axiosCancelTokenSource, id) => {
+    return new Promise((resolve, reject) => {
+        instace.get(`${consts.USER_PROFILE}/${id}`, { cancelToken: axiosCancelTokenSource.token })
             .then(response => resolve(response.data))
             .catch(error => reject(error))
     })
@@ -48,6 +64,33 @@ const updateVolunteerRole = (projectId, userId, role, axiosCancelTokenSource) =>
     })
 }
 
+const getUserProjects = (axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        instace.get(consts.USER_PROJECTS, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
+const getProjectEvaluations = (axiosCancelTokenSource, projectId) => {
+    return new Promise((resolve, reject) => {
+        instace.get(`${consts.GET_PROJECT_EVALUATIONS}/${projectId}`, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
+const acceptVolunteer = (axiosCancelTokenSource, projectId, volunteerId, accept) => {
+    return new Promise((resolve, reject) => {
+        instace.get(`${consts.ACCEPT_VOLUNTEER}/${projectId}/${volunteerId}/${accept}`, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
 const getONGProjects = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.GET_PROJECTS_ONG, { cancelToken: axiosCancelTokenSource.token })
@@ -74,9 +117,69 @@ const createProject = (axiosCancelTokenSource, project) => {
     })
 }
 
+const editProject = (axiosCancelTokenSource, projectId, project) => {
+    return new Promise((resolve, reject) => {
+        instace.post(`${consts.CREATE_PROJECT}/${projectId}`, project, { cancelToken: axiosCancelTokenSource.token }).then(response => {
+            resolve(response.data)
+        }).catch(error => reject(error))
+    })
+}
+
+const deleteProject = (axiosCancelTokenSource, projectId) => {
+    return new Promise((resolve, reject) => {
+        instace.delete(`${consts.CREATE_PROJECT}/${projectId}`, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => resolve(response.data))
+            .catch(error => reject(error))
+    })
+}
+
+const updateProjectState = (axiosCancelTokenSource, projectId, state) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.PROJECTS_UPDATE_STATE, { projectId, state })
+            .then(response => resolve(response.data))
+            .catch(error => reject(error))
+    })
+}
+
 const getAllProjects = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.PROJECTS_LIST, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
+const getAllProjectsPublic = (axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        instace.get(consts.GET_PROJECTS_PUBLIC_ROUTE, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
+const getVolunteerLocationsByOrganization = (axiosCancelTokenSource, orgId, start, end) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.VOLUNTEER_LOCATIONS, { orgId, start, end }, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
+const getVolunteersWorkingTimes = (axiosCancelTokenSource, pryId, start, end) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.WORKING_TIMES, { pryId, start, end }, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
+const searchProjects = (axiosCancelTokenSource, searchString) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.SEARCH_PROJECT, { searchString }, { cancelToken: axiosCancelTokenSource.token })
             .then(response => {
                 resolve(response.data)
             }).catch(error => reject(error))
@@ -610,5 +713,16 @@ export {
     getONGProjects,
     getONGInfo,
     createProject,
-    uploadImage
+    uploadImage,
+    editProject,
+    deleteProject,
+    getUserProjects,
+    getAllProjectsPublic,
+    getProjectEvaluations,
+    updateProjectState,
+    acceptVolunteer,
+    getVolunteerLocationsByOrganization,
+    getUserInfoById,
+    getVolunteersWorkingTimes,
+    searchProjects
 }

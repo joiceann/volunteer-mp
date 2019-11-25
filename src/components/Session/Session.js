@@ -6,6 +6,9 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import { useHistory } from 'react-router-dom';
 import { setAuth } from '../../axios';
 import Register from '../Register';
+import HomePageComponent from '../HomePageComponent/HomePageComponent';
+import ProjectsSearchComponent from '../HomePageComponent/ProjectsSearchComponent';
+
 const Session = () => {
 
   const history = useHistory();
@@ -48,9 +51,8 @@ const Session = () => {
         props={{logout}}
         component={Main}
       />
-      <Route exact path="/">
-        <Redirect to="/login" />
-      </Route>
+      <Route exact path="/" render={() => <HomePageComponent />} /> 
+      <Route path='/search' render={() => <ProjectsSearchComponent />} />       
     </Switch>
   );
 };

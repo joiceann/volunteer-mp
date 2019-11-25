@@ -29,6 +29,7 @@ export const VOLUNTEER_COMMENTS_DIALOG_OK = 'CLOSE'
 export const LOCATION_FILTER = 'FILTER'
 export const DOWNLOAD_CSV = 'Download CSV Report'
 export const DOWNLOAD_CSV_USER_LIST ='Download volunteers list'
+export const ENROLL_TEXT_NOT_LOGGED = 'To enroll to this project, you must be logged in. Please log in into your account and then apply to this project.'
 
 export const starsAverage = (evaluations) => {
     let sum = 0

@@ -88,21 +88,22 @@ const Login = ({ login }) => {
   const [validPasswordText, setPT] = useState("");
   const [validTriesText, setTT] = useState("");
 
-  const handleEmailChange = event => {
-    console.log(event.target.value);
+
+
+  const handleEmailChange = (event) => {
+    // console.log(event.target.value);
     let emailValid = event.target.value.match(emailRegex);
     let inputValid = event.target.value.match(generalInputRegex);
     let reeval = emailValid != null && inputValid != null;
     setValidEmail();
 
-    console.log(emailValid);
-    console.log(inputValid);
+    // console.log(emailValid);
+    // console.log(inputValid);
 
     if (reeval) {
       setET("");
-    } else {
-      setET("Ingreso de texto en correo inválido\n");
-    }
+    } else{
+      setET("Invalid email address\n");    }
     setEmail(event.target.value);
   };
 
@@ -111,8 +112,9 @@ const Login = ({ login }) => {
     setValidPassword(passwordValidate != null);
     if (passwordValidate != null) {
       setPT("");
-    } else {
-      setPT("Ingreso de texto en correo inválido\n");
+    }
+    else{
+      setPT("Invalid email address\n");
     }
     setPassword(event.target.value);
   };
@@ -121,34 +123,34 @@ const Login = ({ login }) => {
     console.log(email);
     event.preventDefault();
     setLoading(true);
-    if (({ validEmail } && { validPassword }) || 4 < { validTries }) {
-      console.log(email);
-      axios
-        .post(Constants.LOGIN, JSON.stringify({ email, password }), {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-        .then(response => {
-          console.log("user logged in: ", response);
-          login(response.data.token, response.data.type);
-          setLoading(false);
-          history.push("/dashboard/my-projects");
-        })
-        .catch(response => {
-          console.log(response);
-          if (response.data == "Invalid Credentials") {
-            setValidTries({ validTries } + 1);
-          }
-          showFormError(true);
-          setLoading(false);
-        });
-    } else {
-      if (4 < { validTries }) {
-        setTT("Se alcanzó el maximo de intentos permitido");
-      }
-      showFormError(true);
-      setLoading(false);
+    if ({validEmail} && {validPassword} || 4 < {validTries}){
+      axios.post(Constants.LOGIN,
+          JSON.stringify({email, password}),
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+      ).then((response) => {
+        console.log('user logged in: ', response)
+        login(response.data.token, response.data.type);
+        setLoading(false);
+        history.push('/dashboard/my-projects');
+      }).catch((response) => {
+        console.log(response);
+        if (response.data == "Invalid Credentials") {
+            setValidTries({validTries} + 1);
+        }
+        showFormError(true);
+        setLoading(false);
+      });
+    }
+    else{
+        if (4 < {validTries}) {
+            setTT("Reached maximum times limit for password input");
+        }
+        showFormError(true);
+        setLoading(false);
     }
   };
   return (
@@ -159,7 +161,9 @@ const Login = ({ login }) => {
         <CustomAvatar>
           <LockOutlinedIcon />
         </CustomAvatar>
-        <Typography variant="h5">Inicio de sesión</Typography>
+        <Typography variant="h5">
+          Login
+        </Typography>
         <Form noValidate onSubmit={submit}>
           <TextField
             variant="outlined"
@@ -169,7 +173,7 @@ const Login = ({ login }) => {
             onChange={handleEmailChange}
             fullWidth
             id="email"
-            label="Correo electrónico"
+            label="Email address"
             name="email"
             autoComplete="email"
             autoFocus
@@ -182,15 +186,14 @@ const Login = ({ login }) => {
             onChange={handlePasswordChange}
             fullWidth
             name="password"
-            label="Contraseña"
+            label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
           />
           {formError && (
             <Typography color="error">
-              Correo electrónico o contraseña incorrectos {validEmailText}{" "}
-              {validPasswordText}
+              Email and/or password invalid: {validEmailText} {validPasswordText}
             </Typography>
           )}
 
@@ -201,7 +204,7 @@ const Login = ({ login }) => {
             variant="contained"
             color="primary"
           >
-            Iniciar Sesión
+            Log In
           </SeparatedButton>
         </Form>
       </StyledPaper>

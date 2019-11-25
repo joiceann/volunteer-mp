@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { createAxiosCancelToken, getAllProjects, getAllProjectsDummy, getUserTypeFromLocalStorage, getONGProjects } from './MyProjectsProvider'
+import { createAxiosCancelToken, getAllProjects, getAllProjectsDummy, getUserTypeFromLocalStorage, getONGProjects, getUserProjects } from './MyProjectsProvider'
 import ProjectCard from './ProjectCard'
 
 import Grid from '@material-ui/core/Grid'
@@ -45,6 +45,27 @@ class MyProjects extends Component {
         this.onHandleProjectUpdate = this.onHandleProjectUpdate.bind(this)
         this.onHandleRefreshProjects = this.onHandleRefreshProjects.bind(this)
         this.handleOnLocalSearch = this.handleOnLocalSearch.bind(this)
+        this.onSuccessfullClose = this.onSuccessfullClose.bind(this)
+    }
+
+    onSuccessfullClose = () => {
+        console.log('closing')
+        const closingProjectDialog = new Promise((resolve, reject) => {
+            this.setState({ showingCreateProject: false, currentProject: null, showingProject: false, openEditProject: false })
+            resolve()
+        })
+
+        closingProjectDialog.then(() => {
+            const clearProjects = new Promise((resolve, reject) => {
+                this.setState({ projects: null })
+                resolve('success')
+            })
+    
+            clearProjects.then(() => {
+                this.getProjectsAccordingToUserType()
+            })
+        })
+
     }
 
     onHandleRefreshProjects = () => {
@@ -132,9 +153,17 @@ class MyProjects extends Component {
                     }).catch(error => reject(error))
                 } else if (userType === '1') {
                     // this is a normal user
-                    getAllProjects(axiosCancelTokenSource).then(projects => {
+
+                    // UNCOMMENT THIS WHEN USER PROJECTS ENDPOINT WORKS
+                    getUserProjects(axiosCancelTokenSource).then(projects => {
+                        console.log('enrolled projects are: ', projects)
                         resolve(projects)
                     }).catch(error => reject(error))
+
+                    // COMMENT THIS WHEN USER PROJECTS ENDPOINT WORKS
+                    // getAllProjects(axiosCancelTokenSource).then(projects => {
+                    //     resolve(projects)
+                    // }).catch(error => reject(error))
                 }
             })
 
@@ -256,6 +285,7 @@ class MyProjects extends Component {
                             edit={true}
                             open={openEditProject}
                             onClose={() => this.setState({ openEditProject: false, currentProject: null })}
+                            onSuccessfullClose={this.onSuccessfullClose}
                             onCompleteEditing={() => {}}
                             project={currentProject}
                             title='Edit Project'
@@ -271,20 +301,22 @@ class MyProjects extends Component {
                             edit={false}
                             open={showingCreateProject}
                             onClose={() => this.setState({ showingCreateProject: false })}
+                            onSuccessfullClose={this.onSuccessfullClose}
                             project={{
-                                organinfo: {},
+                                organizationInfo: {},
                                 name: '',
-                                desc: '',
+                                description: '',
                                 address: '',
-                                fdate: new Date(),
-                                fdatei: new Date(),
+                                finalDate: new Date(),
+                                finalDateInscription: new Date(),
                                 volunteers: [],
                                 photo: [],
                                 news: [],
                                 state: undefined,
-                                mage: undefined,
-                                sdate: new Date(),
-                                sdatei: new Date()
+                                minAge: undefined,
+                                maxAge: undefined,
+                                startDate: new Date(),
+                                startDateInscription: new Date()
                             }}
                             title='Create New Project'
                         />

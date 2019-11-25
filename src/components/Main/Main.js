@@ -13,6 +13,8 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
+import ProjectsSearchComponent from '../HomePageComponent/ProjectsSearchComponent';
+import MyVolunteersLocations from '../MyVolunteersLocations/MyVolunteersLocations';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -39,11 +41,13 @@ const Main = ({ logout }) => {
       <GlobalStyle />
       <Menu logout={logout} />
       <Content>
-        <Switch>
+        <Switch>          
           <Route path="/dashboard/my-projects" render={() => <MyProjects />} />
           {/* <Route path="/dashboard/projects" render={() => <Projects />}/> */}
-          <Route path="/dashboard/profile" render={() => <Profile />}/>
-          <Route render={() => <Overview />}/>
+          <Route path='/dashboard/locations' render={() => <MyVolunteersLocations />} />
+          <Route path="/dashboard/profile/:id" render={() => <Profile />}/>
+          <Route path="/dashboard/search" render={() => <ProjectsSearchComponent main />} />
+          <Route render={() => <MyProjects />}/>
         </Switch>
       </Content>
     </MainContainer>

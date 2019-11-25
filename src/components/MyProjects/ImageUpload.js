@@ -7,7 +7,7 @@ export default class ImageUpload extends Component {
 
         this.state = {
             imageFile: null,
-            imagePreviewUrl: null
+            imagePreviewUrl: this.props.imagePreviewUrl || null
         }
 
         this.handleImageChange = this.handleImageChange.bind(this)

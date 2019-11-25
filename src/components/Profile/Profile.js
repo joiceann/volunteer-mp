@@ -1,32 +1,47 @@
 import React, {
-  useState,
   useEffect,
+  useReducer,
 } from 'react';
 import {
   Header,
+  LoadingScreen,
   Section,
   Snackbar,
 } from '../CommonComponents';
+import {
+  useParams
+} from 'react-router-dom';
 
 import axios from 'axios';
-import instace from '../../axios';
+import instance from '../../axios';
 import ProfileCard from './ProfileCard';
 import * as Constants from '../../constants';
 
 const Profile = () => {
 
-  const [user, setUser] = useState(null);
-  const [showError, setShowError] = useState(false);
+  const [state, setState] = useReducer(
+    (state, newState) => ({...state, ...newState}),
+    {
+      loading: true,
+      showError: false,
+      user: null,
+    }
+  );
 
   const fetchUser = () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    instace.get(Constants.USER_PROFILE, {
+
+    setState({ loading: true });
+    instance.get(Constants.USER_PROFILE, {
       cancelToken: source.token,
     }).then((response) => {
-      setUser(response.data);
+      setState({ user: response.data });
     }).catch(() => {
-      setShowError(true);
+      setState({ showError: true });
+    })
+    .finally(() => {
+      setState({ loading: false });
     });
 
     return () => {
@@ -34,19 +49,27 @@ const Profile = () => {
     };
   };
 
+  const updateUser = user => {
+    return instance.post(Constants.UPDATE_USER, user)
+      .then(response => {
+        console.log(response);
+        fetchUser();
+      })
+  }
+
   useEffect(fetchUser, []);
 
 
   return (
     <Section>
       <Header>
-        Mi perfil
+        Perfil
       </Header>
-      <ProfileCard user={user} />
+      <ProfileCard user={state.user} updateUser={updateUser}/>
       <Snackbar
-        open={showError}
+        open={state.showError}
         variant="error"
-        setOpen={setShowError}
+        setOpen={(showError) => setState({ showError })}
         message="No fue posible obtener el perfil de usuario"
       />
     </Section>

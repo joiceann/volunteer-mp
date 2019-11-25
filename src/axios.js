@@ -3,7 +3,7 @@ import * as Constants from './constants';
 
 const instance = axios.create({
   baseURL: Constants.BASE_URL,
-  timeout: 2000,
+  timeout: 5000,
 });
 
 export const setAuth = (token) => {

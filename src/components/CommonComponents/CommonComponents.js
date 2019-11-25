@@ -29,11 +29,14 @@ export const HeaderLine = styled.div`
 `;
 
 export const ClearButton = styled(MuButton)`
-  color: ${colors.main};
-`;
+  color: ${colors.main};`;
 
 export const PrecautionButton = styled(MuButton)`
+  background-color: ${colors.secondary};
   color: ${colors.error};
+  &:hover {
+    background-color: ${colors.main};
+  }
 `;
 
 export const TextField = styled(MuTextField)`
