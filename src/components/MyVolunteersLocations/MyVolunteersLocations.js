@@ -20,16 +20,8 @@ export default class MyVolunteersLocations extends Component {
             axiosCancelTokenSource: createAxiosCancelToken(),
             kickOut: false,
             orgId: null,
-            initialGeoLocations: [
-                { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-19', coordinates: { lat: 14.636100, long: -90.523556 }, address: '1a Avenida A, Guatemala 01003, Guatemala' },
-                { volunteer: { name: 'Caridad Quiros', id: "5dc76b5ca6d3306ba4f724a5" }, date: '2019-10-12', coordinates: { lat: 14.635459, long: -90.514853 }, address: '6A Av (Paseo de la Sexta) 440, Guatemala' },
-                { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-15', coordinates: { lat: 14.631392, long: -90.523726 }, address: '19 Calle 21, Guatemala' }
-            ],
-            geoLocations: [
-                { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-19', coordinates: { lat: 14.636100, long: -90.523556 }, address: '1a Avenida A, Guatemala 01003, Guatemala' },
-                { volunteer: { name: 'Caridad Quiros', id: "5dc76b5ca6d3306ba4f724a5" }, date: '2019-10-12', coordinates: { lat: 14.635459, long: -90.514853 }, address: '6A Av (Paseo de la Sexta) 440, Guatemala' },
-                { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-15', coordinates: { lat: 14.631392, long: -90.523726 }, address: '19 Calle 21, Guatemala' }
-            ],
+            initialGeoLocations: [],
+            geoLocations: [],
 
             locationsVolunteersSelector: null,
             locationsVolunteerSelectorSelected: "",
