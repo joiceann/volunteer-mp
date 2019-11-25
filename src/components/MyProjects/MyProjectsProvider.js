@@ -168,6 +168,15 @@ const getVolunteerLocationsByOrganization = (axiosCancelTokenSource, orgId, star
     })
 }
 
+const getVolunteersWorkingTimes = (axiosCancelTokenSource, pryId, start, end) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.WORKING_TIMES, { pryId, start, end }, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
 const getAllProjectsDummy = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         const projects = []
@@ -704,5 +713,6 @@ export {
     updateProjectState,
     acceptVolunteer,
     getVolunteerLocationsByOrganization,
-    getUserInfoById
+    getUserInfoById,
+    getVolunteersWorkingTimes
 }

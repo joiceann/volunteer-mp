@@ -17,4 +17,5 @@ export const UPLOAD_IMAGE = '/images/upload'
 export const USER_PROFILE = '/users';
 export const USER_PROJECTS = '/users/myprojects'
 export const VOLUNTEER_LOCATIONS = '/locations/organization/'
+export const WORKING_TIMES = '/tasks/project/'
 

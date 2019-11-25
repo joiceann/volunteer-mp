@@ -31,7 +31,7 @@ import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
 import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV, DOWNLOAD_CSV_USER_LIST, ENROLL_TEXT_NOT_LOGGED } from './MyProjectsConstants';
-import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject, updateProjectState, getProjectEvaluations } from './MyProjectsProvider';
+import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject, updateProjectState, getProjectEvaluations, getVolunteersWorkingTimes } from './MyProjectsProvider';
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
 
@@ -80,7 +80,7 @@ export default class ProjectModal extends Component {
             datePickerOrigin: new Date(),
             datePickerEnd: new Date(),
             datePickerOriginServiceHours: new Date(),
-            datePickerEndServiceHours: new Date(),
+            datePickerEndServiceHours: new Date((new Date()).setDate((new Date()).getDate() + 1)),
 
             evaluations: [],
             initialGeoLocations: [
@@ -132,7 +132,7 @@ export default class ProjectModal extends Component {
     }
 
     componentDidMount = () => {
-        const { volunteers, axiosCancelTokenSource } = this.state
+        const { volunteers, axiosCancelTokenSource, datePickerOriginServiceHours, datePickerEndServiceHours } = this.state
 
         getUserInfoByToken(axiosCancelTokenSource).then(userInfo => {
             const searchVolunteer  = volunteers.filter(v => v.id === userInfo._id)
@@ -151,6 +151,15 @@ export default class ProjectModal extends Component {
             }).catch(error => {
                 console.log(error)
             })
+
+        const start = datePickerOriginServiceHours.toISOString().substring(0, 10)
+        const end = datePickerEndServiceHours.toISOString().substring(0, 10)
+        
+        getVolunteersWorkingTimes(axiosCancelTokenSource, this.props.project._id, start, end)
+            .then(volunteerHours => {
+                console.log(volunteerHours)
+                this.setState({ volunteerHours })
+            }).catch(error => console.log(error))
 
         this.setVolunteersFromLocations(this.state.geoLocations)
 
@@ -309,7 +318,18 @@ export default class ProjectModal extends Component {
     } 
     
     handleFilterServiceHours = () => {
+        const { datePickerOriginServiceHours, datePickerEndServiceHours, axiosCancelTokenSource } = this.state
+
+        const start = datePickerOriginServiceHours.toISOString().substring(0, 10)
+        const end = datePickerEndServiceHours.toISOString().substring(0, 10)
+
         this.setState({ volunteerHours: [] })
+        getVolunteersWorkingTimes(axiosCancelTokenSource, this.props.project._id, start, end)
+            .then(volunteerHours => {
+                console.log(volunteerHours)
+                this.setState({ volunteerHours })
+            }).catch(error => console.log(error))
+
     }
 
     handleLocationsSelectorOnSelect = (e) => {
@@ -668,6 +688,7 @@ export default class ProjectModal extends Component {
                                     <Grid container spacing={2} style={{ paddingLeft: '10%', paddingRight: '10%', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
                                         <Grid item xs={12} sm={12} md={4} lg={4}>
                                             <KeyboardDatePicker
+                                                maxDate={new Date()}
                                                 margin="normal"
                                                 id="date-picker-origin"
                                                 label="Fecha inicial"
@@ -681,6 +702,7 @@ export default class ProjectModal extends Component {
                                         </Grid>
                                         <Grid item xs={12} sm={12} md={4} lg={4}>
                                             <KeyboardDatePicker
+                                                minDate={(new Date()).setDate((new Date()).getDate() + 1)}
                                                 margin="normal"
                                                 id="date-picker-end"
                                                 label="Fecha final"
@@ -698,9 +720,13 @@ export default class ProjectModal extends Component {
                                     </Grid>
                                 </MuiPickersUtilsProvider>
 
-                                <div className='inner-grid' style={{ width: '100%' }}>
-                                    <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleServiceHoursCSVDownload()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{DOWNLOAD_CSV}</Button>                            
-                                </div>
+                                {
+                                    volunteerHours.length > 0 &&
+                                    <div className='inner-grid' style={{ width: '100%' }}>
+                                        <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleServiceHoursCSVDownload()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{DOWNLOAD_CSV}</Button>                            
+                                    </div>
+                                }
+                                
 
                                 <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
                                     {
@@ -712,6 +738,11 @@ export default class ProjectModal extends Component {
                                         })
                                     }
                                 </List>
+
+                                {
+                                    volunteerHours.length === 0 &&
+                                    <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><WarningIcon style={{ fontSize: 14 }}/> No service hours registered on this date range.</h5>
+                                }
                             
                             </Card>
                         </Grid>

@@ -208,7 +208,8 @@ export default class MyVolunteersLocations extends Component {
                             </Grid>
                         </MuiPickersUtilsProvider>
 
-                        {                                
+                        {   
+                            geoLocations.length > 0 &&                             
                             locationsVolunteersSelector &&
                             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 <FormControl style={{ width: '80%' }}>                                    
