@@ -30,6 +30,8 @@ import {
 import colors from '../../colors';
 import { useUserId } from '../../hooks';
 
+import InfoIcon from '@material-ui/icons/Info'
+
 import {
   BusinessCenter,
   Email,
@@ -376,7 +378,7 @@ const ProfileCard = ({ user, updateUser }) => {
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <BusinessCenter />
+                  <InfoIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
@@ -413,7 +415,7 @@ const ProfileCard = ({ user, updateUser }) => {
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <BusinessCenter />
+                  <InfoIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
@@ -465,7 +467,7 @@ const ProfileCard = ({ user, updateUser }) => {
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <BusinessCenter />
+                  <InfoIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
@@ -517,7 +519,7 @@ const ProfileCard = ({ user, updateUser }) => {
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <BusinessCenter />
+                  <InfoIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
@@ -557,7 +559,7 @@ const ProfileCard = ({ user, updateUser }) => {
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <BusinessCenter />
+                  <InfoIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
@@ -605,7 +607,7 @@ const ProfileCard = ({ user, updateUser }) => {
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <BusinessCenter />
+                  <InfoIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
@@ -653,7 +655,7 @@ const ProfileCard = ({ user, updateUser }) => {
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <BusinessCenter />
+                  <InfoIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
@@ -757,7 +759,7 @@ const ProfileCard = ({ user, updateUser }) => {
               <ListItem>
                 <ListItemAvatar>
                   <DataAvatar>
-                    <BusinessCenter />
+                    <InfoIcon />
                   </DataAvatar>
                 </ListItemAvatar>
                 {
