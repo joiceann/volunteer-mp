@@ -17,7 +17,13 @@ import Grid from '@material-ui/core/Grid'
 import Snackbar from '@material-ui/core/Snackbar'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
 import CustomDialog from './CustomDialog';
-import { createAxiosCancelToken, updateVolunteerRole, enrollOrOptOutFromProject, acceptVolunteer } from './MyProjectsProvider';
+import Dialog from '@material-ui/core/Dialog'
+import Slide from '@material-ui/core/Slide'
+import { createAxiosCancelToken, updateVolunteerRole, enrollOrOptOutFromProject, acceptVolunteer, getUserInfoById } from './MyProjectsProvider';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default class ProjectVolunteerItem extends Component {
     constructor(props) {
@@ -29,7 +35,9 @@ export default class ProjectVolunteerItem extends Component {
             snackBarOpen: false,
             snackBarMessage: '',
             openDialogRemoveVolunteer: false,
-            axiosCancelTokenSource: createAxiosCancelToken()
+            axiosCancelTokenSource: createAxiosCancelToken(),
+            showVolunteerInfo: false,
+            volunteerFetchedInfo: null
         }
 
         this.handleSnackBarOpen = this.handleSnackBarOpen.bind(this)
@@ -100,6 +108,16 @@ export default class ProjectVolunteerItem extends Component {
 
     }
 
+    componentDidMount = () => {
+        const { axiosCancelTokenSource } = this.state
+        const { volunteer } = this.props        
+
+        getUserInfoById(axiosCancelTokenSource, volunteer.id).then(info => {
+            console.log(info)
+            this.setState({ volunteerFetchedInfo: info })
+        }).catch(error => console.log(error))
+    }
+
     componentWillUnmount = () => {
         const { axiosCancelTokenSource } = this.state
 
@@ -108,7 +126,7 @@ export default class ProjectVolunteerItem extends Component {
     }
 
     render = () => {
-        const { coordinator, snackBarOpen, snackBarMessage, openDialogRemoveVolunteer, accepted } = this.state
+        const { coordinator, snackBarOpen, snackBarMessage, openDialogRemoveVolunteer, accepted, showVolunteerInfo, volunteerFetchedInfo } = this.state
         const { volunteer, editMode } = this.props
 
         return(
@@ -130,7 +148,7 @@ export default class ProjectVolunteerItem extends Component {
                             </ListItemAvatar>
                         }
                     </Grid>
-                    <Grid item xs={4} sm={4} md={4} lg={4}>
+                    <Grid onClick={ editMode ? () => this.setState({ showVolunteerInfo: true }) : () => {} } item xs={4} sm={4} md={4} lg={4} className={`${editMode ? 'icon-pointer' : ''}`}>
                         {
                             volunteer.name &&
                             <p className='josefin-regular'>{ limitTextToCertainLength(volunteer.name, 30) }</p> 
@@ -196,6 +214,107 @@ export default class ProjectVolunteerItem extends Component {
                     cancelText={REMOVE_VOLUNTEER_DIALOG_CANCEL_TEXT}
                     acceptText={REMOVE_VOLUNTEER_DIALOG_ACCEPT_TEXT}
                 />
+                {
+                    showVolunteerInfo &&
+                    volunteerFetchedInfo &&
+                    <Dialog TransitionComponent={Transition} maxWidth='lg' open={showVolunteerInfo} onClose={() => this.setState({ showVolunteerInfo: false })}>
+                        <div style={{ padding: '10%', backgroundColor: '#fff', width: '75%', height: '75%', display: 'flex', flexDirection: 'column' }}>
+                            <p className='josefin-regular'>
+                                Nationality: {volunteerFetchedInfo.nationality}
+                            </p>
+                            <p className='josefin-regular'>
+                                Occupation: {volunteerFetchedInfo.occupation}
+                            </p>
+                            <p className='josefin-regular'>
+                                Phone Number: +{volunteerFetchedInfo.ncode} {volunteerFetchedInfo.phone}
+                            </p>                            
+                            <p className='josefin-regular'>
+                                e-mail: {volunteerFetchedInfo.email}
+                            </p>
+                            <p className='josefin-regular'>
+                                Gender: {
+                                    volunteerFetchedInfo.gender === 1 ? 'Women' :
+                                    volunteerFetchedInfo.gender === 2 ? 'Men' : 'Prefer not to say'
+                                }
+                            </p>
+                            <p className='josefin-regular'>
+                                Birth Date: {(new Date(volunteerFetchedInfo.bdate)).toDateString()}
+                            </p>
+                            <p className='josefin-regular'>
+                                {volunteerFetchedInfo.bio}
+                            </p>
+                            <p className='josefin-regular'>
+                                Civil Status: {
+                                    volunteerFetchedInfo.civilStatus === 1 ? 'Single' :
+                                    volunteerFetchedInfo.civilStatus === 2 ? 'Married' :
+                                    volunteerFetchedInfo.civilStatus === 3 ? 'Widow' :
+                                    volunteerFetchedInfo.civilStatus === 4 ? 'Divorced' :
+                                    volunteerFetchedInfo.civilStatus === 5 ? 'Free Union' : 'N/A'
+                                }
+                            </p>
+                            <p className='josefin-regular'>
+                                Education Level: {
+                                    volunteerFetchedInfo.educationLevel === 1 ? 'Elementary' :
+                                    volunteerFetchedInfo.educationLevel === 2 ? 'Highschool' :
+                                    volunteerFetchedInfo.educationLevel === 3 ? 'Licenciatura' :
+                                    volunteerFetchedInfo.educationLevel === 4 ? 'Master' :
+                                    volunteerFetchedInfo.educationLevel === 5 ? 'PhD' : 'N/A'
+                                }
+                            </p>
+                            <p className='josefin-regular'>
+                                Diet: {
+                                    volunteerFetchedInfo.foodInfo === 1 ? 'Vegan' :
+                                    volunteerFetchedInfo.foodInfo === 2 ? 'Vegetarian' : 'N/A'
+                                }
+                            </p>
+                            <p className='josefin-regular'>
+                                Allergies: {volunteerFetchedInfo.healthInfo.allergies}
+                            </p>
+                            <p className='josefin-regular'>
+                                Special Medicine: {volunteerFetchedInfo.healthInfo.medicine}
+                            </p>
+                            <p className='josefin-regular'>
+                                Special Condition: {volunteerFetchedInfo.healthInfo.pcondition}
+                            </p>
+                            <p className='josefin-regular'>
+                                Blood Type: {
+                                    volunteerFetchedInfo.healthInfo.btype === 1 ? 'O-' :
+                                    volunteerFetchedInfo.healthInfo.btype === 2 ? 'O+' : 
+                                    volunteerFetchedInfo.healthInfo.btype === 3 ? 'A+' :
+                                    volunteerFetchedInfo.healthInfo.btype === 4 ? 'A-' : 
+                                    volunteerFetchedInfo.healthInfo.btype === 5 ? 'B-' :
+                                    volunteerFetchedInfo.healthInfo.btype === 6 ? 'B+' :
+                                    volunteerFetchedInfo.healthInfo.btype === 7 ? 'AB-' :
+                                    volunteerFetchedInfo.healthInfo.btype === 8 ? 'AB+' : 'N/A'    
+                                }
+                            </p>
+                            <p className='josefin-regular'>
+                                Knows Country and Language: {
+                                    volunteerFetchedInfo.knowCountry === 1 ? 'Yes/Yes' :
+                                    volunteerFetchedInfo.knowCountry === 2 ? 'Yes/No' : 
+                                    volunteerFetchedInfo.knowCountry === 3 ? 'No/Yes' :
+                                    volunteerFetchedInfo.knowCountry === 4 ? 'No/No' : 'N/A'    
+                                }
+                            </p>
+                            <p className='josefin-regular'>
+                                Project Interests: {
+                                    volunteerFetchedInfo.pinterest === 1 ? 'Education' :
+                                    volunteerFetchedInfo.pinterest === 2 ? 'Health' :
+                                    volunteerFetchedInfo.pinterest === 3 ? 'Environment' :
+                                    volunteerFetchedInfo.pinterest === 4 ? 'All' : 'N/A'
+                                }
+                            </p>
+                            <p className='josefin-regular'>
+                                Time Travel Availability: {
+                                    volunteerFetchedInfo.timeTravel === 1 ? '1 week' :
+                                    volunteerFetchedInfo.timeTravel === 2 ? '2 weeks' :
+                                    volunteerFetchedInfo.timeTravel === 3 ? '4 weeks' :
+                                    volunteerFetchedInfo.timeTravel === 4 ? '6 or more weeks' : 'N/A'
+                                }
+                            </p>
+                        </div>
+                    </Dialog>
+                }
             </ListItem>
         )
     }

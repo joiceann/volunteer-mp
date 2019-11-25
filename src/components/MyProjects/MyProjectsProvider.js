@@ -32,6 +32,14 @@ const getUserInfoByToken = (axiosCancelTokenSource) => {
     })
 }
 
+const getUserInfoById = (axiosCancelTokenSource, id) => {
+    return new Promise((resolve, reject) => {
+        instace.get(`${consts.USER_PROFILE}/${id}`, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => resolve(response.data))
+            .catch(error => reject(error))
+    })
+}
+
 const enrollOrOptOutFromProject = (projectId, userId, status, axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(`${consts.ENROLL}/${projectId}/${userId}/${status}`, {
@@ -695,5 +703,6 @@ export {
     getProjectEvaluations,
     updateProjectState,
     acceptVolunteer,
-    getVolunteerLocationsByOrganization
+    getVolunteerLocationsByOrganization,
+    getUserInfoById
 }
