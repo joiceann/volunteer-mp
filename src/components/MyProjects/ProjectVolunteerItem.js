@@ -17,7 +17,7 @@ import Grid from '@material-ui/core/Grid'
 import Snackbar from '@material-ui/core/Snackbar'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
 import CustomDialog from './CustomDialog';
-import { createAxiosCancelToken, updateVolunteerRole, enrollOrOptOutFromProject } from './MyProjectsProvider';
+import { createAxiosCancelToken, updateVolunteerRole, enrollOrOptOutFromProject, acceptVolunteer } from './MyProjectsProvider';
 
 export default class ProjectVolunteerItem extends Component {
     constructor(props) {
@@ -64,8 +64,21 @@ export default class ProjectVolunteerItem extends Component {
         const volunteer = this.props.volunteer
         volunteer.accepted = checked ? true : false
 
-        this.props.onHandleProjectVolunteerRoleChange(volunteer)
-        this.setState({ accepted: checked })
+        acceptVolunteer(
+            axiosCancelTokenSource, 
+            this.props.projectId, 
+            volunteer.id, 
+            volunteer.accepted ? 1 : 0
+        )
+            .then(response => {
+                console.log(response)
+                this.props.onHandleProjectVolunteerRoleChange(volunteer)
+                this.setState({ accepted: checked })
+            }).catch(error => {
+                console.log(error)
+                this.setState({ snackBarOpen: true, snackBarMessage: SERVER_ERROR })
+            })
+
     }
 
     handleSnackBarOpen = (event) => {

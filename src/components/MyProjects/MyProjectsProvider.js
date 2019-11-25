@@ -74,6 +74,15 @@ const getProjectEvaluations = (axiosCancelTokenSource, projectId) => {
     })
 }
 
+const acceptVolunteer = (axiosCancelTokenSource, projectId, volunteerId, accept) => {
+    return new Promise((resolve, reject) => {
+        instace.get(`${consts.ACCEPT_VOLUNTEER}/${projectId}/${volunteerId}/${accept}`, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
 const getONGProjects = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         instace.get(consts.GET_PROJECTS_ONG, { cancelToken: axiosCancelTokenSource.token })
@@ -675,5 +684,6 @@ export {
     getUserProjects,
     getAllProjectsPublic,
     getProjectEvaluations,
-    updateProjectState
+    updateProjectState,
+    acceptVolunteer
 }
