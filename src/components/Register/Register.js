@@ -109,6 +109,12 @@ const Register = ({ login }) => {
   const [preferWorkWith, setPreferWorkWith] = useState("");
   const [projectInterest, setProjectInterest] = useState("4");
   const [foodInfo, setFoodInfo] = useState("0");
+  const [role, setRole] = useState("Other");
+  const [cName, setCName] = useState("");
+  const [cEmail, setCEmail] = useState("");
+  const [cPhone, setCPhone] = useState("");
+  const [bType, setBType] = useState("0");
+  const [allergies, setAllergies] = useState("");
   const handleEmailChange = event => {
     console.log(event.target.value);
     let emailValid = event.target.value.match(emailRegex);
@@ -126,7 +132,30 @@ const Register = ({ login }) => {
     }
     setEmail(event.target.value);
   };
-
+  const handleAllergiesChange = event => {
+    console.log(event.target.value);
+    setAllergies(event.target.value);
+  };
+  const handleCEmailChange = event => {
+    console.log(event.target.value);
+    setCEmail(event.target.value);
+  };
+  const handleBTypeChange = event => {
+    console.log(event.target.value);
+    setBType(event.target.value);
+  };
+  const handleCPhoneChange = event => {
+    console.log(event.target.value);
+    setCPhone(event.target.value);
+  };
+  const handleCNameChange = event => {
+    console.log(event.target.value);
+    setCName(event.target.value);
+  };
+  const handleRoleChange = event => {
+    console.log(event.target.value);
+    setRole(event.target.value);
+  };
   const handleNameChange = event => {
     console.log(event.target.value);
     setName(event.target.value);
@@ -209,25 +238,57 @@ const Register = ({ login }) => {
 
   const submit = event => {
     event.preventDefault();
-    alert(civilStatus);
+    
+    let req = {
+      name,
+      birthDate,
+      gender,
+      educationLevel,
+      occupation,
+      email,
+      password,
+      civilStatus,
+      phone,
+      timeTravel,
+      knowCountry,
+      projectInterest,
+      preferWorkWith:0,
+      contactInfo:[{
+        role,
+        name: cName,
+        phone:cPhone,
+        email:cEmail
+      }],
+      healthInfo:{"btype":bType,"pcondition":"NA","allergies":allergies,"medicine":"NA"},
+      foodInfo,
+      lname:lastName,
+      bio:biography,
+      nationality,
+      ncode: nationalCode,
+      password
+
+    }
+    alert(JSON.stringify(req));
     setLoading(true);
-    /*axios
-        .post(Constants.REGISTER, JSON.stringify({ email, password }), {
+    axios
+        .post(Constants.REGISTER, JSON.stringify(req), {
           headers: {
             "Content-Type": "application/json"
           }
         })
         .then(response => {
+          alert(response)
           console.log("user logged in: ", response);
         })
         .catch(response => {
           console.log(response);
+          alert(response)
           if (response.data == "Invalid Credentials") {
             setValidTries({ validTries } + 1);
           }
           showFormError(true);
           setLoading(false);
-        });*/
+        });
   };
   return (
     <MainContainer>
@@ -529,26 +590,26 @@ const Register = ({ login }) => {
               Role
             </InputLabel>
             <Select
-              labelId="foodInfo"
-              id="foodInfo"
-              value={foodInfo}
-              onChange={handleFoodInfoChange}
+              labelId="role"
+              id="role"
+              value={role}
+              onChange={handleRoleChange}
               style={{ marginRight: "5%" }}
             >
-              <MenuItem value="0">Other</MenuItem>
-              <MenuItem value="1">Mother</MenuItem>
-              <MenuItem value="2">Father</MenuItem>
+              <MenuItem value="Other">Other</MenuItem>
+              <MenuItem value="Mother">Mother</MenuItem>
+              <MenuItem value="Father">Father</MenuItem>
             </Select>
             <TextField
               variant="outlined"
               margin="normal"
               required
-              value={name}
-              onChange={handleNameChange}
+              value={cName}
+              onChange={handleCNameChange}
               fullWidth
-              id="name"
+              id="cName"
               label="Name"
-              name="name"
+              name="CName"
               autoComplete="name"
               autoFocus
             />
@@ -558,12 +619,12 @@ const Register = ({ login }) => {
               variant="outlined"
               margin="normal"
               required
-              value={email}
-              onChange={handleEmailChange}
+              value={cEmail}
+              onChange={handleCEmailChange}
               fullWidth
-              id="email"
+              id="cEmail"
               label="Email"
-              name="email"
+              name="cEmail"
               autoComplete="email"
               autoFocus
             />
@@ -571,12 +632,12 @@ const Register = ({ login }) => {
               variant="outlined"
               margin="normal"
               required
-              value={phone}
-              onChange={handlePhoneChange}
+              value={cPhone}
+              onChange={handleCPhoneChange}
               fullWidth
-              id="phone"
+              id="cPhone"
               label="Phone"
-              name="Phone"
+              name="cPhone"
               autoComplete="Phone"
               autoFocus
             />
@@ -590,10 +651,10 @@ const Register = ({ login }) => {
               Blood type
             </InputLabel>
             <Select
-              labelId="foodInfo"
-              id="foodInfo"
-              value={foodInfo}
-              onChange={handleFoodInfoChange}
+              labelId="bType"
+              id="bType"
+              value={bType}
+              onChange={handleBTypeChange}
               style={{ marginRight: "5%" }}
             >
               <MenuItem value="0">Dont know</MenuItem>
@@ -610,13 +671,13 @@ const Register = ({ login }) => {
               variant="outlined"
               margin="normal"
               required
-              value={name}
-              onChange={handleNameChange}
+              value={allergies}
+              onChange={handleAllergiesChange}
               fullWidth
-              id="name"
+              id="allergies"
               label="Allergies"
-              name="name"
-              autoComplete="name"
+              name="allergies"
+              autoComplete="Allergies"
               autoFocus
             />
           </div>
