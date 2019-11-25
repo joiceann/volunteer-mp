@@ -45,7 +45,7 @@ const Main = ({ logout }) => {
           <Route path="/dashboard/my-projects" render={() => <MyProjects />} />
           {/* <Route path="/dashboard/projects" render={() => <Projects />}/> */}
           <Route path='/dashboard/locations' render={() => <MyVolunteersLocations />} />
-          <Route path="/dashboard/profile" render={() => <Profile />}/>
+          <Route path="/dashboard/profile/:id" render={() => <Profile />}/>
           <Route path="/dashboard/search" render={() => <ProjectsSearchComponent main />} />
           <Route render={() => <MyProjects />}/>
         </Switch>
