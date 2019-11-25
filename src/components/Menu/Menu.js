@@ -16,9 +16,11 @@ import ExitIcon from '@material-ui/icons/ExitToApp';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import SearchIcon from '@material-ui/icons/Search';
+import PersonPinIcon from '@material-ui/icons/PersonPin';
 import devices from '../../devices';
 import { RouterLink } from '../CommonComponents';
 import { useParams } from 'react-router-dom';
+import { useUserId } from '../../hooks';
 
 import styled from 'styled-components';
 
@@ -81,13 +83,16 @@ const StyledListItem = styled(ListItem)`
   padding-bottom: 28px;
 `;
 
-
 const Menu = ({ logout }) => {
   const [open, setOpen] = useState(true);
+  const userId = useUserId();
   let { section } = useParams();
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const userType = localStorage.getItem('V_USER_TYPE') || null
+    
   return (
     <StyledDrawer
       anchor="left"
@@ -149,7 +154,6 @@ const Menu = ({ logout }) => {
             <ListItemText primary="My Projects" />
           </StyledListItem>
         </RouterLink>
-
         <RouterLink to="/dashboard/search">
           <StyledListItem
             selected={section === 'search'}
@@ -163,7 +167,23 @@ const Menu = ({ logout }) => {
           </StyledListItem>
         </RouterLink>
 
-        <RouterLink to="/dashboard/profile">
+        {
+          userType === "2" &&
+          <RouterLink to="/dashboard/locations">
+            <StyledListItem
+              selected={section === 'locations'}
+              button
+              alignItems="center"
+            >
+              <ListItemIcon>
+                <PersonPinIcon />
+              </ListItemIcon>
+              <ListItemText primary="Volunteer Locations" />
+            </StyledListItem>
+          </RouterLink>
+        }
+
+        <RouterLink to={"/dashboard/profile/" + userId}>
           <StyledListItem
             selected={section === 'profile'}
             button
