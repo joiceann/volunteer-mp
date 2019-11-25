@@ -10,14 +10,16 @@ import WarningIcon from '@material-ui/icons/Warning';
 import GeoLocationItem from '../MyProjects/GeoLocationItem';
 
 import { LOCATION_FILTER, DOWNLOAD_CSV } from '../MyProjects/MyProjectsConstants';
-import { getUserTypeFromLocalStorage } from '../MyProjects/MyProjectsProvider';
+import { getUserTypeFromLocalStorage, getONGInfo, createAxiosCancelToken, getVolunteerLocationsByOrganization } from '../MyProjects/MyProjectsProvider';
 
 export default class MyVolunteersLocations extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
+            axiosCancelTokenSource: createAxiosCancelToken(),
             kickOut: false,
+            orgId: null,
             initialGeoLocations: [
                 { volunteer: { name: 'Berta Esquivel', id: "5dc76b5ca6d3306ba4f724a7" }, date: '2019-11-19', coordinates: { lat: 14.636100, long: -90.523556 }, address: '1a Avenida A, Guatemala 01003, Guatemala' },
                 { volunteer: { name: 'Caridad Quiros', id: "5dc76b5ca6d3306ba4f724a5" }, date: '2019-10-12', coordinates: { lat: 14.635459, long: -90.514853 }, address: '6A Av (Paseo de la Sexta) 440, Guatemala' },
@@ -33,7 +35,7 @@ export default class MyVolunteersLocations extends Component {
             locationsVolunteerSelectorSelected: "",
 
             datePickerOrigin: new Date(),
-            datePickerEnd: (new Date()).setDate((new Date()).getDate() + 1),
+            datePickerEnd: new Date((new Date()).setDate((new Date()).getDate() + 1)),
         }
     }
 
@@ -73,7 +75,28 @@ export default class MyVolunteersLocations extends Component {
     }
 
     handleFilterLocations = () => {
+        const { datePickerOrigin, datePickerEnd, axiosCancelTokenSource, orgId } = this.state
+        console.log(datePickerOrigin, datePickerEnd)
+
+        const start = datePickerOrigin.toISOString().substring(0, 10)
+        const end = datePickerEnd.toISOString().substring(0, 10)
+        
         this.setState({ geoLocations: [] })
+        getVolunteerLocationsByOrganization(axiosCancelTokenSource, orgId, start, end)
+            .then(geoLocations => {
+                console.log('got geoLocations: ', geoLocations)
+
+                const setGeoLocations = new Promise((resolve, reject) => {
+                    this.setState({ geoLocations, initialGeoLocations: geoLocations })
+                    resolve()
+                })
+
+                setGeoLocations.then(() => {
+                    this.setVolunteersFromLocations(this.state.geoLocations)
+                })
+
+            }).catch(error => console.log(error))
+
     }
 
     handleLocationsSelectorOnSelect = (e) => {
@@ -107,11 +130,33 @@ export default class MyVolunteersLocations extends Component {
     }
 
     componentDidMount = () => {
+        const { axiosCancelTokenSource, datePickerOrigin, datePickerEnd } = this.state               
         getUserTypeFromLocalStorage().then(userType => {
             if (userType !== "2") {
                 this.setState({ kickOut: true })
             } else {
-                this.setVolunteersFromLocations(this.state.geoLocations)
+                getONGInfo(axiosCancelTokenSource).then(ongInfo => {
+                    console.log(ongInfo)
+                    const orgId = ongInfo._id
+
+                    const start = datePickerOrigin.toISOString().substring(0, 10)
+                    const end = datePickerEnd.toISOString().substring(0, 10)
+
+                    getVolunteerLocationsByOrganization(axiosCancelTokenSource, orgId, start, end)
+                        .then(geoLocations => {
+                            console.log('got geoLocations: ', geoLocations)
+
+                            const setGeoLocations = new Promise((resolve, reject) => {
+                                this.setState({ geoLocations, orgId, initialGeoLocations: geoLocations })
+                                resolve()
+                            })
+
+                            setGeoLocations.then(() => {
+                                this.setVolunteersFromLocations(this.state.geoLocations)
+                            })
+
+                        }).catch(error => console.log(error))
+                })
             }
         })
     }

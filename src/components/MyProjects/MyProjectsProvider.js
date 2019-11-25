@@ -151,6 +151,15 @@ const getAllProjectsPublic = (axiosCancelTokenSource) => {
     })
 }
 
+const getVolunteerLocationsByOrganization = (axiosCancelTokenSource, orgId, start, end) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.VOLUNTEER_LOCATIONS, { orgId, start, end }, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
 const getAllProjectsDummy = (axiosCancelTokenSource) => {
     return new Promise((resolve, reject) => {
         const projects = []
@@ -685,5 +694,6 @@ export {
     getAllProjectsPublic,
     getProjectEvaluations,
     updateProjectState,
-    acceptVolunteer
+    acceptVolunteer,
+    getVolunteerLocationsByOrganization
 }
