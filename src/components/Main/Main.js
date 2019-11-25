@@ -42,7 +42,7 @@ const Main = ({ logout }) => {
         <Switch>
           <Route path="/dashboard/my-projects" render={() => <MyProjects />} />
           {/* <Route path="/dashboard/projects" render={() => <Projects />}/> */}
-          <Route path="/dashboard/profile" render={() => <Profile />}/>
+          <Route path="/dashboard/profile/:id" render={() => <Profile />}/>
           <Route render={() => <Overview />}/>
         </Switch>
       </Content>

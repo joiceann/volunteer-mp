@@ -82,14 +82,14 @@ const Login = ({ login }) => {
 
 
   const handleEmailChange = (event) => {
-    console.log(event.target.value);
+    // console.log(event.target.value);
     let emailValid = event.target.value.match(emailRegex);
     let inputValid = event.target.value.match(generalInputRegex);
     let reeval = emailValid != null && inputValid != null;
     setValidEmail();
 
-    console.log(emailValid);
-    console.log(inputValid);
+    // console.log(emailValid);
+    // console.log(inputValid);
 
     if (reeval){
       setET("");
