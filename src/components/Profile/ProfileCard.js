@@ -14,6 +14,8 @@ import {
   ListItemAvatar,
   ListItemText,
   Paper,
+  Select,
+  MenuItem,
   Typography as MuTypography,
 } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
@@ -37,6 +39,9 @@ import {
   Phone,
 } from '@material-ui/icons';
 
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+
 const theme = createMuiTheme();
 
 const AdditionalList = styled(List)`
@@ -47,15 +52,15 @@ const BigAvatar = styled(Avatar)`
   color: ${colors.fg};
   background-color: ${colors.yellow};
   @media ${devices.mobileS} {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     margin-top: -60px;
     font-size: 2em;
   }
   @media ${devices.laptop} {
-    width: 270px;
-    height: 270px;
-    margin-top: -135px;
+    width: 150px;
+    height: 150px;
+    margin-top: -75px;
     font-size: 3em;
   }
   border: 5px solid ${colors.fg};
@@ -81,9 +86,9 @@ const ColumnContainer = styled.div`
 `;
 
 const Container = styled.div`
-  margin-top: ${theme.spacing(15)}px;
+  margin-top: ${theme.spacing(40)}px;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,11 +105,11 @@ const DetailsList = styled(List)`
 `;
 
 const FullPaper = styled(Paper)`
-  @media ${devices.mobileS} {
-    width: 90%;
-  }
-  max-width: 1305px;
-  height: 100%;
+  width: 100%;
+  height: auto;
+  padding-bottom: 5%;
+  margin-bottom: 10%;
+  margin-top: 10%;
   display: flex;
   flex-direction: column;
 `;
@@ -154,13 +159,23 @@ const ProfileCard = ({ user, updateUser }) => {
       case 'ncode':
       case 'occup':
       case 'phone':
+      case 'occupation':
+      case 'gender':
+      case 'bdate' :
+      case 'civilStatus':
+      case 'educationLevel':
+      case 'foodInfo':
+      case 'knowCountry':
+      case 'pinterest':
+      case 'timeTravel':
         user[property] = value;
         setState({ user });
         break;
       case 'allergies':
       case 'medicine':
       case 'pcondition':
-        user.hinfo[property] = value;
+      case 'btype':
+        user.healthInfo[property] = value;
         setState({ user });
         break;
       default:
@@ -171,8 +186,7 @@ const ProfileCard = ({ user, updateUser }) => {
   useEffect(() => {
     if (user)
       setState({ user: {...user}, canEdit: userId === user._id });
-  }, [user, userId]);
-
+  }, [user, userId]);  
 
   if (!user || state.loading) {
     return <LoadingScreen />;
@@ -180,9 +194,29 @@ const ProfileCard = ({ user, updateUser }) => {
   return (
     <Container>
       <FullPaper>
-        
+        {
+          state.canEdit ?
+          (                  
+            <ButtonContainer>
+              {
+                state.editing ?
+                (
+                  <div>
+                    <PrecautionButton variant="contained" color="primary" onClick={handleToggle}>Cancel</PrecautionButton>
+                    <Button variant="contained" color="primary" onClick={handleUpdateUser}>Save</Button>
+                  </div>
+                ) :
+                (
+                  <Button variant="contained" color="primary"onClick={handleToggle}>Edit</Button>
+                )
+              }
+              
+            </ButtonContainer>
+          ):
+          ''
+        }
         <BioContainer>
-          <BigAvatar>
+          <BigAvatar src={ user.photo ? user.photo : null }>
             {`${user.name[0]}${user.lname[0]}`}
           </BigAvatar>
           
@@ -193,7 +227,7 @@ const ProfileCard = ({ user, updateUser }) => {
                 <Grid item xs={6}>
                   <TextField
                     id="name"
-                    label="Nombres"
+                    label="Name"
                     name="name"
                     onChange={event => handleUpdateProperty(event.target.value, 'name')}
                     required
@@ -204,7 +238,7 @@ const ProfileCard = ({ user, updateUser }) => {
                 <Grid item xs={6}>
                   <TextField
                     id="lname"
-                    label="Apellidos"
+                    label="Lastname"
                     name="lname"
                     onChange={event => handleUpdateProperty(event.target.value, 'lname')}
                     required
@@ -215,7 +249,7 @@ const ProfileCard = ({ user, updateUser }) => {
               </Grid>
             ) :
             (
-              <Typography variant="h3">
+              <Typography variant="h4">
                 {`${user.name} ${user.lname}`}
               </Typography>
             )
@@ -227,7 +261,7 @@ const ProfileCard = ({ user, updateUser }) => {
                 <TextField
                   fullWidth
                   id="bio"
-                  label="Biografía"
+                  label="Biography"
                   margin="normal"
                   multiline
                   name="bio"
@@ -256,7 +290,7 @@ const ProfileCard = ({ user, updateUser }) => {
                 (<TextField
                   autoComplete="email"
                   id="email"
-                  label="Correo electrónico"
+                  label="Email address"
                   name="email"
                   onChange={event => handleUpdateProperty(event.target.value, 'email')}
                   required
@@ -264,7 +298,7 @@ const ProfileCard = ({ user, updateUser }) => {
                   variant="outlined"
                 />) :
                 (<ListItemText
-                    primary="Correo electrónico"
+                    primary="Email address"
                     secondary={user.email}
                   />)
               }
@@ -283,7 +317,7 @@ const ProfileCard = ({ user, updateUser }) => {
                     <Grid item xs={3}>
                       <TextField
                         id="name"
-                        label="Código de Área"
+                        label="Area code"
                         name="name"
                         onChange={event => handleUpdateProperty(event.target.value, 'ncode')}
                         value={state.user.ncode}
@@ -293,7 +327,7 @@ const ProfileCard = ({ user, updateUser }) => {
                     <Grid item xs={9}>
                       <TextField
                         id="name"
-                        label="Teléfono"
+                        label="Phone Number"
                         name="name"
                         onChange={event => handleUpdateProperty(event.target.value, 'phone')}
                         value={state.user.phone}
@@ -304,7 +338,7 @@ const ProfileCard = ({ user, updateUser }) => {
                 ) :
                 (
                   <ListItemText
-                    primary="Teléfono"
+                    primary="Phone Number"
                     secondary={`+${user.ncode} ${user.phone}`}
                   />
                 )
@@ -323,17 +357,342 @@ const ProfileCard = ({ user, updateUser }) => {
                 (
                   <TextField
                     id="name"
-                    label="Ocupacíón"
+                    label="Occupation"
                     name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'occup')}
-                    value={state.user.occup}
+                    onChange={event => handleUpdateProperty(event.target.value, 'occupation')}
+                    value={state.user.occupation}
                     variant="outlined"
                   />
                 ) :
                 (
                   <ListItemText
-                    primary="Ocupación"
-                    secondary={user.occup}
+                    primary="Occupation"
+                    secondary={user.occupation}
+                  />
+                )
+              }
+            </ListItem>
+            {/* gender */}
+            <ListItem>
+              <ListItemAvatar>
+                <DataAvatar>
+                  <BusinessCenter />
+                </DataAvatar>
+              </ListItemAvatar>
+              {
+                state.editing ?
+                (
+                  <Select
+                    id="name"
+                    label="Gender"
+                    name="name"
+                    onChange={event => handleUpdateProperty(event.target.value, 'gender')}
+                    value={state.user.gender}
+                    variant="outlined"
+                  >
+                    <MenuItem value={0}>
+                        <em>Prefer Not To Say</em>
+                    </MenuItem>
+                    <MenuItem value={1}>
+                        <em>Women</em>
+                    </MenuItem>
+                    <MenuItem value={2}>
+                        <em>Men</em>
+                    </MenuItem>
+                  </Select>
+                ) :
+                (
+                  <ListItemText
+                    primary="Gender"
+                    secondary={user.gender === 1 ? 'Women' : user.gender === 2 ? 'Men' : 'Prefer not to say'}
+                  />
+                )
+              }
+            </ListItem>
+            {/* civil status */}
+            <ListItem>
+              <ListItemAvatar>
+                <DataAvatar>
+                  <BusinessCenter />
+                </DataAvatar>
+              </ListItemAvatar>
+              {
+                state.editing ?
+                (
+                  <Select
+                    id="name"
+                    label="Civil Status"
+                    name="name"
+                    onChange={event => handleUpdateProperty(event.target.value, 'civilStatus')}
+                    value={state.user.civilStatus}
+                    variant="outlined"
+                  >
+                    <MenuItem value={0}>
+                        <em>N/A</em>
+                    </MenuItem>
+                    <MenuItem value={1}>
+                        <em>Single</em>
+                    </MenuItem>
+                    <MenuItem value={2}>
+                        <em>Married</em>
+                    </MenuItem>
+                    <MenuItem value={3}>
+                        <em>Widow</em>
+                    </MenuItem>
+                    <MenuItem value={4}>
+                        <em>Divorced</em>
+                    </MenuItem>
+                    <MenuItem value={5}>
+                        <em>Free Union</em>
+                    </MenuItem>
+                  </Select>
+                ) :
+                (
+                  <ListItemText
+                    primary="Civil Status"
+                    secondary={
+                      user.civilStatus === 1 ? 'Single' :
+                      user.civilStatus === 2 ? 'Married' :
+                      user.civilStatus === 3 ? 'Widow' :
+                      user.civilStatus === 4 ? 'Divorced' :
+                      user.civilStatus === 5 ? 'Free Union' : 'N/A' 
+                    }
+                  />
+                )
+              }
+            </ListItem>
+            {/* education level */}
+            <ListItem>
+              <ListItemAvatar>
+                <DataAvatar>
+                  <BusinessCenter />
+                </DataAvatar>
+              </ListItemAvatar>
+              {
+                state.editing ?
+                (
+                  <Select
+                    id="name"
+                    label="Education Level"
+                    name="name"
+                    onChange={event => handleUpdateProperty(event.target.value, 'educationLevel')}
+                    value={state.user.educationLevel}
+                    variant="outlined"
+                  >
+                    <MenuItem value={0}>
+                        <em>N/A</em>
+                    </MenuItem>
+                    <MenuItem value={1}>
+                        <em>Elementary</em>
+                    </MenuItem>
+                    <MenuItem value={2}>
+                        <em>Highschool</em>
+                    </MenuItem>
+                    <MenuItem value={3}>
+                        <em>Licenciatura</em>
+                    </MenuItem>
+                    <MenuItem value={4}>
+                        <em>Master</em>
+                    </MenuItem>
+                    <MenuItem value={5}>
+                        <em>PhD</em>
+                    </MenuItem>
+                  </Select>
+                ) :
+                (
+                  <ListItemText
+                    primary="Education Level"
+                    secondary={
+                      user.educationLevel === 1 ? 'Elementary' :
+                      user.educationLevel === 2 ? 'Highschool' :
+                      user.educationLevel === 3 ? 'Licenciatura' :
+                      user.educationLevel === 4 ? 'Master' :
+                      user.educationLevel === 5 ? 'PhD' : 'N/A' 
+                    }
+                  />
+                )
+              }
+            </ListItem>
+            {/* special diet */}
+            <ListItem>
+              <ListItemAvatar>
+                <DataAvatar>
+                  <BusinessCenter />
+                </DataAvatar>
+              </ListItemAvatar>
+              {
+                state.editing ?
+                (
+                  <Select
+                    id="name"
+                    label="Special Diet"
+                    name="name"
+                    onChange={event => handleUpdateProperty(event.target.value, 'foodInfo')}
+                    value={state.user.foodInfo}
+                    variant="outlined"
+                  >
+                    <MenuItem value={0}>
+                        <em>N/A</em>
+                    </MenuItem>
+                    <MenuItem value={1}>
+                        <em>Vegan</em>
+                    </MenuItem>
+                    <MenuItem value={2}>
+                        <em>Vegetarian</em>
+                    </MenuItem>                    
+                  </Select>
+                ) :
+                (
+                  <ListItemText
+                    primary="Special Diet"
+                    secondary={
+                      user.foodInfo === 1 ? 'Vegan' :
+                      user.foodInfo === 2 ? 'Vegetarian' : 'N/A' 
+                    }
+                  />
+                )
+              }
+            </ListItem>
+            {/* knows */}
+            <ListItem>
+              <ListItemAvatar>
+                <DataAvatar>
+                  <BusinessCenter />
+                </DataAvatar>
+              </ListItemAvatar>
+              {
+                state.editing ?
+                (
+                  <Select
+                    id="name"
+                    label="Knows country and language"
+                    name="name"
+                    onChange={event => handleUpdateProperty(event.target.value, 'knowCountry')}
+                    value={state.user.knowCountry}
+                    variant="outlined"
+                  >
+                    <MenuItem value={0}>
+                        <em>N/A</em>
+                    </MenuItem>
+                    <MenuItem value={1}>
+                        <em>Yes/Yes</em>
+                    </MenuItem>
+                    <MenuItem value={2}>
+                        <em>Yes/No</em>
+                    </MenuItem>   
+                    <MenuItem value={3}>
+                        <em>No/Yes</em>
+                    </MenuItem>
+                    <MenuItem value={4}>
+                        <em>No/No</em>
+                    </MenuItem>                 
+                  </Select>
+                ) :
+                (
+                  <ListItemText
+                    primary="Knows country and language"
+                    secondary={
+                      user.knowCountry === 1 ? 'Yes/Yes' :
+                      user.knowCountry === 2 ? 'Yes/No' : 
+                      user.knowCountry === 3 ? 'No/Yes' :
+                      user.knowCountry === 4 ? 'No/No' : 'N/A' 
+                    }
+                  />
+                )
+              }
+            </ListItem>
+            {/* interests */}
+            <ListItem>
+              <ListItemAvatar>
+                <DataAvatar>
+                  <BusinessCenter />
+                </DataAvatar>
+              </ListItemAvatar>
+              {
+                state.editing ?
+                (
+                  <Select
+                    id="name"
+                    label="Project Interests"
+                    name="name"
+                    onChange={event => handleUpdateProperty(event.target.value, 'pinterest')}
+                    value={state.user.pinterest}
+                    variant="outlined"
+                  >
+                    <MenuItem value={0}>
+                        <em>N/A</em>
+                    </MenuItem>
+                    <MenuItem value={1}>
+                        <em>Education</em>
+                    </MenuItem>
+                    <MenuItem value={2}>
+                        <em>Health</em>
+                    </MenuItem>   
+                    <MenuItem value={3}>
+                        <em>Environment</em>
+                    </MenuItem>
+                    <MenuItem value={4}>
+                        <em>All</em>
+                    </MenuItem>                 
+                  </Select>
+                ) :
+                (
+                  <ListItemText
+                    primary="Project Interests"
+                    secondary={
+                      user.pinterest === 1 ? 'Education' :
+                      user.pinterest === 2 ? 'Health' :
+                      user.pinterest === 3 ? 'Environment' :
+                      user.pinterest === 4 ? 'All' : 'N/A' 
+                    }
+                  />
+                )
+              }
+            </ListItem>
+            {/* travel */}
+            <ListItem>
+              <ListItemAvatar>
+                <DataAvatar>
+                  <BusinessCenter />
+                </DataAvatar>
+              </ListItemAvatar>
+              {
+                state.editing ?
+                (
+                  <Select
+                    id="name"
+                    label="Time Travel Availability"
+                    name="name"
+                    onChange={event => handleUpdateProperty(event.target.value, 'timeTravel')}
+                    value={state.user.timeTravel}
+                    variant="outlined"
+                  >
+                    <MenuItem value={0}>
+                        <em>N/A</em>
+                    </MenuItem>
+                    <MenuItem value={1}>
+                        <em>1 week</em>
+                    </MenuItem>
+                    <MenuItem value={2}>
+                        <em>2 weeks</em>
+                    </MenuItem>   
+                    <MenuItem value={3}>
+                        <em>4 weeks</em>
+                    </MenuItem>
+                    <MenuItem value={4}>
+                        <em>6 or more weeks</em>
+                    </MenuItem>                 
+                  </Select>
+                ) :
+                (
+                  <ListItemText
+                    primary="Time Travel Availability"
+                    secondary={
+                      user.timeTravel === 1 ? '1 week' :
+                      user.timeTravel === 2 ? '2 weeks' :
+                      user.timeTravel === 3 ? '4 weeks' :
+                      user.timeTravel === 4 ? '6 or more weeks' : 'N/A' 
+                    }
                   />
                 )
               }
@@ -352,17 +711,17 @@ const ProfileCard = ({ user, updateUser }) => {
                   (
                     <TextField
                       id="allergies"
-                      label="Alergias"
+                      label="Allergies"
                       name="allergies"
                       onChange={event => handleUpdateProperty(event.target.value, 'allergies')}
-                      value={state.user.hinfo.allergies}
+                      value={state.user.healthInfo.allergies}
                       variant="outlined"
                     />
                   ) :
                   (
                     <ListItemText
-                      primary="Alergias"
-                      secondary={user.hinfo.allergies}
+                      primary="Allergies"
+                      secondary={user.healthInfo.allergies}
                     />
                   )
                 }
@@ -379,17 +738,81 @@ const ProfileCard = ({ user, updateUser }) => {
                   (
                     <TextField
                       id="medicine"
-                      label="Medicina"
+                      label="Special Medicine"
                       name="allergies"
                       onChange={event => handleUpdateProperty(event.target.value, 'medicine')}
-                      value={state.user.hinfo.medicine}
+                      value={state.user.healthInfo.medicine}
                       variant="outlined"
                     />
                   ) :
                   (
                     <ListItemText
-                      primary="Medicina"
-                      secondary={user.hinfo.medicine}
+                      primary="Special Medicine"
+                      secondary={user.healthInfo.medicine}
+                    />
+                  )
+                }
+              </ListItem>
+              {/* blood type */}
+              <ListItem>
+                <ListItemAvatar>
+                  <DataAvatar>
+                    <BusinessCenter />
+                  </DataAvatar>
+                </ListItemAvatar>
+                {
+                  state.editing ?
+                  (
+                    <Select
+                      id="name"
+                      label="Blood Type"
+                      name="name"
+                      onChange={event => handleUpdateProperty(event.target.value, 'btype')}
+                      value={state.user.healthInfo.btype}
+                      variant="outlined"
+                    >
+                      <MenuItem value={0}>
+                          <em>N/A</em>
+                      </MenuItem>
+                      <MenuItem value={1}>
+                          <em>O-</em>
+                      </MenuItem>
+                      <MenuItem value={2}>
+                          <em>O+</em>
+                      </MenuItem>
+                      <MenuItem value={3}>
+                          <em>A+</em>
+                      </MenuItem>
+                      <MenuItem value={4}>
+                          <em>A-</em>
+                      </MenuItem>
+                      <MenuItem value={5}>
+                          <em>B-</em>
+                      </MenuItem>
+                      <MenuItem value={5}>
+                          <em>B+</em>
+                      </MenuItem>
+                      <MenuItem value={5}>
+                          <em>AB-</em>
+                      </MenuItem>
+                      <MenuItem value={5}>
+                          <em>AB+</em>
+                      </MenuItem>
+                    </Select>
+                  ) :
+                  (
+                    <ListItemText
+                      primary="Blood Type"
+                      secondary={
+                        user.healthInfo.btype === 1 ? 'O-' :
+                        user.healthInfo.btype === 2 ? 'O+' : 
+                        user.healthInfo.btype === 3 ? 'A+' :
+                        user.healthInfo.btype === 4 ? 'A-' : 
+                        user.healthInfo.btype === 5 ? 'B-' :
+                        user.healthInfo.btype === 6 ? 'B+' :
+                        user.healthInfo.btype === 7 ? 'AB-' :
+                        user.healthInfo.btype === 8 ? 'AB+' : 'N/A'
+                      }
                     />
                   )
                 }
@@ -406,7 +829,7 @@ const ProfileCard = ({ user, updateUser }) => {
                   (
                     <TextField
                       id="pcondition"
-                      label="Condiciones previas"
+                      label="Special Previous Conditions"
                       name="pcondition"
                       onChange={event => handleUpdateProperty(event.target.value, 'pcondition')}
                       value={state.user.hinfo.pcondition}
@@ -415,35 +838,14 @@ const ProfileCard = ({ user, updateUser }) => {
                   ) :
                   (
                     <ListItemText
-                      primary="Condiciones previas"
+                      primary="Special Previous Conditions"
                       secondary={user.hinfo.pcondition}
                     />
                   )
                 }
               </ListItem>
-            </AdditionalList>
-            {
-              state.canEdit ?
-              (                  
-                <ButtonContainer>
-                  {
-                    state.editing ?
-                    (
-                      <div>
-                        <PrecautionButton variant="contained" color="primary" onClick={handleToggle}>Cancel</PrecautionButton>
-                        <Button variant="contained" color="primary" onClick={handleUpdateUser}>Save</Button>
-                      </div>
-                    ) :
-                    (
-                      <Button variant="contained" color="primary"onClick={handleToggle}>Edit</Button>
-                    )
-                  }
-                  
-                </ButtonContainer>
-              ):
-              ''
-            }
-          </SecondColumn>
+            </AdditionalList>            
+          </SecondColumn>          
         </ColumnContainer>
       </FullPaper>
     </Container>
