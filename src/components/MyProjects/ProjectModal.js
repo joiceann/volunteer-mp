@@ -749,7 +749,7 @@ export default class ProjectModal extends Component {
                     }
 
                     {/* geolocation items */}
-                    {
+                    {/* {
                         userType === '2' &&
                         <Grid item xs={12} sm={12} md={12} lg={12}>
                             <Card style={{ width: '100%', paddingBottom: '2%' }}>
@@ -834,7 +834,7 @@ export default class ProjectModal extends Component {
                                 </List>
                             </Card>
                         </Grid>
-                    }
+                    } */}
                 </Grid>
 
                 {
