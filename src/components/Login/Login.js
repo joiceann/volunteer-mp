@@ -95,7 +95,7 @@ const Login = ({ login }) => {
       setET("");
     }
     else{
-      setET("Ingreso de texto en correo inválido\n");    }
+      setET("Invalid email address\n");    }
     setEmail(event.target.value);
 
   };
@@ -107,7 +107,7 @@ const Login = ({ login }) => {
       setPT("");
     }
     else{
-      setPT("Ingreso de texto en correo inválido\n");
+      setPT("Invalid email address\n");
     }
     setPassword(event.target.value);
   };
@@ -139,7 +139,7 @@ const Login = ({ login }) => {
     }
     else{
         if (4 < {validTries}) {
-            setTT("Se alcanzó el maximo de intentos permitido");
+            setTT("Reached maximum times limit for password input");
         }
         showFormError(true);
         setLoading(false);
@@ -156,7 +156,7 @@ const Login = ({ login }) => {
           <LockOutlinedIcon />
         </CustomAvatar>
         <Typography variant="h5">
-          Inicio de sesión
+          Login
         </Typography>
         <Form noValidate onSubmit={submit}>
           <TextField
@@ -167,7 +167,7 @@ const Login = ({ login }) => {
             onChange={handleEmailChange}
             fullWidth
             id="email"
-            label="Correo electrónico"
+            label="Email address"
             name="email"
             autoComplete="email"
             autoFocus
@@ -180,7 +180,7 @@ const Login = ({ login }) => {
             onChange={handlePasswordChange}
             fullWidth
             name="password"
-            label="Contraseña"
+            label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
@@ -188,7 +188,7 @@ const Login = ({ login }) => {
           {
             formError &&
             <Typography color="error">
-              Correo electrónico o contraseña incorrectos {validEmailText} {validPasswordText}
+              Email and/or password invalid: {validEmailText} {validPasswordText}
             </Typography>
           }
 
@@ -201,7 +201,7 @@ const Login = ({ login }) => {
             variant="contained"
             color="primary"
           >
-            Iniciar Sesión
+            Log In
           </SeparatedButton>
         </Form>
       </StyledPaper>
