@@ -183,18 +183,22 @@ const Menu = ({ logout }) => {
           </RouterLink>
         }
 
-        <RouterLink to={"/dashboard/profile/" + userId}>
-          <StyledListItem
-            selected={section === 'profile'}
-            button
-            alignItems="center"
-          >
-            <ListItemIcon>
-              <FaceIcon />
-            </ListItemIcon>
-            <ListItemText primary="My Profile" />
-          </StyledListItem>
-        </RouterLink>
+        {
+          userType === "1" &&
+          <RouterLink to={"/dashboard/profile/" + userId}>
+            <StyledListItem
+              selected={section === 'profile'}
+              button
+              alignItems="center"
+            >
+              <ListItemIcon>
+                <FaceIcon />
+              </ListItemIcon>
+              <ListItemText primary="My Profile" />
+            </StyledListItem>
+          </RouterLink>
+        }
+
         <Divider />
         <StyledListItem
           onClick={() => logout()}
