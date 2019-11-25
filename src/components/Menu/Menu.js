@@ -20,6 +20,7 @@ import PersonPinIcon from '@material-ui/icons/PersonPin';
 import devices from '../../devices';
 import { RouterLink } from '../CommonComponents';
 import { useParams } from 'react-router-dom';
+import { useUserId } from '../../hooks';
 
 import styled from 'styled-components';
 
@@ -84,6 +85,7 @@ const StyledListItem = styled(ListItem)`
 
 const Menu = ({ logout }) => {
   const [open, setOpen] = useState(true);
+  const userId = useUserId();
   let { section } = useParams();
   const toggleDrawer = () => {
     setOpen(!open);
@@ -152,7 +154,6 @@ const Menu = ({ logout }) => {
             <ListItemText primary="My Projects" />
           </StyledListItem>
         </RouterLink>
-
         <RouterLink to="/dashboard/search">
           <StyledListItem
             selected={section === 'search'}
@@ -182,7 +183,7 @@ const Menu = ({ logout }) => {
           </RouterLink>
         }
 
-        <RouterLink to="/dashboard/profile">
+        <RouterLink to={"/dashboard/profile/" + userId}>
           <StyledListItem
             selected={section === 'profile'}
             button
