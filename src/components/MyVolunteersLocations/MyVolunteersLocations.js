@@ -46,7 +46,6 @@ export default class MyVolunteersLocations extends Component {
                         vol = { id: id, name: loc.volunteer.name !== null ? loc.volunteer.name : id }
                     }
                 })
-
                 return vol
             })
             
@@ -237,13 +236,18 @@ export default class MyVolunteersLocations extends Component {
                             </div>
 
                         }
-                        
+
                         <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
                             {
                                 geoLocations.length > 0 &&
                                 geoLocations.map((location, index) => {
                                     return(
-                                        <GeoLocationItem key={index} location={location} />
+                                        <div style={{display: 'flex', }} >
+                                            <GeoLocationItem  key={index} location={location} />
+                                            <Grid item style={{padding: '30px',  fontSize: '20px'}} >{location.date.slice(0,10)}</Grid>
+
+                                        </div>
+
                                     )
                                 })
                             }
