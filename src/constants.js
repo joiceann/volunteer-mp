@@ -7,6 +7,7 @@ export const GET_PROJECT_EVALUATIONS = '/ratings/myratings'
 export const GET_PROJECTS_ONG = '/organizations/myprojects'
 export const GET_PROJECTS_PUBLIC_ROUTE = '/projects/list/open'
 export const LOGIN = '/users/login';
+export const REGISTER = '/users/register';
 export const NEW_LIST= '/news/list';
 export const ONG_PROFILE_INFORMATION = '/organizations';
 export const PROJECTS_LIST = '/projects/list';

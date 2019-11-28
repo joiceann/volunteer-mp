@@ -1,20 +1,17 @@
-import React, {
-  useState,
-} from 'react';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import colors from '../../colors';
-import styled, { createGlobalStyle } from 'styled-components';
-import Typography from '@material-ui/core/Typography';
-import { Button, TextField } from '../CommonComponents';
-import Avatar from '@material-ui/core/Avatar';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import * as Constants from '../../constants';
-import axios from '../../axios';
-import { useHistory } from 'react-router-dom';
-import {
-  LoadingScreen,
-} from '../CommonComponents';
+import React, { useState } from "react";
+import Container from "@material-ui/core/Container";
+import Paper from "@material-ui/core/Paper";
+import colors from "../../colors";
+import styled, { createGlobalStyle } from "styled-components";
+import Typography from "@material-ui/core/Typography";
+import { Button, TextField } from "../CommonComponents";
+import Avatar from "@material-ui/core/Avatar";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import * as Constants from "../../constants";
+import axios from "../../axios";
+import { useHistory } from "react-router-dom";
+import { LoadingScreen } from "../CommonComponents";
+import { Link } from 'react-router-dom';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -39,8 +36,21 @@ const StyledPaper = styled(Paper)`
   padding: 30px;
 `;
 
+const StyledPaper2 = styled(Paper)`
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 30px;
+  margin-top: 160%;
+  margin-left: -100%
+
+`;
+
 const Logo = styled.h1`
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: "Josefin Sans", sans-serif;
   user-select: none;
   margin-right: 8px;
 `;
@@ -63,12 +73,11 @@ const Form = styled.form`
 //{8,}
 const generalInputRegex = /^[a-zA-Z0-9¡¿?@.:+]*$/gim;
 const emailRegex = /^([\w.%+-]+)@([\w-])+(\.+[\w]{2,})*$/gim;
-const credentialRegex  = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[¡¿?@:+]).{8,}$/gim;
+const credentialRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[¡¿?@:+]).{8,}$/gim;
 
 const Login = ({ login }) => {
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [formError, showFormError] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [validEmail, setValidEmail] = useState(false);
@@ -91,19 +100,17 @@ const Login = ({ login }) => {
     // console.log(emailValid);
     // console.log(inputValid);
 
-    if (reeval){
+    if (reeval) {
       setET("");
-    }
-    else{
+    } else{
       setET("Invalid email address\n");    }
     setEmail(event.target.value);
-
   };
 
-  const handlePasswordChange = (event) => {
+  const handlePasswordChange = event => {
     let passwordValidate = event.target.value.match(credentialRegex);
     setValidPassword(passwordValidate != null);
-    if (passwordValidate != null){
+    if (passwordValidate != null) {
       setPT("");
     }
     else{
@@ -112,7 +119,8 @@ const Login = ({ login }) => {
     setPassword(event.target.value);
   };
 
-  const submit = (event) => {
+  const submit = event => {
+    console.log(email);
     event.preventDefault();
     setLoading(true);
     if ({validEmail} && {validPassword} || 4 < {validTries}){
@@ -149,9 +157,7 @@ const Login = ({ login }) => {
     <MainContainer maxWidth="xs">
       <GlobalStyle />
       <StyledPaper>
-        <Logo>
-          Voluntourist
-        </Logo>
+        <Logo>Voluntourist</Logo>
         <CustomAvatar>
           <LockOutlinedIcon />
         </CustomAvatar>
@@ -185,16 +191,13 @@ const Login = ({ login }) => {
             id="password"
             autoComplete="current-password"
           />
-          {
-            formError &&
+          {formError && (
             <Typography color="error">
               Email and/or password invalid: {validEmailText} {validPasswordText}
             </Typography>
-          }
+          )}
 
-          {
-            isLoading && <LoadingScreen dark="true" />
-          }
+          {isLoading && <LoadingScreen dark="true" />}
           <SeparatedButton
             type="submit"
             fullWidth
@@ -205,7 +208,13 @@ const Login = ({ login }) => {
           </SeparatedButton>
         </Form>
       </StyledPaper>
+      
+      <StyledPaper2>
+      <Typography variant="h6">¿Quieres ser voluntario?</Typography>
+      <Typography variant="h6"> <Link to="/register" >Crea una cuenta</Link></Typography>
+      </StyledPaper2>
     </MainContainer>
+    
   );
 };
 
