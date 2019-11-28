@@ -341,7 +341,7 @@ const Register = ({ login }) => {
               onChange={handleNationalCodeChange}
               fullWidth
               id="nationalCode"
-              label="nationalCode"
+              label="National Code"
               name="nationalCode"
               autoComplete="nationalCode"
               autoFocus
@@ -431,7 +431,7 @@ const Register = ({ login }) => {
               onChange={handlePasswordChange}
               fullWidth
               name="password"
-              label="password"
+              label="Password"
               type="password"
               id="password"
               autoComplete="current-password"
