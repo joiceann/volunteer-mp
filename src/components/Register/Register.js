@@ -302,7 +302,7 @@ const Register = ({ login }) => {
         <CustomAvatar>
           <LockOutlinedIcon />
         </CustomAvatar>
-        <Typography variant="h5">Crear una cuenta</Typography>
+        <Typography variant="h5">Create account</Typography>
         <Form noValidate onSubmit={submit}>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <TextField
@@ -462,11 +462,11 @@ const Register = ({ login }) => {
               value={civilStatus}
               onChange={handleCivilStatusChange}
             >
-              <MenuItem value="1">Soltero</MenuItem>
-              <MenuItem value="2">Casado</MenuItem>
-              <MenuItem value="3">Viudo</MenuItem>
-              <MenuItem value="4">Divorciado</MenuItem>
-              <MenuItem value="5">Union libre</MenuItem>
+              <MenuItem value="1">Single</MenuItem>
+              <MenuItem value="2">Married</MenuItem>
+              <MenuItem value="3">Widow</MenuItem>
+              <MenuItem value="4">Divorced</MenuItem>
+              <MenuItem value="5">Free Union</MenuItem>
             </Select>
           </div>
 
@@ -487,9 +487,9 @@ const Register = ({ login }) => {
               value={gender}
               onChange={handleGenderChange}
             >
-              <MenuItem value="0">Prefiero no decir</MenuItem>
-              <MenuItem value="1">Femenino</MenuItem>
-              <MenuItem value="2">Masculino</MenuItem>
+              <MenuItem value="0">Prefer Not To Say</MenuItem>
+              <MenuItem value="1">Women</MenuItem>
+              <MenuItem value="2">Men</MenuItem>
             </Select>
           </div>
           <div
@@ -509,25 +509,25 @@ const Register = ({ login }) => {
               onChange={handleEducationLevelChange}
               style={{ marginRight: "5%" }}
             >
-              <MenuItem value="1">Primaria</MenuItem>
-              <MenuItem value="2">Secundaria</MenuItem>
-              <MenuItem value="3">Licenciatura</MenuItem>
-              <MenuItem value="4">Maestra</MenuItem>
-              <MenuItem value="5">Doctorado</MenuItem>
+              <MenuItem value="1">Elementary</MenuItem>
+              <MenuItem value="2">HighSchool</MenuItem>
+              <MenuItem value="3">University</MenuItem>
+              <MenuItem value="4">Master</MenuItem>
+              <MenuItem value="5">PHD</MenuItem>
             </Select>
             <InputLabel id="label" style={{ marginRight: "5%" }}>
               Time to travel
             </InputLabel>
             <Select
-              labelId="educationLevel"
-              id="educationLevel"
-              value={educationLevel}
-              onChange={handleEducationLevelChange}
+              labelId="timeTravel"
+              id="timeTravel"
+              value={timeTravel}
+              onChange={handleTimeTravelChange}
             >
-              <MenuItem value="1">1 semana</MenuItem>
-              <MenuItem value="2">2 semanas</MenuItem>
-              <MenuItem value="3">4 semanas</MenuItem>
-              <MenuItem value="4">6 o mas semanas</MenuItem>
+              <MenuItem value="1">1 week</MenuItem>
+              <MenuItem value="2">2 weeks</MenuItem>
+              <MenuItem value="3">4 weeks</MenuItem>
+              <MenuItem value="4">6 or more weeks</MenuItem>
             </Select>
           </div>
           <div
@@ -700,7 +700,7 @@ const Register = ({ login }) => {
             variant="contained"
             color="primary"
           >
-            Crear cuenta
+            Create account
           </SeparatedButton>
         </Form>
       </StyledPaper>
