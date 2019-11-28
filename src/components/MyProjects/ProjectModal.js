@@ -31,7 +31,7 @@ import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
 import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV, DOWNLOAD_CSV_USER_LIST, ENROLL_TEXT_NOT_LOGGED } from './MyProjectsConstants';
-import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject, updateProjectState, getProjectEvaluations, getVolunteersWorkingTimes, getONGInfo, getONGInfoById } from './MyProjectsProvider';
+import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject, updateProjectState, getProjectEvaluations, getVolunteersWorkingTimes, getONGInfo, getONGInfoById, getAllVolunteerTasksForProject } from './MyProjectsProvider';
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
 
@@ -101,7 +101,7 @@ export default class ProjectModal extends Component {
             locationsVolunteersSelector: null,
             locationsVolunteerSelectorSelected: "",
 
-            ongInfo: null
+            ongInfo: null,            
         }
 
         this.onHandleProjectVolunteerRemoval = this.onHandleProjectVolunteerRemoval.bind(this)
@@ -135,6 +135,7 @@ export default class ProjectModal extends Component {
 
     componentDidMount = () => {
         const { volunteers, axiosCancelTokenSource, datePickerOriginServiceHours, datePickerEndServiceHours } = this.state
+        const { userType } = this.props
 
         getUserInfoByToken(axiosCancelTokenSource).then(userInfo => {
             const searchVolunteer  = volunteers.filter(v => v.id === userInfo._id)
@@ -169,8 +170,7 @@ export default class ProjectModal extends Component {
             .then(ongInfo => {
                 this.setState({ ongInfo })
             })
-            .catch(error => console.log(error))
-
+            .catch(error => console.log(error))        
     }
 
     setDialogOptions = (onAccept, title, content, cancelText, acceptText) => {        
@@ -292,6 +292,16 @@ export default class ProjectModal extends Component {
         })        
     }
 
+    handleGetAllTaskHours = () => {
+        const { axiosCancelTokenSource } = this.state
+        getAllVolunteerTasksForProject(axiosCancelTokenSource, this.props.project._id)
+            .then(volunteerHours => {
+                console.log(volunteerHours)
+                this.setState({ volunteerHours })
+            })
+            .catch(error => console.log(error))
+    }
+
     onHandleProjectVolunteerRoleChange = (volunteer) => {
         const { volunteers } = this.state
         const newVolunteers = volunteers.map(v => {
@@ -392,9 +402,9 @@ export default class ProjectModal extends Component {
     handleServiceHoursCSVDownload = () => {
         const { volunteerHours } = this.state
 
-        const rows = [['name', 'hours']]
+        const rows = [['name', 'hours', 'task']]
         volunteerHours.forEach(volunteer => {
-            const row = [volunteer.volunteer.name, volunteer.serviceHours]
+            const row = [volunteer.volunteer.name, volunteer.serviceHours, volunteer.title ? volunteer.title : 'N/A']
             rows.push(row)
         })
         
@@ -721,7 +731,13 @@ export default class ProjectModal extends Component {
                         userType === '2' &&
                         <Grid item xs={12} sm={12} md={12} lg={12}>
                             <Card style={{ width: '100%', paddingBottom: '2%' }}>
-                                <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><PeopleAltIcon /> Volunteer Service Hours</h2>
+                                <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'>
+                                    <PeopleAltIcon /> 
+                                    Volunteer Service Hours
+                                    <Button className='josefin-bold' style={{ fontSize: 9 }} onClick={() => this.handleGetAllTaskHours()}>
+                                        (GET ALL!)
+                                    </Button>
+                                </h2>
 
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <Grid container spacing={2} style={{ paddingLeft: '10%', paddingRight: '10%', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
@@ -771,7 +787,12 @@ export default class ProjectModal extends Component {
                                     {
                                         volunteerHours.length > 0 &&
                                         volunteerHours.map((data, index) => {
-                                            return(
+                                            if (data.title) {
+                                                console.log(data.title)
+                                                return(
+                                                    <ProjectVolunteerServiceHours key={index} volunteer={data.volunteer} serviceHours={data.serviceHours} withTaskTitle={data.title} />
+                                                )
+                                            } else return(
                                                 <ProjectVolunteerServiceHours key={index} volunteer={data.volunteer} serviceHours={data.serviceHours} />
                                             )
                                         })

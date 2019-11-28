@@ -23,7 +23,7 @@ export default class ProjectVolunteerServiceHours extends Component {
     }
 
     render = () => {
-        const { volunteer, serviceHours } = this.props
+        const { volunteer, serviceHours, withTaskTitle } = this.props
 
         return(
             <ListItem style={{ width: '100%', paddingLeft: '10%', paddingRight: '10%' }}>
@@ -35,7 +35,7 @@ export default class ProjectVolunteerServiceHours extends Component {
                             </Avatar>
                         </ListItemAvatar>
                     </Grid>
-                    <Grid item xs={6} sm={6} md={6} lg={6} >
+                    <Grid item xs={withTaskTitle ? 3 : 6} sm={withTaskTitle ? 3 : 6} md={withTaskTitle ? 3 : 6} lg={withTaskTitle ? 3 : 6} >
                         {
                             volunteer.name &&
                             <p className='josefin-regular'>{ limitTextToCertainLength(volunteer.name, 30) }</p> 
@@ -45,9 +45,15 @@ export default class ProjectVolunteerServiceHours extends Component {
                             <p className='josefin-regular'>{ volunteer.id }</p> 
                         }
                     </Grid>
+                    {
+                        withTaskTitle &&
+                        <Grid item xs={3} sm={3} md={3} lg={3} >
+                            <p className='josefin-regular'>{ withTaskTitle }</p>
+                        </Grid>
+                    }
                     <Grid style={{ flexDirection: 'row' }} item xs={4} sm={4} md={4} lg={4} className='inner-grid'>
                         <TimelapseIcon style={{ marginRight: '5%' }}/>
-                        <p className='josefin-regular'>{ serviceHours } hours in total.</p>
+                        <p className='josefin-regular'>{ serviceHours } hours {withTaskTitle ? '' : 'in total'}.</p>
                     </Grid>                    
                 </Grid>
                 

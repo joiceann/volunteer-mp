@@ -186,6 +186,15 @@ const getAllVolunteerLocations = (axiosCancelTokenSource) => {
     })
 }
 
+const getAllVolunteerTasksForProject = (axiosCancelTokenSource, pryId) => {
+    return new Promise((resolve, reject) => {
+        instace.post(consts.GET_ALL_TASKS, { pryId }, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
 const getVolunteersWorkingTimes = (axiosCancelTokenSource, pryId, start, end) => {
     return new Promise((resolve, reject) => {
         instace.post(consts.WORKING_TIMES, { pryId, start, end }, { cancelToken: axiosCancelTokenSource.token })
@@ -744,5 +753,6 @@ export {
     getVolunteersWorkingTimes,
     searchProjects,
     getONGInfoById,
-    getAllVolunteerLocations
+    getAllVolunteerLocations,
+    getAllVolunteerTasksForProject
 }
