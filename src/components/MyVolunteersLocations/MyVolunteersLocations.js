@@ -10,7 +10,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import GeoLocationItem from '../MyProjects/GeoLocationItem';
 
 import { LOCATION_FILTER, DOWNLOAD_CSV } from '../MyProjects/MyProjectsConstants';
-import { getUserTypeFromLocalStorage, getONGInfo, createAxiosCancelToken, getVolunteerLocationsByOrganization } from '../MyProjects/MyProjectsProvider';
+import { getUserTypeFromLocalStorage, getONGInfo, createAxiosCancelToken, getVolunteerLocationsByOrganization, getAllVolunteerLocations } from '../MyProjects/MyProjectsProvider';
 
 export default class MyVolunteersLocations extends Component {
     constructor(props) {
@@ -88,6 +88,18 @@ export default class MyVolunteersLocations extends Component {
 
             }).catch(error => console.log(error))
 
+    }
+
+    handleGetAllLocations = () => {
+        const { axiosCancelTokenSource } = this.state
+
+        this.setState({ geoLocations: [] })
+        getAllVolunteerLocations(axiosCancelTokenSource)
+            .then(geoLocations => {
+                console.log(geoLocations)
+                this.setState({ geoLocations })
+            })
+            .catch(error => console.log(error))
     }
 
     handleLocationsSelectorOnSelect = (e) => {
@@ -169,7 +181,13 @@ export default class MyVolunteersLocations extends Component {
                 }
                 <Grid item xs={12} sm={12} md={12} lg={12}>
                     <Card style={{ width: '100%', paddingBottom: '2%' }}>
-                        <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><RoomIcon /> Visited Locations</h2>
+                        <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'>
+                            <RoomIcon /> 
+                            Visited Locations 
+                            <Button className='josefin-bold' style={{ fontSize: 9 }} onClick={() => this.handleGetAllLocations()}>
+                                (GET ALL!)
+                            </Button>
+                        </h2>
                         
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <Grid container spacing={2} style={{ paddingLeft: '10%', paddingRight: '10%', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>

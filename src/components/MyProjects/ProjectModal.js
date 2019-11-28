@@ -31,7 +31,7 @@ import { width } from '@material-ui/system';
 import ProjectVolunteerItem from './ProjectVolunteerItem';
 import CustomDialog from './CustomDialog';
 import { LEAVE_PROJECT, EDIT_PROJECT, SAVE_CHANGES, REMOVE_PROJECT, EDIT_PROJECT_CLOSE, volunteerRemovalSuccess, SERVER_ERROR, FINISH_PROJECT, LEAVE_PROJECT_TEXT, LEAVE_PROJECT_TITLE, DIALOG_GENERIC_NO, DIALOG_GENERIC_YES, REMOVE_PROJECT_TITLE, REMOVE_PROJECT_TEXT, FINISH_PROJECT_TITLE, FINISH_PROJECT_TEXT, volunteerEnroledSuccess, ENROLL_TITLE, ENROLL_TEXT, ENROLL_TO_PROJECT, starsAverage, LOCATION_FILTER, DOWNLOAD_CSV, DOWNLOAD_CSV_USER_LIST, ENROLL_TEXT_NOT_LOGGED } from './MyProjectsConstants';
-import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject, updateProjectState, getProjectEvaluations, getVolunteersWorkingTimes } from './MyProjectsProvider';
+import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, deleteProject, updateProjectState, getProjectEvaluations, getVolunteersWorkingTimes, getONGInfo, getONGInfoById } from './MyProjectsProvider';
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
 
@@ -99,7 +99,9 @@ export default class ProjectModal extends Component {
             ],
 
             locationsVolunteersSelector: null,
-            locationsVolunteerSelectorSelected: ""
+            locationsVolunteerSelectorSelected: "",
+
+            ongInfo: null
         }
 
         this.onHandleProjectVolunteerRemoval = this.onHandleProjectVolunteerRemoval.bind(this)
@@ -162,6 +164,12 @@ export default class ProjectModal extends Component {
             }).catch(error => console.log(error))
 
         this.setVolunteersFromLocations(this.state.geoLocations)
+
+        getONGInfoById(axiosCancelTokenSource, this.props.project.organizationInfo.id)
+            .then(ongInfo => {
+                this.setState({ ongInfo })
+            })
+            .catch(error => console.log(error))
 
     }
 
@@ -416,7 +424,8 @@ export default class ProjectModal extends Component {
             locationsVolunteersSelector, 
             locationsVolunteerSelectorSelected, 
             volunteerHours,
-            volunteerAccepted 
+            volunteerAccepted,
+            ongInfo 
         } = this.state
         const { userType } = this.props        
         console.log(locationsVolunteersSelector)
@@ -636,6 +645,36 @@ export default class ProjectModal extends Component {
                             
                         </Grid>                        
                     </Grid>
+
+                    {
+                        userType === '1' && 
+                        volunteerIsEnroled &&
+                        ongInfo &&
+                        <Grid item xs={12} sm={12} md={12} lg={12}>
+                            <Card>
+                                <h2 style={{ padding: '10%', paddingBottom: '2%', paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><Home /> Organization Contact Information</h2>
+
+                                <div style={{ width: '100%', paddingLeft: '10%', paddingRight: '10%', paddingBottom: '5%' }}>
+                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
+                                        Organization Name: { ongInfo.name || 'N/A' }
+                                    </p>
+                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
+                                        Phone Number: { ongInfo.phone || 'N/A' }
+                                    </p>
+                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
+                                        Address: { ongInfo.address || 'N/A' }
+                                    </p>
+                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
+                                        Website: { ongInfo.website || 'N/A' }
+                                    </p>
+                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
+                                        Email Address: { ongInfo.email || 'N/A' }
+                                    </p>
+                                </div>
+                            </Card>
+                        </Grid>
+                    }
+
                     <Grid item xs={12} sm={12} md={!this.props.publicMode ? 6 : 12} lg={!this.props.publicMode ? 6 : 12}>
                         <Card>
                             {/* {

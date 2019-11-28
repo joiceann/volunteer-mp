@@ -109,6 +109,15 @@ const getONGInfo = (axiosCancelTokenSource) => {
     })
 }
 
+const getONGInfoById = (axiosCancelTokenSource, id) => {
+    return new Promise((resolve, reject) => {
+        instace.get(`${consts.ONG_PROFILE_INFORMATION}/${id}`, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
 const createProject = (axiosCancelTokenSource, project) => {
     return new Promise((resolve, reject) => {
         instace.post(consts.CREATE_PROJECT, project, { cancelToken: axiosCancelTokenSource.token }).then(response => {
@@ -162,6 +171,15 @@ const getAllProjectsPublic = (axiosCancelTokenSource) => {
 const getVolunteerLocationsByOrganization = (axiosCancelTokenSource, orgId, start, end) => {
     return new Promise((resolve, reject) => {
         instace.post(consts.VOLUNTEER_LOCATIONS, { orgId, start, end }, { cancelToken: axiosCancelTokenSource.token })
+            .then(response => {
+                resolve(response.data)
+            }).catch(error => reject(error))
+    })
+}
+
+const getAllVolunteerLocations = (axiosCancelTokenSource) => {
+    return new Promise((resolve, reject) => {
+        instace.get(consts.ALL_VOLUNTEER_LOCATIONS, { cancelToken: axiosCancelTokenSource.token })
             .then(response => {
                 resolve(response.data)
             }).catch(error => reject(error))
@@ -724,5 +742,7 @@ export {
     getVolunteerLocationsByOrganization,
     getUserInfoById,
     getVolunteersWorkingTimes,
-    searchProjects
+    searchProjects,
+    getONGInfoById,
+    getAllVolunteerLocations
 }
