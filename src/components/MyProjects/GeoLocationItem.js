@@ -49,7 +49,7 @@ export default class GeoLocationItem extends Component {
         return(
             <ListItem style={{ width: '100%', paddingLeft: '10%', paddingRight: '10%' }} className='icon-pointer'>
                 <Grid container spacing={2} onClick={() => this.setState({ showLocation: true })}>
-                    <Grid item xs={4} sm={4} md={4} lg={4} className='inner-grid'>
+                    <Grid item xs={3} sm={3} md={3} lg={3} className='inner-grid'>
                         {
                             location.volunteer.name &&
                             <p className='josefin-regular'>{ limitTextToCertainLength(location.volunteer.name, 30) }</p> 
@@ -59,7 +59,13 @@ export default class GeoLocationItem extends Component {
                             <p className='josefin-regular'>{ location.volunteer.id }</p> 
                         }
                     </Grid>
-                    <Grid item xs={7} sm={7} md={7} lg={7} className='inner-grid' style={{ flexDirection: 'row' }}>
+                    <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid' style={{ flexDirection: 'row' }}>
+                        { (new Date(location.date.split('.')[0])).toLocaleDateString() }
+                    </Grid>
+                    <Grid item xs={2} sm={2} md={2} lg={2} className='inner-grid' style={{ flexDirection: 'row' }}>
+                        { (new Date(location.date.split('.')[0])).toLocaleTimeString() }
+                    </Grid>
+                    <Grid item xs={4} sm={4} md={4} lg={4} className='inner-grid' style={{ flexDirection: 'row' }}>
                         { location.address && <MapIcon /> }
 
                         {

@@ -104,9 +104,9 @@ export default class MyVolunteersLocations extends Component {
     handleLocationsCSVDownload = () => {
         const { geoLocations } = this.state
 
-        const rows = [['volunteer', 'date', 'latitude', 'longitude', 'address']]
+        const rows = [['volunteer', 'date', 'time', 'latitude', 'longitude', 'address']]
         geoLocations.forEach(location => {
-            const row = [location.volunteer.name || 'Anonymous', location.date, location.coordinates.lat, location.coordinates.long, location.address ]
+            const row = [location.volunteer.name || 'Anonymous', (new Date(location.date.split('.')[0])).toLocaleDateString(), (new Date(location.date.split('.')[0])).toLocaleTimeString(), location.coordinates.lat, location.coordinates.long, location.address ]
             rows.push(row)
         })
 
@@ -242,12 +242,7 @@ export default class MyVolunteersLocations extends Component {
                                 geoLocations.length > 0 &&
                                 geoLocations.map((location, index) => {
                                     return(
-                                        <div style={{display: 'flex', }} >
-                                            <GeoLocationItem  key={index} location={location} />
-                                            <Grid item style={{padding: '30px',  fontSize: '20px'}} >{location.date.slice(0,10)}</Grid>
-
-                                        </div>
-
+                                        <GeoLocationItem  key={index} location={location} />
                                     )
                                 })
                             }
