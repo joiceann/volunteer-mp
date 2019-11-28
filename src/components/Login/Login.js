@@ -157,11 +157,11 @@ const Login = ({ login }) => {
     <MainContainer maxWidth="xs">
       <GlobalStyle />
       <StyledPaper>
-        <Logo>Voluntourist</Logo>
+        <Logo>voluntourist</Logo>
         <CustomAvatar>
           <LockOutlinedIcon />
         </CustomAvatar>
-        <Typography variant="h5">
+        <Typography variant="h5" className='josefin-bold'>
           Login
         </Typography>
         <Form noValidate onSubmit={submit}>
@@ -210,8 +210,8 @@ const Login = ({ login }) => {
       </StyledPaper>
       
       <StyledPaper2>
-      <Typography variant="h6">¿Quieres ser voluntario?</Typography>
-      <Typography variant="h6"> <Link to="/register" >Crea una cuenta</Link></Typography>
+      <Typography variant="h6" className='josefin-bold'>Don't have an account?</Typography>
+      <Typography variant="h6" className='josefin-regular'> <Link to="/register" >Register</Link></Typography>
       </StyledPaper2>
     </MainContainer>
     
