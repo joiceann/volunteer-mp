@@ -8,7 +8,7 @@ import { setAuth } from '../../axios';
 import Register from '../Register';
 import HomePageComponent from '../HomePageComponent/HomePageComponent';
 import ProjectsSearchComponent from '../HomePageComponent/ProjectsSearchComponent';
-
+import ResetPassword from '../ResetPassword'
 const Session = () => {
 
   const history = useHistory();
@@ -45,6 +45,7 @@ const Session = () => {
         render={() => <Login login={login}/>}
       />
       <Route path="/register" render={() => <Register/>}/>
+      <Route path="/resetPassword" render={() => <ResetPassword/>}/>
       <PrivateRoute
         path="/dashboard/:section"
         login={login}

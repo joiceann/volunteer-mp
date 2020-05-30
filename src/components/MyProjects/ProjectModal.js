@@ -24,6 +24,11 @@ import FeedbackIcon from '@material-ui/icons/Feedback';
 import RoomIcon from '@material-ui/icons/Room';
 import WarningIcon from '@material-ui/icons/Warning';
 import styled from 'styled-components'
+import Dialog from '@material-ui/core/Dialog'
+import Slide from '@material-ui/core/Slide';
+
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
 
 import './my_projects.css'
 import colors from '../../colors'
@@ -35,32 +40,94 @@ import { enrollOrOptOutFromProject, createAxiosCancelToken, getUserInfoByToken, 
 import VolunteerEvaluationItem from './VolunteerEvaluationItem';
 import GeoLocationItem from './GeoLocationItem';
 
+import { makeStyles } from '@material-ui/core/styles';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import image1 from './images/image1.jpg'
+import image2 from './images/image2.jpg'
+import image3 from './images/image3.jpg'
+import image4 from './images/image4.jpg'
+import image5 from './images/image5.jpg'
+import image6 from './images/image6.jpg'
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import Translate from 'react-translate-component';
 
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
     KeyboardTimePicker,
     KeyboardDatePicker,
-  } from '@material-ui/pickers';
+} from '@material-ui/pickers';
 import EditProject from '../Projects/EditProject';
 import ProjectVolunteerServiceHours from './ProjectVolunteerServiceHours';
+import { YellowButton } from '../CommonComponents';
 
 import { Redirect } from "react-router-dom"
+
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
+counterpart.setLocale(localStorage.getItem('lang'));
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const CustomAppBar = styled(AppBar)`
   position: relative;
   color: ${colors.fg};
-  background-color: #F0AD4E;
+  background-color: ${colors.main};
 `
 
 const Filler = styled.div`
   flex-grow: 1;
 `;
+
+const tileData = [
+    {
+        img: image1,
+        title: 'Image',
+        author: 'author',
+        cols: 2,
+    },
+    {
+        img: image2,
+        title: 'Image',
+        author: 'author',
+        cols: 2,
+
+    }, {
+        img: image3,
+        title: 'Image',
+        author: 'author',
+        cols: 2,
+    },
+    {
+        img: image4,
+        title: 'Image',
+        author: 'author',
+        cols: 2,
+    },
+    {
+        img: image5,
+        title: 'Image',
+        author: 'author',
+        cols: 2,
+    },
+    {
+        img: image6,
+        title: 'Image',
+        author: 'author',
+        cols: 2,
+    }
+
+];
 
 export default class ProjectModal extends Component {
     constructor(props) {
@@ -69,6 +136,7 @@ export default class ProjectModal extends Component {
         console.log((new Date()).toISOString())
 
         this.state = {
+            showLocation: false,
             editMode: false,
             volunteers: this.props.project.volunteers,
             axiosCancelTokenSource: createAxiosCancelToken(),
@@ -101,32 +169,32 @@ export default class ProjectModal extends Component {
             locationsVolunteersSelector: null,
             locationsVolunteerSelectorSelected: "",
 
-            ongInfo: null,            
+            ongInfo: null,
         }
 
         this.onHandleProjectVolunteerRemoval = this.onHandleProjectVolunteerRemoval.bind(this)
         this.onHandleProjectVolunteerRoleChange = this.onHandleProjectVolunteerRoleChange.bind(this)
     }
 
-    setVolunteersFromLocations = (geoLocations) => {                
+    setVolunteersFromLocations = (geoLocations) => {
         if (geoLocations.size !== null) {
             const volunteersIds = geoLocations.map(location => {
                 return location.volunteer.id
-            })            
+            })
 
-            const uniqueVolunteersIds = [...new Set(volunteersIds)] 
-            console.log(uniqueVolunteersIds)           
+            const uniqueVolunteersIds = [...new Set(volunteersIds)]
+            console.log(uniqueVolunteersIds)
             const locationsVolunteersSelector = uniqueVolunteersIds.map(id => {
                 let vol = null
                 geoLocations.forEach(loc => {
-                    if (loc.volunteer.id === id) {                        
+                    if (loc.volunteer.id === id) {
                         vol = { id: id, name: loc.volunteer.name !== null ? loc.volunteer.name : id }
                     }
                 })
 
                 return vol
             })
-            
+
             console.log('locationsVolunteersSelector', locationsVolunteersSelector)
             this.setState({ locationsVolunteersSelector })
 
@@ -138,12 +206,12 @@ export default class ProjectModal extends Component {
         const { userType } = this.props
 
         getUserInfoByToken(axiosCancelTokenSource).then(userInfo => {
-            const searchVolunteer  = volunteers.filter(v => v.id === userInfo._id)
+            const searchVolunteer = volunteers.filter(v => v.id === userInfo._id)
             const volunteerIsEnroled = searchVolunteer.length === 1
             const volunteerAccepted = volunteerIsEnroled ? searchVolunteer[0].accepted ? true : false : null
-                
-            console.log('enroled: ', volunteerIsEnroled)      
-            console.log('accepted: ', volunteerAccepted)            
+
+            console.log('enroled: ', volunteerIsEnroled)
+            console.log('accepted: ', volunteerAccepted)
             this.setState({ volunteerIsEnroled, volunteerAccepted })
         })
 
@@ -157,7 +225,7 @@ export default class ProjectModal extends Component {
 
         const start = datePickerOriginServiceHours.toISOString().substring(0, 10)
         const end = datePickerEndServiceHours.toISOString().substring(0, 10)
-        
+
         getVolunteersWorkingTimes(axiosCancelTokenSource, this.props.project._id, start, end)
             .then(volunteerHours => {
                 console.log(volunteerHours)
@@ -170,10 +238,10 @@ export default class ProjectModal extends Component {
             .then(ongInfo => {
                 this.setState({ ongInfo })
             })
-            .catch(error => console.log(error))        
+            .catch(error => console.log(error))
     }
 
-    setDialogOptions = (onAccept, title, content, cancelText, acceptText) => {        
+    setDialogOptions = (onAccept, title, content, cancelText, acceptText) => {
         const dialogOptions = {
             onAccept,
             title,
@@ -182,15 +250,15 @@ export default class ProjectModal extends Component {
             acceptText
         }
 
-        this.setState({ dialogOptions, openDialog: true })  
-        
+        this.setState({ dialogOptions, openDialog: true })
+
         this.handleEndDateChange = this.handleEndDateChange.bind(this)
         this.handleOriginDateChange = this.handleOriginDateChange.bind(this)
         this.handleEndDateChangeServiceHours = this.handleEndDateChangeServiceHours.bind(this)
         this.handleOriginDateChangeServiceHours = this.handleOriginDateChangeServiceHours.bind(this)
     }
 
-    handleOriginDateChange = (datePickerOrigin) => {        
+    handleOriginDateChange = (datePickerOrigin) => {
         this.setState({ datePickerOrigin })
     }
 
@@ -198,14 +266,14 @@ export default class ProjectModal extends Component {
         this.setState({ datePickerEnd })
     }
 
-    handleOriginDateChangeServiceHours = (datePickerOriginServiceHours) => {        
+    handleOriginDateChangeServiceHours = (datePickerOriginServiceHours) => {
         this.setState({ datePickerOriginServiceHours })
     }
 
     handleEndDateChangeServiceHours = (datePickerEndServiceHours) => {
         this.setState({ datePickerEndServiceHours })
     }
-    
+
     handleVolunteerOptInOrOut = (option) => {
         const { axiosCancelTokenSource } = this.state
 
@@ -215,7 +283,7 @@ export default class ProjectModal extends Component {
                 console.log(response)
 
                 if (option === 2) {
-                    this.onHandleProjectVolunteerRemoval(userInfo._id, true)            
+                    this.onHandleProjectVolunteerRemoval(userInfo._id, true)
                     const successMessage = volunteerRemovalSuccess(`${userInfo.name} ${userInfo.lname}`, 'NORMAL')
                     this.setState({ openDialogRemoveVolunteer: false, snackBarOpen: true, snackBarMessage: successMessage, })
                     this.props.onClose()
@@ -236,14 +304,14 @@ export default class ProjectModal extends Component {
         })
     }
 
-    handleVolunteerOptOut = () => {     
+    handleVolunteerOptOut = () => {
         const { axiosCancelTokenSource } = this.state
 
         getUserInfoByToken(axiosCancelTokenSource).then(userInfo => {
             console.log(userInfo)
             enrollOrOptOutFromProject(this.props.project._id, userInfo._id, 2, axiosCancelTokenSource).then(response => {
                 console.log(response)
-                this.onHandleProjectVolunteerRemoval(userInfo._id, true)            
+                this.onHandleProjectVolunteerRemoval(userInfo._id, true)
                 const successMessage = volunteerRemovalSuccess(`${userInfo.name} ${userInfo.lname}`, 'NORMAL')
                 this.setState({ openDialogRemoveVolunteer: false, snackBarOpen: true, snackBarMessage: successMessage, })
                 this.props.onClose()
@@ -254,7 +322,7 @@ export default class ProjectModal extends Component {
         }).catch(error => {
             console.log(error)
             this.setState({ snackBarOpen: true, snackBarMessage: SERVER_ERROR, openDialogRemoveVolunteer: false })
-        })  
+        })
 
     }
 
@@ -289,7 +357,7 @@ export default class ProjectModal extends Component {
             this.props.onHandleRefreshProjects()
             this.props.onClose()
             this.setState({ openDialog: false, dialogOptions: null })
-        })        
+        })
     }
 
     handleGetAllTaskHours = () => {
@@ -333,8 +401,8 @@ export default class ProjectModal extends Component {
 
     handleFilterLocations = () => {
         this.setState({ geoLocations: [] })
-    } 
-    
+    }
+
     handleFilterServiceHours = () => {
         const { datePickerOriginServiceHours, datePickerEndServiceHours, axiosCancelTokenSource } = this.state
 
@@ -366,7 +434,7 @@ export default class ProjectModal extends Component {
 
         const rows = [['volunteer', 'date', 'latitude', 'longitude', 'address']]
         geoLocations.forEach(location => {
-            const row = [location.volunteer.name || 'Anonymous', location.date, location.coordinates.lat, location.coordinates.long, location.address ]
+            const row = [location.volunteer.name || 'Anonymous', location.date, location.coordinates.lat, location.coordinates.long, location.address]
             rows.push(row)
         })
 
@@ -388,7 +456,7 @@ export default class ProjectModal extends Component {
             const row = [volunteer.name, volunteer.nationality, volunteer.role === 1 ? 'coordinator' : 'volunteer', volunteer.phone]
             rows.push(row)
         })
-        
+
         const csv = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n")
         var encodedUri = encodeURI(csv)
         var link = document.createElement("a")
@@ -407,7 +475,7 @@ export default class ProjectModal extends Component {
             const row = [volunteer.volunteer.name, volunteer.serviceHours, volunteer.title ? volunteer.title : 'N/A']
             rows.push(row)
         })
-        
+
         const csv = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n")
         var encodedUri = encodeURI(csv)
         var link = document.createElement("a")
@@ -419,43 +487,45 @@ export default class ProjectModal extends Component {
     }
 
     render = () => {
-        const { 
-            editMode, 
-            volunteers, 
-            openDialog, 
-            dialogOptions, 
-            volunteerIsEnroled, 
-            evaluations, 
-            geoLocations, 
-            datePickerEnd, 
-            datePickerOrigin, 
-            datePickerEndServiceHours, 
-            datePickerOriginServiceHours, 
-            locationsVolunteersSelector, 
-            locationsVolunteerSelectorSelected, 
+        const {
+            showLocation,
+            editMode,
+            volunteers,
+            openDialog,
+            dialogOptions,
+            volunteerIsEnroled,
+            evaluations,
+            geoLocations,
+            datePickerEnd,
+            datePickerOrigin,
+            datePickerEndServiceHours,
+            datePickerOriginServiceHours,
+            locationsVolunteersSelector,
+            locationsVolunteerSelectorSelected,
             volunteerHours,
             volunteerAccepted,
-            ongInfo 
+            ongInfo
         } = this.state
-        const { userType } = this.props        
+        const { userType } = this.props
         console.log(locationsVolunteersSelector)
-
+        const lat = 14.601065
+        const long = -90.688039
         console.log(`userType from modal is ${userType}`)
 
         const showVolunteers = userType === '2' ? true :
-            volunteerAccepted === true 
+            volunteerAccepted === true
 
-        return(
-            <div>
+        return (
+            <div style={{ height: '1200px' }}>
                 {
                     this.state.redirectToLogin === true &&
                     <Redirect to={{ pathname: '/login' }} />
                 }
                 <CustomAppBar>
-                    <Toolbar> 
-                    <Typography variant="h6" className='josefin-bold'>
-                        Project Details
-                    </Typography>                       
+                    <Toolbar>
+                        <Typography variant="h6" className='josefin-bold'>
+                            <Translate content="projectDetails" />
+                        </Typography>
                         <Filler />
                         <IconButton
                             edge="start"
@@ -467,256 +537,353 @@ export default class ProjectModal extends Component {
                         </IconButton>
                     </Toolbar>
                 </CustomAppBar>
-                <Grid container spacing={2} className="wrapper-modal-flex">
-                    <Grid container spacing={2} style={{ marginBottom: 20 }}>
-                        <Grid item xs={12} sm={12} md={2} lg={2}>
-                            {
-                                this.props.project.photo[0] &&
-                                <div style={{ width: '100%', height: '100%' }}>
-                                    <img src={this.props.project.photo[0]} width="100%" />
-                                </div>
-                            }
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6}>
-                            <Grid item xs={12} sm={12} md={12} lg={12}>
-                                <h2 style={{ padding: 0, textAlign: 'left' }} className='project-name-text'>{this.props.project.name}</h2>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
-                                <Home style={{ marginRight: 20}}/>
-                                {/* {
+
+                <Grid container style={{ marginTop: '40px' }}>
+                    <Grid item justify="space-around" xs={8} style={{ display: 'flex', alignContent: 'center' }}>
+                        <Card style={{ width: '80%' }}>
+                            <CardMedia
+                                style={{ height: '350px' }}
+                                image={this.props.project.photo[0]}
+                                title="Contemplative Reptile"
+                            />
+                            <CardContent>
+                                <Grid container spacing={3} style={{ marginBottom: 20 }}>
+                                    <Grid item xs={12}>
+                                        <Grid item xs={12} sm={12} md={12} lg={12}>
+                                            <Typography variant="h4" className='project-name-text'>
+                                                {this.props.project.name}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <Home style={{ marginRight: 20, marginLeft: 60 }} />
+                                    {/* {
                                     this.props.project.organinfo &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.organinfo.name}</p>
                                 } */}
-                                {
-                                    this.props.project.organizationInfo &&
-                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.organizationInfo.name}</p>
-                                }
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
-                                <EmojiPeopleIcon style={{ marginRight: 20}}/>
-                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>Minimum Age: </p>
-                                {/* {
+                                    {
+                                        this.props.project.organizationInfo &&
+                                        <Typography variant='body1' className='project-desc-text'>
+                                            {this.props.project.organizationInfo.name}
+                                        </Typography>
+
+                                    }
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <EmojiPeopleIcon style={{ marginRight: 20, marginLeft: 60 }} />
+                                    <Typography variant='body1' className='project-desc-text'>
+                                        <Translate content='minimumAge' />:
+                                            </Typography>
+
+                                    {/* {
                                     this.props.project.mage &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.mage}</p>
                                 } */}
-                                {
-                                    this.props.project.minAge &&
-                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.minAge}</p>
-                                }
-                                {/* {
+                                    {
+                                        this.props.project.minAge &&
+                                        <Typography variant='body1' className='project-desc-text'>
+                                            {this.props.project.minAge}
+                                        </Typography>
+                                    }
+                                    {/* {
                                     this.props.project.maxAge &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.maxAge}</p>
                                 } */}
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
-                                <LocationOn style={{ marginRight: 20}}/>
-                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{this.props.project.address}</p>
-                            </Grid>                            
-                            <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
-                                <OfflineBolt style={{ marginRight: 20}}/>
-                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>
-                                    {
-                                        this.props.project.state === 1 ? 'Active' :
-                                        this.props.project.state === 2 ? 'Ended' :
-                                        this.props.project.state === 3 ? 'Canceled' :
-                                        this.props.project.state === 4 ? 'New and recruiting' : ''
-                                    }
-                                </p>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={8} lg={8} style={{ display: 'flex', flexDirection: 'row' }}>
-                                <DateRangeIcon style={{ marginRight: 20}}/>
-                                {/* {
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <LocationOn style={{ marginRight: 20, marginLeft: 60 }} />
+                                    <Typography variant='body1' className='project-desc-text'>
+                                        {this.props.project.address}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={6} lg={6} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <OfflineBolt style={{ marginRight: 20, marginLeft: 60 }} />
+                                    <Typography variant='body1' className='project-desc-text'>
+                                        {
+                                            this.props.project.state === 1 ? 'Active' :
+                                                this.props.project.state === 2 ? 'Ended' :
+                                                    this.props.project.state === 3 ? 'Canceled' :
+                                                        this.props.project.state === 4 ? 'New and recruiting' : ''
+                                        }
+                                    </Typography>
+
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={8} lg={8} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <DateRangeIcon style={{ marginRight: 20, marginLeft: 60 }} />
+                                    {/* {
                                     this.props.project.fdate &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.sdate)).toDateString()} through ${(new Date(this.props.project.fdate)).toDateString()}`}</p>
                                 } */}
-                                {
-                                    this.props.project.finalDate &&
-                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.startDate)).toDateString()} through ${(new Date(this.props.project.finalDate)).toDateString()}`}</p>
-                                }
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', flexDirection: 'row' }}>
-                                <DateRangeIcon style={{ marginRight: 20}}/> 
-                                <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>Inscription period: </p>
-                                {/* {
+                                    {
+                                        this.props.project.finalDate &&
+                                        <Typography variant='body1' className='project-desc-text'>
+                                            {`${(new Date(this.props.project.startDate)).toDateString()} through ${(new Date(this.props.project.finalDate)).toDateString()}`}
+                                        </Typography>
+
+                                    }
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <DateRangeIcon style={{ marginRight: 20, marginLeft: 60 }} />
+                                    <Typography variant='body1' className='project-desc-text'>
+                                        <Translate content='inscriptionPeriod' /> :
+                                            </Typography>
+
+                                    {/* {
                                     this.props.project.fdatei &&
                                     <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.sdatei)).toDateString()} through ${(new Date(this.props.project.fdatei)).toDateString()}`}</p>
                                 } */}
+                                    {
+                                        this.props.project.finalDateInscription &&
+                                        <Typography variant='body1' className='project-desc-text'>
+                                            {`${(new Date(this.props.project.startDateInscription)).toDateString()} through ${(new Date(this.props.project.finalDateInscription)).toDateString()}`}
+                                        </Typography>
+                                    }
+                                </Grid>
                                 {
-                                    this.props.project.finalDateInscription &&
-                                    <p style={{ padding: 5, margin: 0 }} className='project-desc-text'>{`${(new Date(this.props.project.startDateInscription)).toDateString()} through ${(new Date(this.props.project.finalDateInscription)).toDateString()}`}</p>
+                                    volunteerAccepted !== null &&
+                                    <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', flexDirection: 'row', marginBottom: '10px' }}>
+                                        <DateRangeIcon style={{ marginRight: 20, marginLeft: 60 }} />
+                                        {
+                                            volunteerAccepted === true &&
+                                            <Typography variant='body1' className='project-desc-text'>
+                                                <Translate content='accepted' />
+                                            </Typography>
+
+                                        }
+                                        {
+                                            volunteerAccepted === false &&
+                                            <Typography variant='body1' className='project-desc-text'>
+                                                <Translate content='application' />
+                                            </Typography>
+
+                                        }
+                                    </Grid>
                                 }
+
+
+                                {
+                                    this.props.project.description &&
+                                    <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                                        <p style={{ color: '#000', padding: '5%' }} className='project-desc-text project-desc-text-height'>{this.props.project.description}</p>
+                                    </Grid>
+                                }
+
+                            </CardContent>
+                        </Card>
+
+                    </Grid>
+                    <Grid item justify="space-around" xs={4}>
+                        {
+                            // USER_TYPE = NORMAL
+                            userType === '1' && volunteerIsEnroled &&
+                            <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', justifyContent: 'center', width: '90%' }}>
+                                <Button onClick={
+                                    () => this.setDialogOptions(
+                                        () => this.handleVolunteerOptInOrOut(2),
+                                        LEAVE_PROJECT_TITLE,
+                                        LEAVE_PROJECT_TEXT,
+                                        DIALOG_GENERIC_NO,
+                                        DIALOG_GENERIC_YES
+                                    )
+                                } variant='contained' className='projects-leave-btn'><DirectionsRunIcon className='icon-btn' />{LEAVE_PROJECT}</Button>
                             </Grid>
-                            {
-                                volunteerAccepted !== null &&
-                                <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', flexDirection: 'row' }}>
-                                    <DateRangeIcon style={{ marginRight: 20}}/> 
-                                    {
-                                        volunteerAccepted === true &&
-                                        <p style={{ padding: 5, margin: 0 }} className='project-desc-text josefin-bold'>You have been accepted to form part of this project!: </p>
-                                    }
-                                    {
-                                        volunteerAccepted === false &&
-                                        <p style={{ padding: 5, margin: 0 }} className='project-desc-text josefin-bold'>Your application for this project is yet being evaluated.</p>
-                                    }
-                                </Grid>
-                            }
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={4} lg={4}>
-                            {
-                                // USER_TYPE = NORMAL
-                                userType === '1' && volunteerIsEnroled &&
-                                <Grid item xs={12} sm={12} md={12} lg={12}>
-                                    <Button onClick={
-                                        () => this.setDialogOptions(
-                                            () => this.handleVolunteerOptInOrOut(2),
-                                            LEAVE_PROJECT_TITLE,
-                                            LEAVE_PROJECT_TEXT,
-                                            DIALOG_GENERIC_NO,
-                                            DIALOG_GENERIC_YES
-                                        )
-                                    } variant='contained' className='projects-leave-btn'><DirectionsRunIcon className='icon-btn' />{LEAVE_PROJECT}</Button>
-                                </Grid>
-                            }
-                            {
-                                // USER_TYPE = NORMAL
-                                userType === '1' && !volunteerIsEnroled &&
-                                <Grid item xs={12} sm={12} md={12} lg={12}>
-                                    <Button onClick={
-                                        () => this.setDialogOptions(
-                                            () => this.handleVolunteerOptInOrOut(1),
-                                            ENROLL_TITLE,
-                                            ENROLL_TEXT,
-                                            DIALOG_GENERIC_NO,
-                                            DIALOG_GENERIC_YES
-                                        )
-                                    } variant='contained' className='projects-enroll-btn'><BeenhereIcon className='icon-btn' />{ENROLL_TO_PROJECT}</Button>
-                                </Grid>
-                            }
-                            {
-                                // USER_TYPE = NOT_LOGGED
-                                userType === 'NOT_LOGGED' &&
-                                <Grid item xs={12} sm={12} md={12} lg={12}>
-                                    <Button onClick={
-                                        () => this.setDialogOptions(
-                                            () => this.setState({ redirectToLogin: true }),
-                                            ENROLL_TITLE,
-                                            ENROLL_TEXT_NOT_LOGGED,
-                                            DIALOG_GENERIC_NO,
-                                            'OK'
-                                        )
-                                    } variant='contained' className='projects-enroll-btn'><BeenhereIcon className='icon-btn' />{ENROLL_TO_PROJECT}</Button>
-                                </Grid>
-                            }
-                            {/* {
+                        }
+                        {
+                            // USER_TYPE = NORMAL
+                            userType === '1' && !volunteerIsEnroled &&
+                            <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', justifyContent: 'center', width: '90%' }}>
+                                <Button onClick={
+                                    () => this.setDialogOptions(
+                                        () => this.handleVolunteerOptInOrOut(1),
+                                        ENROLL_TITLE,
+                                        ENROLL_TEXT,
+                                        DIALOG_GENERIC_NO,
+                                        DIALOG_GENERIC_YES
+                                    )
+                                } variant='contained' className='projects-enroll-btn'><BeenhereIcon className='icon-btn' />{ENROLL_TO_PROJECT}</Button>
+                            </Grid>
+                        }
+                        {
+                            // USER_TYPE = NOT_LOGGED
+                            userType === 'NOT_LOGGED' &&
+                            <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', justifyContent: 'center', width: '90%' }}>
+                                <Button onClick={
+                                    () => this.setDialogOptions(
+                                        () => this.setState({ redirectToLogin: true }),
+                                        ENROLL_TITLE,
+                                        ENROLL_TEXT_NOT_LOGGED,
+                                        DIALOG_GENERIC_NO,
+                                        'OK'
+                                    )
+                                } variant='contained' className='projects-enroll-btn'><BeenhereIcon className='icon-btn' />{ENROLL_TO_PROJECT}</Button>
+                            </Grid>
+                        }
+                        {/* {
                                 userType === '2' &&
                                 ONG
                             } */}
-                            {
-                                userType === '2' &&
-                                <Grid item xs={12} sm={12} md={12} lg={12}>                                
-                                    <Button onClick={
-                                        () => this.setDialogOptions(
-                                            () => this.handleRemoveProject(),
-                                            REMOVE_PROJECT_TITLE,
-                                            REMOVE_PROJECT_TEXT,
-                                            DIALOG_GENERIC_NO,
-                                            DIALOG_GENERIC_YES
-                                        )
-                                    } variant='contained' className='projects-leave-btn'><DeleteIcon className='icon-btn' />{REMOVE_PROJECT}</Button>
-                                </Grid>
+                        {
+                            userType === '2' &&
+                            <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', justifyContent: 'center', width: '90%' }}>
+                                <Button onClick={
+                                    () => this.setDialogOptions(
+                                        () => this.handleRemoveProject(),
+                                        REMOVE_PROJECT_TITLE,
+                                        REMOVE_PROJECT_TEXT,
+                                        DIALOG_GENERIC_NO,
+                                        DIALOG_GENERIC_YES
+                                    )
+                                } variant='contained' className='projects-leave-btn'><DeleteIcon className='icon-btn' />{REMOVE_PROJECT}</Button>
+                            </Grid>
 
-                            }
-                            {
-                                userType === '2' &&
-                                <Grid item xs={12} sm={12} md={12} lg={12}>
-                                    <Button onClick={
-                                        () => this.setDialogOptions(
-                                            () => this.handleTerminateProject(),
-                                            FINISH_PROJECT_TITLE,
-                                            FINISH_PROJECT_TEXT,
-                                            DIALOG_GENERIC_NO,
-                                            DIALOG_GENERIC_YES
-                                        )
-                                    } variant='contained' className='projects-leave-btn'><FlagIcon className='icon-btn' />{FINISH_PROJECT}</Button>
-                                </Grid>
-                            }
-                            {
-                                userType === '2' &&
-                                <Grid item xs={12} sm={12} md={12} lg={12}>
-                                    <Button onClick={() => this.setState({ editMode: !editMode })} variant='contained' className='projects-edit-btn'><PeopleAltIcon className='icon-btn' />{ !editMode ? EDIT_PROJECT : EDIT_PROJECT_CLOSE}</Button>
-                                </Grid>
-                            }
-                            {/* {
+                        }
+                        {
+                            userType === '2' &&
+                            <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', justifyContent: 'center', width: '90%' }}>
+                                <Button onClick={
+                                    () => this.setDialogOptions(
+                                        () => this.handleTerminateProject(),
+                                        FINISH_PROJECT_TITLE,
+                                        FINISH_PROJECT_TEXT,
+                                        DIALOG_GENERIC_NO,
+                                        DIALOG_GENERIC_YES
+                                    )
+                                } variant='contained' className='projects-leave-btn'><FlagIcon className='icon-btn' />{FINISH_PROJECT}</Button>
+                            </Grid>
+                        }
+                        {
+                            userType === '2' &&
+                            <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', justifyContent: 'center', width: '90%' }}>
+                                <Button onClick={() => this.setState({ editMode: !editMode })} variant='contained' className='projects-edit-btn'><PeopleAltIcon className='icon-btn' />{!editMode ? EDIT_PROJECT : EDIT_PROJECT_CLOSE}</Button>
+                            </Grid>
+                        }
+                        {/* {
                                 editMode &&
                                 <Grid item xs={12} sm={12} md={12} lg={12}>
                                     <Button onClick={() => {}} variant='contained' className='projects-save-btn'>{SAVE_CHANGES}</Button>
                                 </Grid>
                             } */}
-                            
-                        </Grid>                        
+
+                        {
+                            userType === '1' &&
+                            ongInfo &&
+                            <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'block', justifyContent: 'center', width: '90%', marginTop: '20px' }}>
+                                <Card>
+
+                                    <CardContent>
+                                        <h3 style={{ padding: '10%', paddingBottom: '2%', paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><Home /> <Translate content='ongInfo' />  </h3>
+
+                                        <Typography variant='body2' className='project-desc-text project-desc-text-height' component="p" style={{ color: '#000', paddingLeft: '8%', paddingRight: '8%' }}>
+                                            <Translate content='ongName' />: {ongInfo.name || 'N/A'}
+                                        </Typography>
+                                        <Typography variant='body2' className='project-desc-text project-desc-text-height' component="p" style={{ color: '#000', paddingLeft: '8%', paddingRight: '8%' }}>
+                                            <Translate content='phone' />: {ongInfo.phone || 'N/A'}
+                                        </Typography>
+                                        <Typography variant='body2' className='project-desc-text project-desc-text-height' component="p" style={{ color: '#000', paddingLeft: '8%', paddingRight: '8%' }}>
+                                            <Translate content='address' />: {ongInfo.address || 'N/A'}
+                                        </Typography>
+                                        <Typography variant='body2' className='project-desc-text project-desc-text-height' component="p" style={{ color: '#000', paddingLeft: '8%', paddingRight: '8%' }}>
+                                            Website: {ongInfo.website || 'N/A'}
+                                        </Typography>
+                                        <Typography variant='body2' className='project-desc-text project-desc-text-height' component="p" style={{ color: '#000', paddingLeft: '8%', paddingRight: '8%' }}>
+                                            <Translate content='email' />: {ongInfo.email || 'N/A'}
+                                        </Typography>
+
+                                        <Grid item xs={12} sm={12} md={12} lg={12} style={{ display: 'flex', flexDirection: 'row', color: '#000', paddingLeft: '5%', paddingRight: '5%', marginTop: '25px' }} component="p">
+                                            <Typography variant='body2' className='project-desc-text project-desc-text-height' >
+                                                {ongInfo.bio || 'NA'}
+                                            </Typography>
+                                        </Grid>
+                                    </CardContent>
+                                </Card>
+                                <Card>
+                                    <CardContent>
+                                        <h3 style={{ marginTop: '0%', paddingLeft: '10%', textAlign: 'left', color: '#000' }} className='project-name-text'><Home />
+                                            <Translate content='about' />   {this.props.project.address}
+                                        </h3>
+                                        <Typography variant='body2' className='project-desc-text project-desc-text-height' style={{ display: 'flex', flexDirection: 'row', color: '#000', paddingLeft: '5%', paddingRight: '5%' }}>
+                                            Izabal cuenta con Rio Dulce uno de los encantos de Guatemala. Tiene conexión con el Lago de Izabal y con el Mar Caribe. Tiene más de 33 millas donde conviven gran variedad de especies marinas. Es uno de los principales destinos turísticos para los visitantes que llegan a conocer Guatemala. En esta misma zona de Río Dulce vale la pena conocer otros sitios de interés: Castillo de San Felipe,  Lagunitas Salvador, Siete Altares…y en especial la ciudad de Livingston. Ésta última es una pequeña ciudad garífuna, situada en la desembocadura del Río.
+                                        </Typography>
+                                        <CardMedia
+                                            style={{ height: '150px', width: '350px', margin: 'auto', marginTop: '10px' }}
+                                            image={this.props.project.photo[1]}
+                                            title={this.props.project.address}
+                                        />
+                                    </CardContent>
+                                    <div style={{display:'flex', justifyContent:'center', marginBottom:'20px'}}>
+                                    <YellowButton onClick={() => this.setState({ showLocation: true })} style={{width:'60%'}}>
+                                        Ver en mapa
+                                    </YellowButton>
+
+                                    </div>
+
+                                    
+
+
+                                </Card>
+                            </Grid>
+                        }
+
                     </Grid>
 
-                    {
-                        userType === '1' && 
-                        volunteerIsEnroled &&
-                        ongInfo &&
-                        <Grid item xs={12} sm={12} md={12} lg={12}>
-                            <Card>
-                                <h2 style={{ padding: '10%', paddingBottom: '2%', paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><Home /> Organization Contact Information</h2>
+                </Grid>
+                {
+                    showLocation &&
+                    <Dialog TransitionComponent={Transition} open={showLocation} onClose={() => this.setState({ showLocation: false })}>
 
-                                <div style={{ width: '100%', paddingLeft: '10%', paddingRight: '10%', paddingBottom: '5%' }}>
-                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
-                                        Organization Name: { ongInfo.name || 'N/A' }
-                                    </p>
-                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
-                                        Phone Number: { ongInfo.phone || 'N/A' }
-                                    </p>
-                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
-                                        Address: { ongInfo.address || 'N/A' }
-                                    </p>
-                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
-                                        Website: { ongInfo.website || 'N/A' }
-                                    </p>
-                                    <p style={{ color: '#000', padding: 0, margin: 2 }} className='project-desc-text project-desc-text-height'>
-                                        Email Address: { ongInfo.email || 'N/A' }
-                                    </p>
-                                </div>
-                            </Card>
-                        </Grid>
-                    }
-
-                    <Grid item xs={12} sm={12} md={!this.props.publicMode ? 6 : 12} lg={!this.props.publicMode ? 6 : 12}>
-                        <Card>
-                            {/* {
-                                this.props.project.desc &&
-                                <p style={{ color: '#000', padding: '10%' }} className='project-desc-text project-desc-text-height'>{this.props.project.desc}</p>
-                            } */}
+                        <div style={{ width: 600, height: 600 }}>
+                            <iframe
+                                width="600"
+                                height="100%"
+                                src={`https://maps.google.com/maps?q=${lat}+${long}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                                frameBorder="0"
+                                scrolling="no"
+                                marginHeight="0"
+                                marginWidth="0"
+                            >
+                            </iframe>
                             {
-                                this.props.project.description &&
-                                <p style={{ color: '#000', padding: '10%' }} className='project-desc-text project-desc-text-height'>{this.props.project.description}</p>
+                                this.props.project.address &&
+                                <p className='josefin-bold' style={{ textAlign: 'center', position: 'absolute', padding: '2%', top: 100, left: 10, width: 280, backgroundColor: '#fff', color: '#000', zIndex: 30 }}>{this.props.project.address}</p>
                             }
-                        </Card>
+                        </div>
+
+
+                    </Dialog>
+                }
+
+                <Grid container spacing={3} justify="space-around" xs={12} style={{ marginTop: "20px" }}>
+
+                    <Grid item xs={12} sm={8}>
+                        <GridList cellHeight={160} cols={8} style={{ padding: 2 }}>
+                            {tileData.map((tile) => (
+                                <GridListTile key={tile.img} cols={tile.cols || 5}>
+                                    <img src={tile.img} alt={tile.title} />
+                                </GridListTile>
+                            ))}
+                        </GridList>
+
                     </Grid>
 
-                    {/* volunteers */}
                     {
                         !this.props.publicMode &&
-                        showVolunteers && 
-                        <Grid item xs={12} sm={12} md={6} lg={6}>
-                            <Card style={{ width: '100%' }}>
+                        showVolunteers &&
+                        <Grid item xs={12} sm={4} >
+                            <Card style={{ width: "100%" }}>
                                 <h2 style={{ padding: '10%', paddingBottom: '5%', paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><EmojiPeopleIcon /> Enroled volunteers</h2>
-                                
+
                                 {
                                     userType === '2' &&
                                     <div className='inner-grid' style={{ width: '100%' }}>
-                                        <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleVolunteersInfoCSVDownload()} variant='contained' className='projects-enroll-btn'><PeopleAltIcon className='icon-btn' />{DOWNLOAD_CSV_USER_LIST}</Button>                            
+                                        <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleVolunteersInfoCSVDownload()} variant='contained' className='projects-enroll-btn'><PeopleAltIcon className='icon-btn' />{DOWNLOAD_CSV_USER_LIST}</Button>
                                     </div>
-                                }                            
+                                }
 
-                                <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
+                                <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto', width: '100%' }}>
                                     {
                                         volunteers.map((volunteer, index) => {
-                                            return(
+                                            return (
                                                 <ProjectVolunteerItem projectId={this.props.project._id} onHandleProjectVolunteerRemoval={this.onHandleProjectVolunteerRemoval} onHandleProjectVolunteerRoleChange={this.onHandleProjectVolunteerRoleChange} key={index} volunteer={volunteer} editMode={editMode} />
                                             )
                                         })
@@ -724,213 +891,13 @@ export default class ProjectModal extends Component {
                                 </List>
                             </Card>
                         </Grid>
+
                     }
 
-                    {/* serviceHours items */}
-                    {
-                        userType === '2' &&
-                        <Grid item xs={12} sm={12} md={12} lg={12}>
-                            <Card style={{ width: '100%', paddingBottom: '2%' }}>
-                                <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'>
-                                    <PeopleAltIcon /> 
-                                    Volunteer Service Hours
-                                    <Button className='josefin-bold' style={{ fontSize: 9 }} onClick={() => this.handleGetAllTaskHours()}>
-                                        (GET ALL!)
-                                    </Button>
-                                </h2>
-
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <Grid container spacing={2} style={{ paddingLeft: '10%', paddingRight: '10%', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
-                                        <Grid item xs={12} sm={12} md={4} lg={4}>
-                                            <KeyboardDatePicker
-                                                maxDate={new Date()}
-                                                margin="normal"
-                                                id="date-picker-origin"
-                                                label="Fecha inicial"
-                                                format="MM/dd/yyyy"
-                                                value={datePickerOriginServiceHours}
-                                                onChange={this.handleOriginDateChangeServiceHours}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change date',
-                                                }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={12} md={4} lg={4}>
-                                            <KeyboardDatePicker
-                                                minDate={(new Date()).setDate((new Date()).getDate() + 1)}
-                                                margin="normal"
-                                                id="date-picker-end"
-                                                label="Fecha final"
-                                                format="MM/dd/yyyy"
-                                                value={datePickerEndServiceHours}
-                                                onChange={this.handleEndDateChangeServiceHours}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change date',
-                                                }}
-                                            />                                    
-                                        </Grid>
-                                        <Grid item xs={12} sm={12} md={4} lg={4}>
-                                            <Button onClick={() => this.handleFilterServiceHours()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{LOCATION_FILTER}</Button>                                    
-                                        </Grid>
-                                    </Grid>
-                                </MuiPickersUtilsProvider>
-
-                                {
-                                    volunteerHours.length > 0 &&
-                                    <div className='inner-grid' style={{ width: '100%' }}>
-                                        <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleServiceHoursCSVDownload()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{DOWNLOAD_CSV}</Button>                            
-                                    </div>
-                                }
-                                
-
-                                <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
-                                    {
-                                        volunteerHours.length > 0 &&
-                                        volunteerHours.map((data, index) => {
-                                            if (data.title) {
-                                                console.log(data.title)
-                                                return(
-                                                    <ProjectVolunteerServiceHours key={index} volunteer={data.volunteer} serviceHours={data.serviceHours} withTaskTitle={data.title} />
-                                                )
-                                            } else return(
-                                                <ProjectVolunteerServiceHours key={index} volunteer={data.volunteer} serviceHours={data.serviceHours} />
-                                            )
-                                        })
-                                    }
-                                </List>
-
-                                {
-                                    volunteerHours.length === 0 &&
-                                    <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><WarningIcon style={{ fontSize: 14 }}/> No service hours registered on this date range.</h5>
-                                }
-                            
-                            </Card>
-                        </Grid>
-                    }
-
-                    {/* evaluation items */}
-                    {
-                        userType === '2' &&
-                        <Grid item xs={12} sm={12} md={12} lg={12}>
-                            <Card style={{ width: '100%', paddingBottom: '2%' }}>
-                                <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><FeedbackIcon /> Evaluation Results</h2>                            
-                                
-                                {
-                                    evaluations.length > 0 &&
-                                    <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><EmojiEventsIcon style={{ fontSize: 14 }}/> Average score: {starsAverage(evaluations)}/5 stars</h5>
-                                }
-                                
-                                <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
-                                    {
-                                        evaluations.length > 0 &&
-                                        evaluations.map((evaluation, index) => {
-                                            return(
-                                                <VolunteerEvaluationItem key={index} volunteer={evaluation.volunteer} stars={evaluation.stars} comments={evaluation.comments} />
-                                            )
-                                        })
-                                    }
-                                </List>
-
-                                {
-                                    evaluations.length === 0 &&
-                                    <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><WarningIcon style={{ fontSize: 14 }}/> By the moment, there are no evaluations.</h5>
-                                }
-                            </Card>
-                        </Grid>
-                    }
-
-                    {/* geolocation items */}
-                    {/* {
-                        userType === '2' &&
-                        <Grid item xs={12} sm={12} md={12} lg={12}>
-                            <Card style={{ width: '100%', paddingBottom: '2%' }}>
-                                <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'><RoomIcon /> Visited Locations</h2>
-                                
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <Grid container spacing={2} style={{ paddingLeft: '10%', paddingRight: '10%', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
-                                        <Grid item xs={12} sm={12} md={4} lg={4}>
-                                            <KeyboardDatePicker
-                                                margin="normal"
-                                                id="date-picker-origin"
-                                                label="Fecha inicial"
-                                                format="MM/dd/yyyy"
-                                                value={datePickerOrigin}
-                                                onChange={this.handleOriginDateChange}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change date',
-                                                }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={12} md={4} lg={4}>
-                                            <KeyboardDatePicker
-                                                margin="normal"
-                                                id="date-picker-end"
-                                                label="Fecha final"
-                                                format="MM/dd/yyyy"
-                                                value={datePickerEnd}
-                                                onChange={this.handleEndDateChange}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change date',
-                                                }}
-                                            />                                    
-                                        </Grid>
-                                        <Grid item xs={12} sm={12} md={4} lg={4}>
-                                            <Button onClick={() => this.handleFilterLocations()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{LOCATION_FILTER}</Button>                                    
-                                        </Grid>
-                                    </Grid>
-                                </MuiPickersUtilsProvider>
-
-                                {                                
-                                    locationsVolunteersSelector &&
-                                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                        <FormControl style={{ width: '80%' }}>                                    
-                                            <Select
-                                                labelId="vol-select-label"
-                                                id="vol-select"
-                                                value={locationsVolunteerSelectorSelected}
-                                                onChange={(e) => this.handleLocationsSelectorOnSelect(e)}
-                                            >
-                                                <MenuItem value="">
-                                                    <em>None</em>
-                                                </MenuItem>
-                                                {
-                                                    locationsVolunteersSelector.map((volunteer, index) => {
-                                                        return(
-                                                            <MenuItem key={index} value={volunteer.id}>{volunteer.name}</MenuItem>
-                                                        )
-                                                    })
-                                                }
-                                            </Select>
-                                            <FormHelperText>Filter by volunteer on this date range</FormHelperText>
-                                        </FormControl>
-
-                                        <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleLocationsCSVDownload()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{DOWNLOAD_CSV}</Button>
-                                    </div>
-
-                                }
-                                
-                                <List style={{ maxHeight: 400, position: 'relative', overflow: 'auto' }}>
-                                    {
-                                        geoLocations.length > 0 &&
-                                        geoLocations.map((location, index) => {
-                                            return(
-                                                <GeoLocationItem key={index} location={location} />
-                                            )
-                                        })
-                                    }
-                                    {
-                                        geoLocations.length === 0 &&
-                                        <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><WarningIcon style={{ fontSize: 14 }}/> No locations registered.</h5>
-                                    }
-                                </List>
-                            </Card>
-                        </Grid>
-                    } */}
                 </Grid>
-
                 {
                     openDialog &&
-                    <CustomDialog 
+                    <CustomDialog
                         open={openDialog}
                         onClose={() => this.setState({ openDialog: false, dialogOptions: null })}
                         onAccept={dialogOptions.onAccept}
@@ -940,9 +907,9 @@ export default class ProjectModal extends Component {
                         acceptText={dialogOptions.acceptText}
                     />
 
-                }                
+                }
 
-            </div>
+            </div >
         )
     }
 }

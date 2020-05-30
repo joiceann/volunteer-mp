@@ -1,6 +1,6 @@
 import React, {
   useState,
-}from 'react';
+} from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { createMuiTheme } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -23,6 +23,15 @@ import { useParams } from 'react-router-dom';
 import { useUserId } from '../../hooks';
 
 import styled from 'styled-components';
+
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import Translate from 'react-translate-component';
+
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
+counterpart.setLocale(localStorage.getItem('lang'));
 
 const drawerClosedWidth = '60px';
 
@@ -84,6 +93,7 @@ const StyledListItem = styled(ListItem)`
 `;
 
 const Menu = ({ logout }) => {
+  counterpart.setLocale(localStorage.getItem('lang'));
   const [open, setOpen] = useState(true);
   const userId = useUserId();
   let { section } = useParams();
@@ -92,7 +102,7 @@ const Menu = ({ logout }) => {
   };
 
   const userType = localStorage.getItem('V_USER_TYPE') || null
-    
+
   return (
     <StyledDrawer
       anchor="left"
@@ -105,15 +115,15 @@ const Menu = ({ logout }) => {
             {open ? 'voluntourist' : 'v'}
           </Logo>
           {open &&
-          <IconButton onClick={toggleDrawer}>
-            <ChevronLeft  />
-          </IconButton>
+            <IconButton onClick={toggleDrawer}>
+              <ChevronLeft />
+            </IconButton>
           }
         </LogoContainer>
         {!open &&
-        <PaddedIconButton onClick={toggleDrawer}>
-          <ChevronRight />
-        </PaddedIconButton>
+          <PaddedIconButton onClick={toggleDrawer}>
+            <ChevronRight />
+          </PaddedIconButton>
         }
         <Divider />
         {/* <RouterLink to="/dashboard/overview">
@@ -151,22 +161,24 @@ const Menu = ({ logout }) => {
             <ListItemIcon>
               <ProjectIcon />
             </ListItemIcon>
-            <ListItemText primary="My Projects" />
+            <ListItemText primary={<Translate content='myProjects' />} />
           </StyledListItem>
         </RouterLink>
-        <RouterLink to="/dashboard/search">
-          <StyledListItem
-            selected={section === 'search'}
-            button
-            alignItems="center"
-          >
-            <ListItemIcon>
-              <SearchIcon />
-            </ListItemIcon>
-            <ListItemText primary="Search Projects" />
-          </StyledListItem>
-        </RouterLink>
-
+        {
+          userType === "1" &&
+          <RouterLink to="/dashboard/search">
+            <StyledListItem
+              selected={section === 'search'}
+              button
+              alignItems="center"
+            >
+              <ListItemIcon>
+                <SearchIcon />
+              </ListItemIcon>
+              <ListItemText primary={<Translate content='searchPs' />} />
+            </StyledListItem>
+          </RouterLink>
+        }
         {
           userType === "2" &&
           <RouterLink to="/dashboard/locations">
@@ -194,7 +206,7 @@ const Menu = ({ logout }) => {
               <ListItemIcon>
                 <FaceIcon />
               </ListItemIcon>
-              <ListItemText primary="My Profile" />
+              <ListItemText primary={<Translate content='myProfile' />} />
             </StyledListItem>
           </RouterLink>
         }
@@ -208,7 +220,7 @@ const Menu = ({ logout }) => {
           <ListItemIcon>
             <ExitIcon />
           </ListItemIcon>
-          <ListItemText primary="Log Out" />
+          <ListItemText primary={<Translate content='logout' />} />
         </StyledListItem>
 
       </List>

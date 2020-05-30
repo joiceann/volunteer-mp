@@ -12,6 +12,15 @@ import GeoLocationItem from '../MyProjects/GeoLocationItem';
 import { LOCATION_FILTER, DOWNLOAD_CSV } from '../MyProjects/MyProjectsConstants';
 import { getUserTypeFromLocalStorage, getONGInfo, createAxiosCancelToken, getVolunteerLocationsByOrganization, getAllVolunteerLocations } from '../MyProjects/MyProjectsProvider';
 
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import Translate from 'react-translate-component';
+import translator from "counterpart"
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
+counterpart.setLocale(localStorage.getItem('lang'));
+
 export default class MyVolunteersLocations extends Component {
     constructor(props) {
         super(props)
@@ -183,9 +192,9 @@ export default class MyVolunteersLocations extends Component {
                     <Card style={{ width: '100%', paddingBottom: '2%' }}>
                         <h2 style={{ padding: '10%', paddingBottom: 0, paddingTop: '2%', textAlign: 'left', color: '#000' }} className='project-name-text'>
                             <RoomIcon /> 
-                            Visited Locations 
+                                <Translate content='visitedLocations'/> 
                             <Button className='josefin-bold' style={{ fontSize: 9 }} onClick={() => this.handleGetAllLocations()}>
-                                (GET ALL!)
+                                <Translate content='getAll'/> 
                             </Button>
                         </h2>
                         
@@ -247,7 +256,9 @@ export default class MyVolunteersLocations extends Component {
                                             })
                                         }
                                     </Select>
-                                    <FormHelperText>Filter by volunteer on this date range</FormHelperText>
+                                    <FormHelperText>
+                                        <Translate content='filterByVolunteer'/>
+                                    </FormHelperText>
                                 </FormControl>
 
                                 <Button style={{ width: '80%', marginTop: '2%' }} onClick={() => this.handleLocationsCSVDownload()} variant='contained' className='projects-enroll-btn'><FilterListIcon className='icon-btn' />{DOWNLOAD_CSV}</Button>
@@ -266,7 +277,18 @@ export default class MyVolunteersLocations extends Component {
                             }
                             {
                                 geoLocations.length === 0 &&
-                                <h5 style={{ padding: '10%', paddingBottom: '5%', paddingTop: 0, textAlign: 'left', color: '#000' }}className='project-name-text'><WarningIcon style={{ fontSize: 14 }}/> No locations registered.</h5>
+                                <h5 
+                                style={{ 
+                                    padding: '10%', 
+                                    paddingBottom: '5%', 
+                                    paddingTop: 0, 
+                                    textAlign: 'left', 
+                                    color: '#000' }}
+                                className='project-name-text'
+                                >
+                                    <WarningIcon style={{ fontSize: 14 }}/> 
+                                        <Translate content='noLocationR'/> 
+                                </h5>
                             }
                         </List>
                     </Card>

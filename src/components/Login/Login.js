@@ -13,6 +13,14 @@ import { useHistory } from "react-router-dom";
 import { LoadingScreen } from "../CommonComponents";
 import { Link } from 'react-router-dom';
 
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import Translate from 'react-translate-component';
+
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
+
 const GlobalStyle = createGlobalStyle`
   body {
     background-color: ${colors.main};
@@ -61,7 +69,7 @@ const CustomAvatar = styled(Avatar)`
 `;
 
 const SeparatedButton = styled(Button)`
-  margin-top: 20px;
+  margin-top: 40px;
 `;
 
 const Form = styled.form`
@@ -80,6 +88,7 @@ const Login = ({ login }) => {
   const [password, setPassword] = useState("");
   const [formError, showFormError] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const [forgotPass, setForgotPass] = useState(true);
   const [validEmail, setValidEmail] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
   const [validTries, setValidTries] = useState(0);
@@ -87,8 +96,35 @@ const Login = ({ login }) => {
   const [validEmailText, setET] = useState("");
   const [validPasswordText, setPT] = useState("");
   const [validTriesText, setTT] = useState("");
+  const [checked, setChecked] = React.useState(true);
 
+  let lang = localStorage.getItem('lang')
+  console.log('ESTE ES EL LANG', lang)
+  counterpart.setLocale(lang);
 
+  function onLangChange(lang) {
+    console.log(lang)
+    //lang = lang;
+    counterpart.setLocale(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+  const styles = {
+    myTextStyle: {
+      textDecoration: 'none',
+      '&:hover': {
+        color: 'white'
+      }
+    }
+  };
+
+  const handleChange = () => {
+    setChecked((prev) => !prev);
+  };
+
+  const handleForgot = () => {
+    setForgotPass((prev) => !prev);
+  };
 
   const handleEmailChange = (event) => {
     // console.log(event.target.value);
@@ -102,8 +138,9 @@ const Login = ({ login }) => {
 
     if (reeval) {
       setET("");
-    } else{
-      setET("Invalid email address\n");    }
+    } else {
+      setET("Invalid email address\n");
+    }
     setEmail(event.target.value);
   };
 
@@ -113,7 +150,7 @@ const Login = ({ login }) => {
     if (passwordValidate != null) {
       setPT("");
     }
-    else{
+    else {
       setPT("Invalid email address\n");
     }
     setPassword(event.target.value);
@@ -123,14 +160,14 @@ const Login = ({ login }) => {
     console.log(email);
     event.preventDefault();
     setLoading(true);
-    if ({validEmail} && {validPassword} || 4 < {validTries}){
+    if ({ validEmail } && { validPassword } || 4 < { validTries }) {
       axios.post(Constants.LOGIN,
-          JSON.stringify({email, password}),
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
+        JSON.stringify({ email, password }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
           },
+        },
       ).then((response) => {
         console.log('user logged in: ', response)
         login(response.data.token, response.data.type);
@@ -139,82 +176,95 @@ const Login = ({ login }) => {
       }).catch((response) => {
         console.log(response);
         if (response.data == "Invalid Credentials") {
-            setValidTries({validTries} + 1);
+          setValidTries({ validTries } + 1);
         }
         showFormError(true);
         setLoading(false);
       });
     }
-    else{
-        if (4 < {validTries}) {
-            setTT("Reached maximum times limit for password input");
-        }
-        showFormError(true);
-        setLoading(false);
+    else {
+      if (4 < { validTries }) {
+        setTT("Reached maximum times limit for password input");
+      }
+      showFormError(true);
+      setLoading(false);
     }
   };
   return (
-    <MainContainer maxWidth="xs">
-      <GlobalStyle />
-      <StyledPaper>
-        <Logo>voluntourist</Logo>
-        <CustomAvatar>
-          <LockOutlinedIcon />
-        </CustomAvatar>
-        <Typography variant="h5" className='josefin-bold'>
-          Login
-        </Typography>
-        <Form noValidate onSubmit={submit}>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            value={email}
-            onChange={handleEmailChange}
-            fullWidth
-            id="email"
-            label="Email address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            value={password}
-            onChange={handlePasswordChange}
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          {formError && (
-            <Typography color="error">
-              Email and/or password invalid: {validEmailText} {validPasswordText}
-            </Typography>
-          )}
+    <div className='wrapper-public-projects' style={{ padding: 0 }}>
 
-          {isLoading && <LoadingScreen dark="true" />}
-          <SeparatedButton
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-          >
-            Log In
-          </SeparatedButton>
-        </Form>
-      </StyledPaper>
-      
-      <StyledPaper2>
-      <Typography variant="h6" className='josefin-bold'>Don't have an account?</Typography>
-      <Typography variant="h6" className='josefin-regular'> <Link to="/register" >Register</Link></Typography>
-      </StyledPaper2>
-    </MainContainer>
-    
+      <MainContainer maxWidth="xs">
+        <GlobalStyle />
+
+        <StyledPaper style={{ display: "" }}>
+          <Logo>voluntourist</Logo>
+          <CustomAvatar>
+            <LockOutlinedIcon />
+          </CustomAvatar>
+
+          <Form noValidate onSubmit={submit}>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              value={email}
+              onChange={handleEmailChange}
+              fullWidth
+              id="email"
+              label={<Translate content="email" />}
+              name="email"
+              autoComplete="email"
+              autoFocus
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              value={password}
+              onChange={handlePasswordChange}
+              fullWidth
+              name="password"
+              label={<Translate content="password" />}
+              type="password"
+              id="password"
+              autoComplete="current-password"
+            />
+            {formError && (
+              <Typography color="error">
+                Email and/or password invalid: {validEmailText} {validPasswordText}
+              </Typography>
+            )}
+
+            {isLoading && <LoadingScreen dark="true" />}
+
+            <Typography variant="h9" className='josefin-regular'>
+              <Link to="/resetPassword" underline="hover" onClick={handleForgot} >
+                <Translate content="passwordForgot" />
+              </Link>
+            </Typography>
+
+            <SeparatedButton
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+            >
+              <Translate content="login" />
+            </SeparatedButton>
+          </Form>
+        </StyledPaper>
+
+        <StyledPaper2>
+          <Typography variant="h6" className='josefin-bold'><Translate content="notaccount" /></Typography>
+          <Typography variant="h6" className='josefin-regular'> <Link to="/register" ><Translate content="register" /></Link></Typography>
+        </StyledPaper2>
+
+      </MainContainer>
+
+    </div>
+
+
+
   );
 };
 

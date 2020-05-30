@@ -16,11 +16,23 @@ import axios from 'axios';
 import instance from '../../axios';
 import ProfileCard from './ProfileCard';
 import * as Constants from '../../constants';
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import Translate from 'react-translate-component';
+import Typography from "@material-ui/core/Typography";
+
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
+
 
 const Profile = () => {
+  let lang = localStorage.getItem('lang')
+  console.log('ESTE ES EL LANG', lang)
+  counterpart.setLocale(lang);
 
   const [state, setState] = useReducer(
-    (state, newState) => ({...state, ...newState}),
+    (state, newState) => ({ ...state, ...newState }),
     {
       loading: true,
       showError: false,
@@ -40,9 +52,9 @@ const Profile = () => {
     }).catch(() => {
       setState({ showError: true });
     })
-    .finally(() => {
-      setState({ loading: false });
-    });
+      .finally(() => {
+        setState({ loading: false });
+      });
 
     return () => {
       source.cancel();
@@ -63,9 +75,11 @@ const Profile = () => {
   return (
     <Section>
       <Header>
-        Perfil
+        <Typography variant="h3" className='josefin-bold' style={{ color: '#fff', marginBottom: 20 }}>
+          <Translate content="myProfile" />
+        </Typography>
       </Header>
-      <ProfileCard user={state.user} updateUser={updateUser}/>
+      <ProfileCard user={state.user} updateUser={updateUser} />
       <Snackbar
         open={state.showError}
         variant="error"

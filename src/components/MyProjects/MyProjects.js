@@ -17,6 +17,16 @@ import ViewModuleIcon from '@material-ui/icons/ViewModule'
 import ViewListIcon from '@material-ui/icons/ViewList'
 import { SearchBar, Fab } from '../CommonComponents';
 import EditProject from '../Projects/EditProject';
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import Translate from 'react-translate-component';
+import translator from "counterpart"
+
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
+
+const searchP = translator.translate("searchP");
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -318,7 +328,7 @@ class MyProjects extends Component {
                                 startDate: new Date(),
                                 startDateInscription: new Date()
                             }}
-                            title='Create New Project'
+                            title={<Translate content='createProject'/>}
                         />
                     </Dialog>
                 }
@@ -334,7 +344,7 @@ class MyProjects extends Component {
                     <Grid container className='projects-grid' spacing={2}>
                         <Grid item xs={userType === '2' ? 8 : 10} sm={userType === '2' ? 8 : 10} md={userType === '2' ? 8 : 10} lg={userType === '2' ? 8 : 10}>
                             <Typography variant="h3" className='josefin-bold' style={{ color: '#fff', marginBottom: 20 }}>
-                                My projects
+                                <Translate content="myprojects" />
                             </Typography> 
                         </Grid>
                         <Grid style={{ flexDirection: 'row', justifyContent: 'flex-end' }} item xs={userType === '2' ? 4 : 2} sm={userType === '2' ? 4 : 2} md={userType === '2' ? 4 : 2} lg={userType === '2' ? 4 : 2} className='inner-grid'>
@@ -358,7 +368,7 @@ class MyProjects extends Component {
                 {
                     projects &&
                     <SearchBar                        
-                        placeholder="Search in your projects"
+                        placeholder={searchP}
                         value={undefined}
                         onChange={this.handleOnLocalSearch}
                     />

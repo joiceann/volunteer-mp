@@ -1,35 +1,46 @@
-export const OPEN_PROJECT = 'VIEW PROJECT'
-export const LEAVE_PROJECT = 'LEAVE THIS PROJECT'
-export const ENROLL_TO_PROJECT = 'I WANT TO BE PART!'
-export const REMOVE_PROJECT = 'DELETE THIS PROJECT'
-export const FINISH_PROJECT = 'FINISH THIS PROJECT'
-export const EDIT_PROJECT = 'MANAGE VOLUNTEERS'
-export const EDIT_PROJECT_CLOSE = 'CLOSE MANAGING OPTIONS'
-export const SAVE_CHANGES = 'SAVE CHANGES'
-export const COORDINATOR_LABEL = 'COORDINATOR'
-export const REMOVE_VOLUNTEER_DIALOG_TITLE = 'Removing volunteer'
-export const REMOVE_VOLUNTEER_DIALOG_CONTENT = "Are you sure you want to remove this volunteer from this project? This action can't be undone."
-export const REMOVE_VOLUNTEER_DIALOG_CANCEL_TEXT = 'No, keep this volunteer'
-export const REMOVE_VOLUNTEER_DIALOG_ACCEPT_TEXT = 'Yes, remove this volunteer'
-export const SERVER_ERROR = "We couldn't process your request at this time. Please try again in a few moments."
-export const VOLUNTEER_ITEM_COORDINATOR_PLACEHOLDER = 'COORDINATOR'
-export const VOLUNTEER_ITEM_ACCEPTED_VOLUNTEER = 'ACCEPTED'
-export const LEAVE_PROJECT_TEXT = "Are you sure you want to leave this project? If so, you would have to re-apply to this project and await for the organization's approval."
-export const LEAVE_PROJECT_TITLE = 'Leaving this project'
-export const DIALOG_GENERIC_NO = 'NO'
-export const DIALOG_GENERIC_YES = ' YES'
-export const REMOVE_PROJECT_TEXT = 'Are you sure you want to delete this project? This action cannot be undone.'
-export const REMOVE_PROJECT_TITLE = 'Deleting project'
-export const FINISH_PROJECT_TEXT = 'Are you sure you want to end this project? This action cannot be undone.'
-export const FINISH_PROJECT_TITLE = 'Closing project'
-export const ENROLL_TITLE = 'Enrolling to this project!'
-export const ENROLL_TEXT = 'Are you sure you want to enroll to this project? If so, an application will be sent to the organization and you will have to wait for your approval before you can be a part of this project.'
-export const VOLUNTEER_COMMENTS_DIALOG_TITLE = ' said this about your project'
-export const VOLUNTEER_COMMENTS_DIALOG_OK = 'CLOSE'
-export const LOCATION_FILTER = 'FILTER'
-export const DOWNLOAD_CSV = 'Download CSV Report'
-export const DOWNLOAD_CSV_USER_LIST ='Download volunteers list'
-export const ENROLL_TEXT_NOT_LOGGED = 'To enroll to this project, you must be logged in. Please log in into your account and then apply to this project.'
+import React, { Component }  from 'react';
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import translator from "counterpart"
+
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
+counterpart.setLocale(localStorage.getItem('lang'));
+
+
+export const OPEN_PROJECT = translator.translate('viewProject')
+export const LEAVE_PROJECT = translator.translate('leave')
+export const ENROLL_TO_PROJECT = translator.translate('joinProject')
+export const REMOVE_PROJECT = translator.translate('removeProject')
+export const FINISH_PROJECT = translator.translate('finishProject')
+export const EDIT_PROJECT = translator.translate('editProject')
+export const EDIT_PROJECT_CLOSE = translator.translate('editProjectClose')
+export const SAVE_CHANGES = translator.translate('saveChanges')
+export const COORDINATOR_LABEL = translator.translate('coordinator')
+export const REMOVE_VOLUNTEER_DIALOG_TITLE = translator.translate('removingVolunteer')
+export const REMOVE_VOLUNTEER_DIALOG_CONTENT = translator.translate('REMOVE_VOLUNTEER_DIALOG_CONTENT')
+export const REMOVE_VOLUNTEER_DIALOG_CANCEL_TEXT = translator.translate('REMOVE_VOLUNTEER_DIALOG_CANCEL_TEXT')
+export const REMOVE_VOLUNTEER_DIALOG_ACCEPT_TEXT = translator.translate('REMOVE_VOLUNTEER_DIALOG_ACCEPT_TEXT')
+export const SERVER_ERROR = translator.translate('SERVER_ERROR')
+export const VOLUNTEER_ITEM_COORDINATOR_PLACEHOLDER = translator.translate('VOLUNTEER_ITEM_COORDINATOR_PLACEHOLDER')
+export const VOLUNTEER_ITEM_ACCEPTED_VOLUNTEER = translator.translate('VOLUNTEER_ITEM_ACCEPTED_VOLUNTEER')
+export const LEAVE_PROJECT_TEXT = translator.translate('LEAVE_PROJECT_TEXT')
+export const LEAVE_PROJECT_TITLE = translator.translate('LEAVE_PROJECT_TITLE')
+export const DIALOG_GENERIC_NO = translator.translate('DIALOG_GENERIC_NO')
+export const DIALOG_GENERIC_YES = translator.translate('DIALOG_GENERIC_YES')
+export const REMOVE_PROJECT_TEXT = translator.translate('REMOVE_PROJECT_TEXT')
+export const REMOVE_PROJECT_TITLE = translator.translate('REMOVE_PROJECT_TITLE')
+export const FINISH_PROJECT_TEXT = translator.translate('FINISH_PROJECT_TEXT')
+export const FINISH_PROJECT_TITLE = translator.translate('FINISH_PROJECT_TITLE')
+export const ENROLL_TITLE = translator.translate('ENROLL_TITLE')
+export const ENROLL_TEXT = translator.translate('ENROLL_TEXT')
+export const VOLUNTEER_COMMENTS_DIALOG_TITLE = translator.translate('VOLUNTEER_COMMENTS_DIALOG_TITLE')
+export const VOLUNTEER_COMMENTS_DIALOG_OK = translator.translate('VOLUNTEER_COMMENTS_DIALOG_OK')
+export const LOCATION_FILTER = translator.translate('LOCATION_FILTER')
+export const DOWNLOAD_CSV = translator.translate('DOWNLOAD_CSV')
+export const DOWNLOAD_CSV_USER_LIST =translator.translate('DOWNLOAD_CSV_USER_LIST')
+export const ENROLL_TEXT_NOT_LOGGED = translator.translate('ENROLL_TEXT_NOT_LOGGED')
 
 export const starsAverage = (evaluations) => {
     let sum = 0

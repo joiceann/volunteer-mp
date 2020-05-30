@@ -4,6 +4,7 @@ import instance from '../../axios';
 import React, {
   useEffect,
   useReducer,
+  useState,
 } from 'react';
 import {
   Avatar,
@@ -15,23 +16,36 @@ import {
   ListItemText,
   Paper,
   Select,
+  InputLabel,
   MenuItem,
   Typography as MuTypography,
 } from '@material-ui/core';
+import { Button } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import devices from '../../devices';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import {
-  Button,
   LoadingScreen,
   PrecautionButton,
   TextField,
+  YellowButton
 } from '../CommonComponents';
 import colors from '../../colors';
 import { useUserId } from '../../hooks';
 
 import InfoIcon from '@material-ui/icons/Info'
-
+import WcIcon from '@material-ui/icons/Wc';
+import FastfoodIcon from '@material-ui/icons/Fastfood';
+import LanguageIcon from '@material-ui/icons/Language';
+import PublicIcon from '@material-ui/icons/Public';
+import EditIcon from '@material-ui/icons/Edit';
+import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
+import { GiLoveInjection, GiMedicines } from "react-icons/gi";
+import SchoolIcon from '@material-ui/icons/School';
 import {
   BusinessCenter,
   Email,
@@ -43,6 +57,13 @@ import {
 
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import Translate from 'react-translate-component';
+
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
 
 const theme = createMuiTheme();
 
@@ -75,8 +96,15 @@ const BioContainer = styled.div`
 `;
 
 const ButtonContainer = styled.div`
+  margin-top:15px;
   display: flex;
   justify-content: flex-end;
+  margin-right:15px;
+`
+const ButtonContainerBottom = styled.div`
+  margin-top:15px;
+  display: flex;
+  justify-content: center;
 `
 
 const ColumnContainer = styled.div`
@@ -128,21 +156,60 @@ const Typography = styled(MuTypography)`
 
 
 const ProfileCard = ({ user, updateUser }) => {
-  const [state , setState] = useReducer(
-    (state, newState) => ({...state, ...newState}),
+  let lang = localStorage.getItem('lang')
+  console.log('ESTE ES EL LANG', lang)
+  counterpart.setLocale(lang);
+
+
+  const [state, setState] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
     {
       user: null,
       canEdit: false,
       editing: false,
       loading: false,
+      checkedSpanish: false,
+      checkedGuate: false,
     }
   );
+
   const userId = useUserId();
+
+  function handleKnowCountryChange(guate, esp) {
+    console.log('update')
+    console.log('guate', guate)
+    console.log('spanish', esp)
+    if (guate === true && esp === true) {
+      handleUpdateProperty(1, 'knowCountry')
+    }
+    if (guate === true && esp === false) {
+      handleUpdateProperty(2, 'knowCountry')
+    }
+    if (guate === false && esp === true) {
+      handleUpdateProperty(3, 'knowCountry')
+    }
+    if (guate === false && esp === false) {
+      handleUpdateProperty(4, 'knowCountry')
+    }
+  };
+
+  const handleChangeCheckedGuatemala = (event) => {
+    console.log(event.target.checked)
+    setState({ checkedGuate: event.target.checked })
+    handleKnowCountryChange(event.target.checked, state.checkedSpanish)
+  };
+
+  const handleChangeCheckedSpanish = (event) => {
+    console.log(event.target.checked)
+    setState({ checkedSpanish: event.target.checked })
+    handleKnowCountryChange(state.checkedGuate, event.target.checked)
+  };
 
   const handleToggle = (value) => {
     setState({ editing: !state.editing });
   };
   const handleUpdateUser = () => {
+    console.log(state.user)
     setState({ loading: true });
     setState({ editing: false });
     updateUser(state.user)
@@ -163,12 +230,13 @@ const ProfileCard = ({ user, updateUser }) => {
       case 'phone':
       case 'occupation':
       case 'gender':
-      case 'bdate' :
+      case 'bdate':
       case 'civilStatus':
       case 'educationLevel':
       case 'foodInfo':
       case 'knowCountry':
-      case 'pinterest':
+      case 'knowSpanish':
+      case 'projectInterest':
       case 'timeTravel':
         user[property] = value;
         setState({ user });
@@ -186,97 +254,106 @@ const ProfileCard = ({ user, updateUser }) => {
   };
 
   useEffect(() => {
-    if (user)
-      setState({ user: {...user}, canEdit: userId === user._id });
-  }, [user, userId]);  
+    if (user) {
+      setState({
+        user: {
+          ...user,
+        },
+        canEdit: userId === user._id,
+        checkedSpanish: user.knowCountry == 1 || user.knowCountry == 3,
+        checkedGuate: user.knowCountry == 1 || user.knowCountry == 2,
+      });
+    }
+
+  }, [user, userId]);
 
   if (!user || state.loading) {
     return <LoadingScreen />;
   }
+
+
+
   return (
     <Container>
       <FullPaper>
         {
           state.canEdit ?
-          (                  
-            <ButtonContainer>
-              {
-                state.editing ?
-                (
-                  <div>
-                    <PrecautionButton variant="contained" color="primary" onClick={handleToggle}>Cancel</PrecautionButton>
-                    <Button variant="contained" color="primary" onClick={handleUpdateUser}>Save</Button>
-                  </div>
-                ) :
-                (
-                  <Button variant="contained" color="primary"onClick={handleToggle}>Edit</Button>
-                )
-              }
-              
-            </ButtonContainer>
-          ):
-          ''
+            (
+              <ButtonContainer>
+                {
+                  !state.editing ?  
+                    (
+                      <IconButton aria-label="delete" size="large" onClick={handleToggle}>
+                        <EditIcon />
+                      </IconButton>
+                    ):
+                    ''
+                }
+              </ButtonContainer>
+            ) :
+            ''
         }
         <BioContainer>
-          <BigAvatar src={ user.photo ? user.photo : null }>
+          <BigAvatar src={user.photo ? user.photo : null}>
             {`${user.name[0]}${user.lname[0]}`}
           </BigAvatar>
-          
+
           {
             state.editing ?
-            (
-              <Grid container spacing={3} xs={6}>
-                <Grid item xs={6}>
-                  <TextField
-                    id="name"
-                    label="Name"
-                    name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'name')}
-                    required
-                    value={state.user.name}
-                    variant="outlined"
-                  />
+              (
+                <Grid container spacing={3} xs={6}>
+                  <Grid item xs={6}>
+                    <TextField
+                      id="name"
+                      label={<Translate content="name" />}
+                      name="name"
+                      onChange={event => handleUpdateProperty(event.target.value, 'name')}
+                      required
+                      value={state.user.name}
+                      variant="outlined"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      id="lname"
+                      label={<Translate content="lastname" />}
+                      name="lname"
+                      onChange={event => handleUpdateProperty(event.target.value, 'lname')}
+                      required
+                      value={state.user.lname}
+                      variant="outlined"
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    id="lname"
-                    label="Lastname"
-                    name="lname"
-                    onChange={event => handleUpdateProperty(event.target.value, 'lname')}
-                    required
-                    value={state.user.lname}
-                    variant="outlined"
-                  />
-                </Grid>
-              </Grid>
-            ) :
-            (
-              <Typography variant="h4">
-                {`${user.name} ${user.lname}`}
-              </Typography>
-            )
+              ) :
+              (
+                <Typography variant="h4">
+                  {`${user.name} ${user.lname}`}
+                </Typography>
+              )
           }
           {
             state.editing ?
-            (
-              <Grid container spacing={3} xs={6} style={{marginTop: '10px'}}>
-                <TextField
-                  fullWidth
-                  id="bio"
-                  label="Biography"
-                  margin="normal"
-                  multiline
-                  name="bio"
-                  onChange={event => handleUpdateProperty(event.target.value, 'bio')}
-                  required
-                  value={state.user.bio}
-                  variant="outlined"
-                />
-              </Grid>
+              (
+                <Grid container spacing={3} xs={6} style={{ marginTop: '10px' }}>
+                  <TextField
+                    fullWidth
+                    id="bio"
+                    label={<Translate content="bio" />}
+                    margin="normal"
+                    multiline
+                    name="bio"
+                    onChange={event => handleUpdateProperty(event.target.value, 'bio')}
+                    required
+                    value={state.user.bio}
+                    variant="outlined"
+                    rows={4}
+                  />
+                </Grid>
               ) :
-            (<Typography>
-            {user.bio}
-            </Typography>)
+              (<Typography>
+                {user.bio}
+              </Typography>)
           }
         </BioContainer>
         <ColumnContainer>
@@ -289,18 +366,19 @@ const ProfileCard = ({ user, updateUser }) => {
               </ListItemAvatar>
               {
                 state.editing ?
-                (<TextField
-                  autoComplete="email"
-                  id="email"
-                  label="Email address"
-                  name="email"
-                  onChange={event => handleUpdateProperty(event.target.value, 'email')}
-                  required
-                  value={state.user.email}
-                  variant="outlined"
-                />) :
-                (<ListItemText
-                    primary="Email address"
+                  (<TextField
+                    autoComplete="email"
+                    id="email"
+                    label={<Translate content="email" />}
+                    name="email"
+                    onChange={event => handleUpdateProperty(event.target.value, 'email')}
+                    required
+                    value={state.user.email}
+                    variant="outlined"
+                    style={{ width: "75%" }}
+                  />) :
+                  (<ListItemText
+                    primary={<Translate content="email" />}
                     secondary={user.email}
                   />)
               }
@@ -309,43 +387,45 @@ const ProfileCard = ({ user, updateUser }) => {
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <Phone/>
+                  <Phone />
                 </DataAvatar>
               </ListItemAvatar>
               {
                 state.editing ?
-                ( 
-                  <Grid container spacing={3}>
-                    <Grid item xs={3}>
-                      <TextField
-                        id="name"
-                        label="Area code"
-                        name="name"
-                        onChange={event => handleUpdateProperty(event.target.value, 'ncode')}
-                        value={state.user.ncode}
-                        variant="outlined"
-                      />
+                  (
+                    <Grid container spacing={3} >
+                      <Grid item xs={3}>
+                        <TextField
+                          id="name"
+                          label={<Translate content="code" />}
+                          name="name"
+                          onChange={event => handleUpdateProperty(event.target.value, 'ncode')}
+                          value={state.user.ncode}
+                          variant="outlined"
+                          style={{ width: "100%" }}
+                        />
+                      </Grid>
+                      <Grid item xs={9}>
+                        <TextField
+                          id="name"
+                          label={<Translate content="phone" />}
+                          name="name"
+                          onChange={event => handleUpdateProperty(event.target.value, 'phone')}
+                          value={state.user.phone}
+                          variant="outlined"
+                          style={{ width: "82%" }}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={9}>
-                      <TextField
-                        id="name"
-                        label="Phone Number"
-                        name="name"
-                        onChange={event => handleUpdateProperty(event.target.value, 'phone')}
-                        value={state.user.phone}
-                        variant="outlined"
-                      />
-                    </Grid>
-                  </Grid>
-                ) :
-                (
-                  <ListItemText
-                    primary="Phone Number"
-                    secondary={`+${user.ncode} ${user.phone}`}
-                  />
-                )
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content="phone" />}
+                      secondary={`+${user.ncode} ${user.phone}`}
+                    />
+                  )
               }
-              
+
             </ListItem>
             <Divider variant="inset" component="li" />
             <ListItem>
@@ -356,251 +436,248 @@ const ProfileCard = ({ user, updateUser }) => {
               </ListItemAvatar>
               {
                 state.editing ?
-                (
-                  <TextField
-                    id="name"
-                    label="Occupation"
-                    name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'occupation')}
-                    value={state.user.occupation}
-                    variant="outlined"
-                  />
-                ) :
-                (
-                  <ListItemText
-                    primary="Occupation"
-                    secondary={user.occupation}
-                  />
-                )
+                  (
+                    <TextField
+                      id="name"
+                      label={<Translate content="occup" />}
+                      name="name"
+                      onChange={event => handleUpdateProperty(event.target.value, 'occupation')}
+                      value={state.user.occupation}
+                      variant="outlined"
+                      style={{ width: "75%" }}
+                    />
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content="occup" />}
+                      secondary={user.occupation}
+                    />
+                  )
               }
             </ListItem>
             {/* gender */}
-            <ListItem>
+            <ListItem style={{ alignItems: "center" }}>
               <ListItemAvatar>
                 <DataAvatar>
-                  <InfoIcon />
+                  <WcIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
                 state.editing ?
-                (
-                  <Select
-                    id="name"
-                    label="Gender"
-                    name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'gender')}
-                    value={state.user.gender}
-                    variant="outlined"
-                  >
-                    <MenuItem value={0}>
-                        <em>Prefer Not To Say</em>
-                    </MenuItem>
-                    <MenuItem value={1}>
-                        <em>Women</em>
-                    </MenuItem>
-                    <MenuItem value={2}>
-                        <em>Men</em>
-                    </MenuItem>
-                  </Select>
-                ) :
-                (
-                  <ListItemText
-                    primary="Gender"
-                    secondary={user.gender === 1 ? 'Women' : user.gender === 2 ? 'Men' : 'Prefer not to say'}
-                  />
-                )
+                  (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "75%"
+                      }}
+                    >
+                      <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+                        <Translate content="gender" />
+                      </InputLabel>
+                      <Select
+                        id="name"
+                        label="Gender"
+                        name="name"
+                        onChange={event => handleUpdateProperty(event.target.value, 'gender')}
+                        value={state.user.gender}
+                        variant="outlined"
+                        style={{ width: "100%" }}
+                      >
+                        <MenuItem value={0}>
+                          <em>Prefer Not To Say</em>
+                        </MenuItem>
+                        <MenuItem value={1}>
+                          <em>Women</em>
+                        </MenuItem>
+                        <MenuItem value={2}>
+                          <em>Men</em>
+                        </MenuItem>
+                      </Select>
+
+                    </div>
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content="gender" />}
+                      secondary={user.gender === 1 ? 'Women' : user.gender === 2 ? 'Men' : 'Prefer not to say'}
+                    />
+                  )
               }
             </ListItem>
             {/* civil status */}
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <InfoIcon />
+                  <Favorite />
                 </DataAvatar>
               </ListItemAvatar>
               {
                 state.editing ?
-                (
-                  <Select
-                    id="name"
-                    label="Civil Status"
-                    name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'civilStatus')}
-                    value={state.user.civilStatus}
-                    variant="outlined"
-                  >
-                    <MenuItem value={0}>
-                        <em>N/A</em>
-                    </MenuItem>
-                    <MenuItem value={1}>
-                        <em>Single</em>
-                    </MenuItem>
-                    <MenuItem value={2}>
-                        <em>Married</em>
-                    </MenuItem>
-                    <MenuItem value={3}>
-                        <em>Widow</em>
-                    </MenuItem>
-                    <MenuItem value={4}>
-                        <em>Divorced</em>
-                    </MenuItem>
-                    <MenuItem value={5}>
-                        <em>Free Union</em>
-                    </MenuItem>
-                  </Select>
-                ) :
-                (
-                  <ListItemText
-                    primary="Civil Status"
-                    secondary={
-                      user.civilStatus === 1 ? 'Single' :
-                      user.civilStatus === 2 ? 'Married' :
-                      user.civilStatus === 3 ? 'Widow' :
-                      user.civilStatus === 4 ? 'Divorced' :
-                      user.civilStatus === 5 ? 'Free Union' : 'N/A' 
-                    }
-                  />
-                )
+                  (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "75%"
+                      }}
+                    >
+                      <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+                        <Translate content="civilstatus" />
+                      </InputLabel>
+                      <Select
+                        id="name"
+                        label="Civil Status"
+                        name="name"
+                        onChange={event => handleUpdateProperty(event.target.value, 'civilStatus')}
+                        value={state.user.civilStatus}
+                        variant="outlined"
+                        style={{ width: "100%" }}
+                      >
+                        <MenuItem value={0}>
+                          <em>N/A</em>
+                        </MenuItem>
+                        <MenuItem value={1}>
+                          <em>Single</em>
+                        </MenuItem>
+                        <MenuItem value={2}>
+                          <em>Married</em>
+                        </MenuItem>
+                        <MenuItem value={3}>
+                          <em>Widow</em>
+                        </MenuItem>
+                        <MenuItem value={4}>
+                          <em>Divorced</em>
+                        </MenuItem>
+                        <MenuItem value={5}>
+                          <em>Free Union</em>
+                        </MenuItem>
+                      </Select>
+
+                    </div>
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content="civilstatus" />}
+                      secondary={
+                        user.civilStatus === 1 ? 'Single' :
+                          user.civilStatus === 2 ? 'Married' :
+                            user.civilStatus === 3 ? 'Widow' :
+                              user.civilStatus === 4 ? 'Divorced' :
+                                user.civilStatus === 5 ? 'Free Union' : 'N/A'
+                      }
+                    />
+                  )
               }
             </ListItem>
             {/* education level */}
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <InfoIcon />
+                  <SchoolIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
                 state.editing ?
-                (
-                  <Select
-                    id="name"
-                    label="Education Level"
-                    name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'educationLevel')}
-                    value={state.user.educationLevel}
-                    variant="outlined"
-                  >
-                    <MenuItem value={0}>
-                        <em>N/A</em>
-                    </MenuItem>
-                    <MenuItem value={1}>
-                        <em>Elementary</em>
-                    </MenuItem>
-                    <MenuItem value={2}>
-                        <em>Highschool</em>
-                    </MenuItem>
-                    <MenuItem value={3}>
-                        <em>Licenciatura</em>
-                    </MenuItem>
-                    <MenuItem value={4}>
-                        <em>Master</em>
-                    </MenuItem>
-                    <MenuItem value={5}>
-                        <em>PhD</em>
-                    </MenuItem>
-                  </Select>
-                ) :
-                (
-                  <ListItemText
-                    primary="Education Level"
-                    secondary={
-                      user.educationLevel === 1 ? 'Elementary' :
-                      user.educationLevel === 2 ? 'Highschool' :
-                      user.educationLevel === 3 ? 'Licenciatura' :
-                      user.educationLevel === 4 ? 'Master' :
-                      user.educationLevel === 5 ? 'PhD' : 'N/A' 
-                    }
-                  />
-                )
+                  (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "75%"
+                      }}
+                    >
+                      <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+                        <Translate content="eduLevel" />
+                      </InputLabel>
+                      <Select
+                        id="name"
+                        label="Education Level"
+                        name="name"
+                        onChange={event => handleUpdateProperty(event.target.value, 'educationLevel')}
+                        value={state.user.educationLevel}
+                        variant="outlined"
+                        style={{ width: "100%" }}
+                      >
+                        <MenuItem value={0}><em>N/A</em></MenuItem>
+                        <MenuItem value={1}><em><Translate content="middle" /></em></MenuItem>
+                        <MenuItem value={2}><em> <Translate content="highschool" /></em></MenuItem>
+                        <MenuItem value={3}><em> <Translate content="university" /></em></MenuItem>
+                        <MenuItem value={4}><em> <Translate content="master" /></em></MenuItem>
+                        <MenuItem value={5}><em> <Translate content="phd" /></em></MenuItem>
+
+                      </Select>
+
+                    </div>
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content="eduLevel" />}
+                      secondary={
+                        user.educationLevel === 1 ? 'Elementary' :
+                          user.educationLevel === 2 ? 'Highschool' :
+                            user.educationLevel === 3 ? 'Licenciatura' :
+                              user.educationLevel === 4 ? 'Master' :
+                                user.educationLevel === 5 ? 'PhD' : 'N/A'
+                      }
+                    />
+                  )
               }
             </ListItem>
             {/* special diet */}
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <InfoIcon />
+                  <FastfoodIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
                 state.editing ?
-                (
-                  <Select
-                    id="name"
-                    label="Special Diet"
-                    name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'foodInfo')}
-                    value={state.user.foodInfo}
-                    variant="outlined"
-                  >
-                    <MenuItem value={0}>
-                        <em>N/A</em>
-                    </MenuItem>
-                    <MenuItem value={1}>
-                        <em>Vegan</em>
-                    </MenuItem>
-                    <MenuItem value={2}>
-                        <em>Vegetarian</em>
-                    </MenuItem>                    
-                  </Select>
-                ) :
-                (
-                  <ListItemText
-                    primary="Special Diet"
-                    secondary={
-                      user.foodInfo === 1 ? 'Vegan' :
-                      user.foodInfo === 2 ? 'Vegetarian' : 'N/A' 
-                    }
-                  />
-                )
-              }
-            </ListItem>
-            {/* knows */}
-            <ListItem>
-              <ListItemAvatar>
-                <DataAvatar>
-                  <InfoIcon />
-                </DataAvatar>
-              </ListItemAvatar>
-              {
-                state.editing ?
-                (
-                  <Select
-                    id="name"
-                    label="Knows country and language"
-                    name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'knowCountry')}
-                    value={state.user.knowCountry}
-                    variant="outlined"
-                  >
-                    <MenuItem value={0}>
-                        <em>N/A</em>
-                    </MenuItem>
-                    <MenuItem value={1}>
-                        <em>Yes/Yes</em>
-                    </MenuItem>
-                    <MenuItem value={2}>
-                        <em>Yes/No</em>
-                    </MenuItem>   
-                    <MenuItem value={3}>
-                        <em>No/Yes</em>
-                    </MenuItem>
-                    <MenuItem value={4}>
-                        <em>No/No</em>
-                    </MenuItem>                 
-                  </Select>
-                ) :
-                (
-                  <ListItemText
-                    primary="Knows country and language"
-                    secondary={
-                      user.knowCountry === 1 ? 'Yes/Yes' :
-                      user.knowCountry === 2 ? 'Yes/No' : 
-                      user.knowCountry === 3 ? 'No/Yes' :
-                      user.knowCountry === 4 ? 'No/No' : 'N/A' 
-                    }
-                  />
-                )
+                  (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "75%"
+                      }}
+                    >
+                      <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+                        <Translate content='specialdiet' />
+                      </InputLabel>
+                      <Select
+                        id="name"
+                        label={<Translate content='specialdiet' />}
+                        name="name"
+                        onChange={event => handleUpdateProperty(event.target.value, 'foodInfo')}
+                        value={state.user.foodInfo}
+                        variant="outlined"
+                        style={{ width: "100%" }}
+                      >
+                        <MenuItem value={0}>
+                          <em>N/A</em>
+                        </MenuItem>
+                        <MenuItem value={1}>
+                          <em><Translate contents='vegan'/></em>
+                        </MenuItem>
+                        <MenuItem value={2}>
+                          <em><Translate content='vegetarian'/></em>
+                        </MenuItem>
+                      </Select>
+                    </div>
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content='specialdiet' />}
+                      secondary={
+                        user.foodInfo === 1 ? 'Vegano' :
+                          user.foodInfo === 2 ? 'Vegetariano' : 'N/A'
+                      }
+                    />
+                  )
               }
             </ListItem>
             {/* interests */}
@@ -612,91 +689,209 @@ const ProfileCard = ({ user, updateUser }) => {
               </ListItemAvatar>
               {
                 state.editing ?
-                (
-                  <Select
-                    id="name"
-                    label="Project Interests"
-                    name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'pinterest')}
-                    value={state.user.pinterest}
-                    variant="outlined"
-                  >
-                    <MenuItem value={0}>
-                        <em>N/A</em>
-                    </MenuItem>
-                    <MenuItem value={1}>
-                        <em>Education</em>
-                    </MenuItem>
-                    <MenuItem value={2}>
-                        <em>Health</em>
-                    </MenuItem>   
-                    <MenuItem value={3}>
-                        <em>Environment</em>
-                    </MenuItem>
-                    <MenuItem value={4}>
-                        <em>All</em>
-                    </MenuItem>                 
-                  </Select>
-                ) :
-                (
-                  <ListItemText
-                    primary="Project Interests"
-                    secondary={
-                      user.pinterest === 1 ? 'Education' :
-                      user.pinterest === 2 ? 'Health' :
-                      user.pinterest === 3 ? 'Environment' :
-                      user.pinterest === 4 ? 'All' : 'N/A' 
-                    }
-                  />
-                )
+                  (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "75%"
+                      }}
+                    >
+                      <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+                        <Translate content='projectInterests' />
+                      </InputLabel>
+                      <Select
+                        id="name"
+                        label="Project Interests"
+                        name="name"
+                        onChange={event => handleUpdateProperty(event.target.value, 'projectInterest')}
+                        value={state.user.projectInterest}
+                        variant="outlined"
+                        style={{ width: '100%' }}
+                      >
+                        <MenuItem value={0}>
+                          <em>N/A</em>
+                        </MenuItem>
+                        <MenuItem value={1}>
+                          <em><Translate content='education'/></em>
+                        </MenuItem>
+                        <MenuItem value={2}>
+                          <em><Translate content='health'/></em>
+                        </MenuItem>
+                        <MenuItem value={3}>
+                          <em><Translate content='environment'/></em>
+                        </MenuItem>
+                        <MenuItem value={4}>
+                          <em><Translate content='all'/></em>
+                        </MenuItem>
+                      </Select>
+                    </div>
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content="projectInterests" />}
+                      secondary={
+                        user.projectInterest === 1 ? 'Educación' :
+                          user.projectInterest === 2 ? 'Salud' :
+                            user.projectInterest === 3 ? 'Medio Ambiente' :
+                              user.projectInterest === 4 ? 'Todas' : 'N/A'
+                      }
+                    />
+                  )
               }
             </ListItem>
             {/* travel */}
             <ListItem>
               <ListItemAvatar>
                 <DataAvatar>
-                  <InfoIcon />
+                  <AccessAlarmIcon />
                 </DataAvatar>
               </ListItemAvatar>
               {
                 state.editing ?
-                (
-                  <Select
-                    id="name"
-                    label="Time Travel Availability"
-                    name="name"
-                    onChange={event => handleUpdateProperty(event.target.value, 'timeTravel')}
-                    value={state.user.timeTravel}
-                    variant="outlined"
-                  >
-                    <MenuItem value={0}>
-                        <em>N/A</em>
-                    </MenuItem>
-                    <MenuItem value={1}>
-                        <em>1 week</em>
-                    </MenuItem>
-                    <MenuItem value={2}>
-                        <em>2 weeks</em>
-                    </MenuItem>   
-                    <MenuItem value={3}>
-                        <em>4 weeks</em>
-                    </MenuItem>
-                    <MenuItem value={4}>
-                        <em>6 or more weeks</em>
-                    </MenuItem>                 
-                  </Select>
-                ) :
-                (
-                  <ListItemText
-                    primary="Time Travel Availability"
-                    secondary={
-                      user.timeTravel === 1 ? '1 week' :
-                      user.timeTravel === 2 ? '2 weeks' :
-                      user.timeTravel === 3 ? '4 weeks' :
-                      user.timeTravel === 4 ? '6 or more weeks' : 'N/A' 
-                    }
-                  />
-                )
+                  (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "75%"
+                      }}
+                    >
+                      <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+                        <Translate content='timeTravel' />
+                      </InputLabel>
+                      <Select
+                        id="name"
+                        label="Time Travel Availability"
+                        name="name"
+                        onChange={event => handleUpdateProperty(event.target.value, 'timeTravel')}
+                        value={state.user.timeTravel}
+                        variant="outlined"
+                        style={{ width: '100%' }}
+                      >
+                        <MenuItem value={0}>
+                          <em>N/A</em>
+                        </MenuItem>
+                        <MenuItem value={1}>
+                          <em>1 <Translate content='week'/></em>
+                        </MenuItem>
+                        <MenuItem value={2}>
+                          <em>2 <Translate content='weeks'/></em>
+                        </MenuItem>
+                        <MenuItem value={3}>
+                          <em>4 <Translate content='weeks'/></em>
+                        </MenuItem>
+                        <MenuItem value={4}>
+                          <em>6 <Translate content='moreWeeks'/></em>
+                        </MenuItem>
+                      </Select>
+                    </div>
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content="timeTravel" />}
+                      secondary={
+                        user.timeTravel === 1 ? '1 semana' :
+                          user.timeTravel === 2 ? '2 semanas' :
+                            user.timeTravel === 3 ? '4 semanas' :
+                              user.timeTravel === 4 ? '6 o más' : 'N/A'
+                      }
+                    />
+                  )
+              }
+            </ListItem>
+            {/* knows Country */}
+            <ListItem>
+              <ListItemAvatar>
+                <DataAvatar>
+                  <PublicIcon />
+                </DataAvatar>
+              </ListItemAvatar>
+              {
+                state.editing ?
+                  (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "75%"
+                      }}
+                    >
+                      <FormGroup row>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={state.checkedGuate}
+                              onChange={handleChangeCheckedGuatemala}
+                            />
+                          }
+                          labelPlacement="start"
+                          label={<Translate content="knowsGuate" />}
+                        />
+                      </FormGroup>
+                    </div>
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content="knowsGuate" />}
+                      secondary={
+                        user.knowCountry === 1 ? 'Si' :
+                          user.knowCountry === 2 ? 'Si' :
+                            user.knowCountry === 3 ? 'No' :
+                              user.knowCountry === 4 ? 'No' :
+                                user.knowCountry === 0 ? 'N/A' : 'N/A'
+                      }
+                    />
+                  )
+              }
+            </ListItem>
+            {/* knows Spanish*/}
+            <ListItem>
+              <ListItemAvatar>
+                <DataAvatar>
+                  <LanguageIcon />
+                </DataAvatar>
+              </ListItemAvatar>
+              {
+                state.editing ?
+                  (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "75%"
+                      }}
+                    >
+                      <FormGroup row>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={state.checkedSpanish}
+                              onChange={handleChangeCheckedSpanish}
+                            />
+                          }
+                          labelPlacement="start"
+                          label={<Translate content="knowSpanish" />}
+                        />
+                      </FormGroup>
+                    </div>
+                  ) :
+                  (
+                    <ListItemText
+                      primary={<Translate content="knowsSpanish" />}
+                      secondary={
+                        user.knowCountry === 1 ? 'Si' :
+                          user.knowCountry === 2 ? 'No' :
+                            user.knowCountry === 3 ? 'Si' :
+                              user.knowCountry === 4 ? 'No' :
+                                user.knowCountry === 0 ? 'N/A' : 'N/A'
+                      }
+                    />
+                  )
               }
             </ListItem>
           </DetailsList>
@@ -710,116 +905,58 @@ const ProfileCard = ({ user, updateUser }) => {
                 </ListItemAvatar>
                 {
                   state.editing ?
-                  (
-                    <TextField
-                      id="allergies"
-                      label="Allergies"
-                      name="allergies"
-                      onChange={event => handleUpdateProperty(event.target.value, 'allergies')}
-                      value={state.user.healthInfo.allergies}
-                      variant="outlined"
-                    />
-                  ) :
-                  (
-                    <ListItemText
-                      primary="Allergies"
-                      secondary={user.healthInfo.allergies}
-                    />
-                  )
+                    (
+                      <TextField
+                        id="allergies"
+                        label="Allergies"
+                        name="allergies"
+                        onChange={event => handleUpdateProperty(event.target.value, 'allergies')}
+                        value={state.user.healthInfo.allergies}
+                        variant="outlined"
+                        style={{width:'75%'}}
+                        multiline
+                        rows={2}
+                      />
+                    ) :
+                    (
+                      <ListItemText
+                        primary={<Translate content="allergie" />}
+                        secondary={user.healthInfo.allergies}
+                      />
+                    )
                 }
               </ListItem>
               <Divider variant="inset" component="li" />
               <ListItem>
                 <ListItemAvatar>
                   <DataAvatar>
-                    <Favorite />
+                    <GiMedicines />
                   </DataAvatar>
                 </ListItemAvatar>
                 {
                   state.editing ?
-                  (
-                    <TextField
-                      id="medicine"
-                      label="Special Medicine"
-                      name="allergies"
-                      onChange={event => handleUpdateProperty(event.target.value, 'medicine')}
-                      value={state.user.healthInfo.medicine}
-                      variant="outlined"
-                    />
-                  ) :
-                  (
-                    <ListItemText
-                      primary="Special Medicine"
-                      secondary={user.healthInfo.medicine}
-                    />
-                  )
+                    (
+                      <TextField
+                        id="medicine"
+                        label={<Translate content='specialMedicine'/>}
+                        name="allergies"
+                        onChange={event => handleUpdateProperty(event.target.value, 'medicine')}
+                        value={state.user.healthInfo.medicine}
+                        variant="outlined"
+                        style={{width:'75%'}}
+                        multiline
+                        rows={2}
+                      />
+                    ) :
+                    (
+                      <ListItemText
+                        primary={<Translate content='specialMedicine'/>}
+                        secondary={user.healthInfo.medicine}
+                      />
+                    )
                 }
               </ListItem>
-              {/* blood type */}
-              <ListItem>
-                <ListItemAvatar>
-                  <DataAvatar>
-                    <InfoIcon />
-                  </DataAvatar>
-                </ListItemAvatar>
-                {
-                  state.editing ?
-                  (
-                    <Select
-                      id="name"
-                      label="Blood Type"
-                      name="name"
-                      onChange={event => handleUpdateProperty(event.target.value, 'btype')}
-                      value={state.user.healthInfo.btype}
-                      variant="outlined"
-                    >
-                      <MenuItem value={0}>
-                          <em>N/A</em>
-                      </MenuItem>
-                      <MenuItem value={1}>
-                          <em>O-</em>
-                      </MenuItem>
-                      <MenuItem value={2}>
-                          <em>O+</em>
-                      </MenuItem>
-                      <MenuItem value={3}>
-                          <em>A+</em>
-                      </MenuItem>
-                      <MenuItem value={4}>
-                          <em>A-</em>
-                      </MenuItem>
-                      <MenuItem value={5}>
-                          <em>B-</em>
-                      </MenuItem>
-                      <MenuItem value={5}>
-                          <em>B+</em>
-                      </MenuItem>
-                      <MenuItem value={5}>
-                          <em>AB-</em>
-                      </MenuItem>
-                      <MenuItem value={5}>
-                          <em>AB+</em>
-                      </MenuItem>
-                    </Select>
-                  ) :
-                  (
-                    <ListItemText
-                      primary="Blood Type"
-                      secondary={
-                        user.healthInfo.btype === 1 ? 'O-' :
-                        user.healthInfo.btype === 2 ? 'O+' : 
-                        user.healthInfo.btype === 3 ? 'A+' :
-                        user.healthInfo.btype === 4 ? 'A-' : 
-                        user.healthInfo.btype === 5 ? 'B-' :
-                        user.healthInfo.btype === 6 ? 'B+' :
-                        user.healthInfo.btype === 7 ? 'AB-' :
-                        user.healthInfo.btype === 8 ? 'AB+' : 'N/A'
-                      }
-                    />
-                  )
-                }
-              </ListItem>
-              <Divider variant="inset" component="li" />
+              {/* Special previous conditions */}
               <ListItem>
                 <ListItemAvatar>
                   <DataAvatar>
@@ -828,27 +965,127 @@ const ProfileCard = ({ user, updateUser }) => {
                 </ListItemAvatar>
                 {
                   state.editing ?
-                  (
-                    <TextField
-                      id="pcondition"
-                      label="Special Previous Conditions"
-                      name="pcondition"
-                      onChange={event => handleUpdateProperty(event.target.value, 'pcondition')}
-                      value={state.user.healthInfo.pcondition}
-                      variant="outlined"
-                    />
-                  ) :
-                  (
-                    <ListItemText
-                      primary="Special Previous Conditions"
-                      secondary={user.healthInfo.pcondition}
-                    />
-                  )
+                    (
+                      <TextField
+                        id="pcondition"
+                        label={<Translate content='previousConditions'/>}
+                        name="pcondition"
+                        onChange={event => handleUpdateProperty(event.target.value, 'pcondition')}
+                        value={state.user.healthInfo.pcondition}
+                        variant="outlined"
+                        style={{width:'75%'}}
+                        multiline
+                        rows={2}
+                      />
+                    ) :
+                    (
+                      <ListItemText
+                        primary={<Translate content='previousConditions'/>}
+                        secondary={user.healthInfo.pcondition}
+                      />
+                    )
                 }
               </ListItem>
-            </AdditionalList>            
-          </SecondColumn>          
+              {/* blood type */}
+              <ListItem>
+                <ListItemAvatar>
+                  <DataAvatar>
+                    <GiLoveInjection />
+                  </DataAvatar>
+                </ListItemAvatar>
+                {
+                  state.editing ?
+                    (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          width: "75%"
+                        }}
+                      >
+                        <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+                          <Translate content='typeBlood' />
+                        </InputLabel>
+                        <Select
+                          id="name"
+                          label={<Translate content="typeBlood" />}
+                          name="name"
+                          onChange={event => handleUpdateProperty(event.target.value, 'btype')}
+                          value={state.user.healthInfo.btype}
+                          variant="outlined"
+                          style={{width:'100%'}}
+                        >
+                          <MenuItem value={0}>
+                            <em>N/A</em>
+                          </MenuItem>
+                          <MenuItem value={1}>
+                            <em>O-</em>
+                          </MenuItem>
+                          <MenuItem value={2}>
+                            <em>O+</em>
+                          </MenuItem>
+                          <MenuItem value={3}>
+                            <em>A+</em>
+                          </MenuItem>
+                          <MenuItem value={4}>
+                            <em>A-</em>
+                          </MenuItem>
+                          <MenuItem value={5}>
+                            <em>B-</em>
+                          </MenuItem>
+                          <MenuItem value={6}>
+                            <em>B+</em>
+                          </MenuItem>
+                          <MenuItem value={7}>
+                            <em>AB-</em>
+                          </MenuItem>
+                          <MenuItem value={8}>
+                            <em>AB+</em>
+                          </MenuItem>
+                        </Select>
+                      </div>
+                    ) :
+                    (
+                      <ListItemText
+                        primary={<Translate content="typeBlood" />}
+                        secondary={
+                          user.healthInfo.btype === 1 ? 'O-' :
+                            user.healthInfo.btype === 2 ? 'O+' :
+                              user.healthInfo.btype === 3 ? 'A+' :
+                                user.healthInfo.btype === 4 ? 'A-' :
+                                  user.healthInfo.btype === 5 ? 'B-' :
+                                    user.healthInfo.btype === 6 ? 'B+' :
+                                      user.healthInfo.btype === 7 ? 'AB-' :
+                                        user.healthInfo.btype === 8 ? 'AB+' : 'N/A'
+                        }
+                      />
+                    )
+                }
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </AdditionalList>
+          </SecondColumn>
         </ColumnContainer>
+      
+        {
+          state.canEdit ?
+            (
+              <ButtonContainerBottom>
+                {
+                  state.editing ?
+                    (
+                      <div style={{width:'100%', justifyContent:'center', display: 'flex'}}>
+                        <Button variant="outlined" color="secondary" style={{margin:10, width:'15%'}} onClick={handleToggle}>Cancel</Button>
+                        <Button variant="contained" style={{backgroundColor: '#06A10B', color: '#fff', margin:10, width:'15%'}} onClick={handleUpdateUser}>Save </Button>
+                      </div>
+                    ) :
+                    ''
+                }
+              </ButtonContainerBottom>
+            ) :
+            ''
+        }
       </FullPaper>
     </Container>
   );

@@ -8,6 +8,14 @@ import Modal from '@material-ui/core/Modal'
 import Dialog from '@material-ui/core/Dialog';
 import Slide from '@material-ui/core/Slide';
 import List from '@material-ui/core/List'
+import Select from '@material-ui/core/Select';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import {
+    Button,
+    FormControl,
+    MenuItem,
+    FormHelperText
+} from '@material-ui/core';
 import '../MyProjects/my_projects.css'
 import ProjectModal from '../MyProjects/ProjectModal';
 import ProjectListItem from '../MyProjects/ProjectListItem';
@@ -17,6 +25,15 @@ import ViewModuleIcon from '@material-ui/icons/ViewModule'
 import ViewListIcon from '@material-ui/icons/ViewList'
 import { SearchBar, Fab } from '../CommonComponents';
 import EditProject from '../Projects/EditProject';
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import Translate from 'react-translate-component';
+import translator from "counterpart"
+
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -36,15 +53,17 @@ class ProjectsSearchComponent extends Component {
             listView: true,
 
             showingCreateProject: false,
-            openEditProject: false
+            openEditProject: false,
+            typeSelect: 0,
         }
 
-        this.onOpenProject = this.onOpenProject.bind(this)        
+        this.onOpenProject = this.onOpenProject.bind(this)
         this.toggleProjectModal = this.toggleProjectModal.bind(this)
         this.onHandleProjectUpdate = this.onHandleProjectUpdate.bind(this)
         this.onHandleRefreshProjects = this.onHandleRefreshProjects.bind(this)
-        this.handleOnLocalSearch = this.handleOnLocalSearch.bind(this)        
+        this.handleOnLocalSearch = this.handleOnLocalSearch.bind(this)
     }
+
 
     onHandleRefreshProjects = () => {
         const clearProjects = new Promise((resolve, reject) => {
@@ -77,13 +96,13 @@ class ProjectsSearchComponent extends Component {
 
     onOpenProject = (project) => {
         console.log('project is', project)
-        
+
         const setNewProject = new Promise((resolve, reject) => {
             this.setState({ currentProject: project })
             resolve()
         })
 
-        setNewProject.then(() => { this.toggleProjectModal() })        
+        setNewProject.then(() => { this.toggleProjectModal() })
     }
 
     toggleProjectModal = () => {
@@ -126,7 +145,7 @@ class ProjectsSearchComponent extends Component {
                 if (listView) {
                     fixedProjects = projects
                 } else {
-                    fixedProjects = this.normalizeProjectsForGridPlacement(projects)  
+                    fixedProjects = this.normalizeProjectsForGridPlacement(projects)
                 }
 
                 console.log(fixedProjects)
@@ -140,23 +159,23 @@ class ProjectsSearchComponent extends Component {
                         resolve(projects)
                     }).catch(error => reject(error))
                 })
-    
+
                 fetchedProjects.then(projects => {
                     let fixedProjects = null
-    
+
                     if (listView) {
                         fixedProjects = projects
                     } else {
-                        fixedProjects = this.normalizeProjectsForGridPlacement(projects)  
+                        fixedProjects = this.normalizeProjectsForGridPlacement(projects)
                     }
-    
+
                     console.log(fixedProjects)
-    
+
                     this.setState({ projects: fixedProjects, initialProjects: fixedProjects, userType: 'NOT_LOGGED' })
                 })
             }
         })
-    }    
+    }
 
     normalizeProjectsForGridPlacement = (projects) => {
         let fixedProjects = []
@@ -201,21 +220,45 @@ class ProjectsSearchComponent extends Component {
         // this.setState({ projects })
     }
 
+    handleLocationsSelectorOnSelect = (e) => {
+        const { initialProjects } = this.state
+        const { projects } = this.state
+        this.setState({ typeSelect: Number(e.target.value) })
+        let geoLocations = projects
+
+        if (e.target.value !== "") {
+            if (Number(e.target.value) == 0) {
+                this.setState({ projects: initialProjects })
+            }
+            else {
+                geoLocations = projects.filter(project => project.type === Number(e.target.value))
+                console.log(geoLocations)
+                this.setState({ projects: geoLocations })
+            }
+        }
+    }
+
     render = () => {
         console.log(this.state)
-        const { axiosCancelTokenSource, projects, showingProject, currentProject, userType, listView, showingCreateProject, openEditProject } = this.state
+        const { axiosCancelTokenSource, projects, showingProject, currentProject, userType, listView, showingCreateProject, openEditProject, typeSelect } = this.state
 
-        console.log(`userType is ${userType}`)        
-        
-        return(
+        console.log(`userType is ${userType}`)
+        let lang = localStorage.getItem('lang')
+        console.log('ESTE ES EL LANG', lang)
+        counterpart.setLocale(lang);
+        const searchPs = translator.translate("searchPs")
+
+
+        return (
             <div className={this.props.main ? 'wrapper-my-projects' : 'wrapper-public-projects'}>
+
                 {
                     currentProject &&
                     <Dialog TransitionComponent={Transition} fullScreen open={showingProject} onClose={this.toggleProjectModal}>
-                        <ProjectModal 
+                        <ProjectModal
                             publicMode
-                            userType={userType} 
-                            project={currentProject} 
+                            userType={userType}
+                            project={currentProject}
                             onClose={this.toggleProjectModal}
                             onHandleProjectUpdate={this.onHandleProjectUpdate}
                             onHandleRefreshProjects={this.onHandleRefreshProjects}
@@ -235,8 +278,8 @@ class ProjectsSearchComponent extends Component {
                     <Grid container className='projects-grid' spacing={2}>
                         <Grid item xs={10} sm={10} md={10} lg={10}>
                             <Typography variant="h3" className='josefin-bold' style={{ color: '#fff', marginBottom: 20 }}>
-                                Search projects
-                            </Typography> 
+                                <Translate content="searchPs" />
+                            </Typography>
                         </Grid>
                         <Grid style={{ flexDirection: 'row', justifyContent: 'flex-end' }} item xs={2} sm={2} md={2} lg={2} className='inner-grid'>
                             {
@@ -253,11 +296,43 @@ class ProjectsSearchComponent extends Component {
 
                 {
                     projects &&
-                    <SearchBar                        
-                        placeholder="Search projects"
-                        value={undefined}
-                        onChange={this.handleOnLocalSearch}
-                    />
+                    <Grid container style={{ backgroundColor: '#fff', alignSelf:'center' }}>
+                        <Grid item xs={8} style={{alignSelf:'center'}}>
+                            <SearchBar
+                                placeholder={searchPs}
+                                value={undefined}
+                                onChange={this.handleOnLocalSearch}
+                            />
+
+                        </Grid>
+                        <Grid item xs={4}>
+                            <FormControl style={{ width: '80%', padding:'20px' }}>
+                                <Select
+                                    labelId="vol-select-label"
+                                    id="vol-select"
+                                    value={this.state.typeSelect}
+                                    onChange={(e) => this.handleLocationsSelectorOnSelect(e)}
+                                >
+                                    <MenuItem value="0">
+                                        <em>Todos</em>
+                                    </MenuItem>
+                                    <MenuItem value="1">
+                                        <em>Medio Ambiente</em>
+                                    </MenuItem>
+                                    <MenuItem value="2">
+                                        <em>Educación</em>
+                                    </MenuItem>
+                                    <MenuItem value="3">
+                                        <em>Salud</em>
+                                    </MenuItem>
+
+                                </Select>
+                                <FormHelperText>Filtrar por categoría de proyecto</FormHelperText>
+                            </FormControl>
+
+                        </Grid>
+                    </Grid>
+
                 }
 
                 {
@@ -265,8 +340,8 @@ class ProjectsSearchComponent extends Component {
                     <List>
                         {
                             projects.map((project, index) => {
-                                return(
-                                    <ProjectListItem key={index} onEditProject={() => {}} editOption={false} project={project} onOpenProject={this.onOpenProject} />
+                                return (
+                                    <ProjectListItem key={index} onEditProject={() => { }} editOption={false} project={project} onOpenProject={this.onOpenProject} />
                                 )
                             })
                         }
@@ -275,33 +350,33 @@ class ProjectsSearchComponent extends Component {
                 {
                     !listView && projects &&
                     projects.map((projectRow, key) => {
-                        return(
+                        return (
                             <Grid key={key} container className='projects-grid' spacing={2}>
                                 {
                                     projectRow[0] &&
                                     <Grid item xs={12} sm={12} md={6} lg={3} className='inner-grid'>
-                                        <ProjectCard editOption={false} project={projectRow[0]} onOpenProject={this.onOpenProject}/>
+                                        <ProjectCard editOption={false} project={projectRow[0]} onOpenProject={this.onOpenProject} />
                                     </Grid>
                                 }
                                 {
                                     projectRow[1] &&
                                     <Grid item xs={12} sm={12} md={6} lg={3} className='inner-grid'>
-                                        <ProjectCard editOption={false} project={projectRow[1]} onOpenProject={this.onOpenProject}/>
+                                        <ProjectCard editOption={false} project={projectRow[1]} onOpenProject={this.onOpenProject} />
                                     </Grid>
                                 }
                                 {
                                     projectRow[2] &&
                                     <Grid item xs={12} sm={12} md={6} lg={3} className='inner-grid'>
-                                        <ProjectCard editOption={false} project={projectRow[2]} onOpenProject={this.onOpenProject}/>
+                                        <ProjectCard editOption={false} project={projectRow[2]} onOpenProject={this.onOpenProject} />
                                     </Grid>
                                 }
                                 {
                                     projectRow[3] &&
                                     <Grid item xs={12} sm={12} md={6} lg={3} className='inner-grid'>
-                                        <ProjectCard editOption={false} project={projectRow[3]} onOpenProject={this.onOpenProject}/>
+                                        <ProjectCard editOption={false} project={projectRow[3]} onOpenProject={this.onOpenProject} />
                                     </Grid>
                                 }
-                            </Grid>                        
+                            </Grid>
                         )
                     })
                 }

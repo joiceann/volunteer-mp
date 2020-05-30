@@ -7,7 +7,9 @@ export default class ImageUpload extends Component {
 
         this.state = {
             imageFile: null,
-            imagePreviewUrl: this.props.imagePreviewUrl || null
+            imagePreviewUrl: this.props.imagePreviewUrl || null,
+            index: this.props.index,
+            title:this.props.title
         }
 
         this.handleImageChange = this.handleImageChange.bind(this)
@@ -21,7 +23,7 @@ export default class ImageUpload extends Component {
 
         reader.onloadend = () => {
             const imagePath = URL.createObjectURL(imageFile)            
-            this.props.handleImageChange(imageFile)
+            this.props.handleImageChange(imageFile, this.state.index)
             this.setState({ imageFile, imagePreviewUrl: reader.result })
         }
 
@@ -33,8 +35,12 @@ export default class ImageUpload extends Component {
 
         return(
             <div className='inner-grid' style={{ width: '100%' }}>
-                <h3 className='josefin-bold'>Project Image</h3>
-                <Grid className='inner-grid' style={{ flexDirection: 'row' }} container spacing={2}>
+                {
+                    this.state.title &&
+                    <h3 className='josefin-bold'>Project Image</h3>
+
+                }
+                <Grid className='inner-grid' container spacing={2}>
                     {
                         imagePreviewUrl &&
                         <Grid item xs={3} sm={3} md={3} lg={3}>

@@ -4,15 +4,32 @@ import Paper from "@material-ui/core/Paper";
 import colors from "../../colors";
 import styled, { createGlobalStyle } from "styled-components";
 import Typography from "@material-ui/core/Typography";
-import { Button, TextField } from "../CommonComponents";
+import { Button, TextField, MUCheckbox } from "../CommonComponents";
 import { MenuItem, Select, InputLabel } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import { TextareaAutosize } from '@material-ui/core';
+import DateFnsUtils from '@date-io/date-fns';
+import { DatePicker, KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import * as Constants from "../../constants";
 import axios from "../../axios";
 import { useHistory } from "react-router-dom";
 import { LoadingScreen } from "../CommonComponents";
 import { Link } from "react-router-dom";
+import { makeStyles } from '@material-ui/core/styles';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+import en from './../../lang/en'
+import es from './../../lang/es'
+import counterpart from 'counterpart';
+import Translate from 'react-translate-component';
+
+counterpart.registerTranslations('en', en);
+counterpart.registerTranslations('es', es);
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -21,7 +38,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const MainContainer = styled(Container)`
-  height: 180%;
+  height: 190%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,8 +47,8 @@ const MainContainer = styled(Container)`
 const StyledPaper = styled(Paper)`
   position: relative;
   display: flex;
-  width: 70%;
-  margin-top: 30%;
+  width: 50%;
+  margin-top: 60%;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -68,17 +85,33 @@ const SeparatedButton = styled(Button)`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  width: 40%;
+  width: 60%;
 `;
 const box = styled(Container)`
   display: flex;
   flex-direction: row;
 `;
 
+
+
 //{8,}
 const generalInputRegex = /^[a-zA-Z0-9¡¿?@.:+]*$/gim;
 const emailRegex = /^([\w.%+-]+)@([\w-])+(\.+[\w]{2,})*$/gim;
 const credentialRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[¡¿?@:+]).{8,}$/gim;
+
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const Register = ({ login }) => {
   const [email, setEmail] = useState("");
@@ -105,16 +138,39 @@ const Register = ({ login }) => {
   const [timeTravel, setTimeTravel] = useState("1");
   const [biography, setBiography] = useState("");
   const [nationalCode, setNationalCode] = useState("");
-  const [knowCountry, setKnowCountry] = useState("1");
+  const [checkedGuatemala, setCheckedGuatemala] = useState(false);
+  const [checkedSpanish, setCheckedSpanish] = useState(false);
+  const [knowCountry, setKnowCountry] = useState("4");
   const [preferWorkWith, setPreferWorkWith] = useState("");
   const [projectInterest, setProjectInterest] = useState("4");
   const [foodInfo, setFoodInfo] = useState("0");
+  const [vegetarian, setVegetarian] = useState(false);
   const [role, setRole] = useState("Other");
   const [cName, setCName] = useState("");
+  const [cLastName, setCLastname] = useState("");
   const [cEmail, setCEmail] = useState("");
+  const [cCode, setCCode] = useState("")
   const [cPhone, setCPhone] = useState("");
   const [bType, setBType] = useState("0");
   const [allergies, setAllergies] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [open, setOpen] = React.useState(false);
+  const classes = useStyles();
+
+  let lang = localStorage.getItem('lang')
+  console.log('ESTE ES EL LANG', lang)
+  counterpart.setLocale(lang);
+
+  function handleDateChange(date) {
+    setSelectedDate(date)
+    console.log(date)
+    let day = ("0" + date.getDate()).slice(-2)
+    console.log('el dia es' + day)
+    let month = ("0" + (date.getMonth() + 1)).slice(-2)
+
+    let fulldate = date.getFullYear().toString() + "-" + month + "-" + day
+    handleBirthDateChange(fulldate)
+  }
   const handleEmailChange = event => {
     console.log(event.target.value);
     let emailValid = event.target.value.match(emailRegex);
@@ -144,6 +200,10 @@ const Register = ({ login }) => {
     console.log(event.target.value);
     setBType(event.target.value);
   };
+  const handleCCodeChange = event => {
+    console.log(event.target.value);
+    setCCode(event.target.value);
+  }
   const handleCPhoneChange = event => {
     console.log(event.target.value);
     setCPhone(event.target.value);
@@ -152,6 +212,10 @@ const Register = ({ login }) => {
     console.log(event.target.value);
     setCName(event.target.value);
   };
+  const handleCLastnameChange = event => {
+    console.log(event.target.value);
+    setCLastname(event.target.value);
+  }
   const handleRoleChange = event => {
     console.log(event.target.value);
     setRole(event.target.value);
@@ -164,9 +228,10 @@ const Register = ({ login }) => {
     console.log(event.target.value);
     setLastName(event.target.value);
   };
-  const handleBirthDateChange = event => {
-    console.log(event.target.value);
-    setBirthDate(event.target.value);
+  function handleBirthDateChange(date) {
+    console.log("en la funcion")
+    console.log(date);
+    setBirthDate(date);
   };
   const handleOccupationChange = event => {
     console.log(event.target.value);
@@ -204,13 +269,35 @@ const Register = ({ login }) => {
     console.log(event.target.value);
     setBiography(event.target.value);
   };
+
   const handleNationalCodeChange = event => {
     console.log(event.target.value);
     setNationalCode(event.target.value);
   };
-  const handleKnowCountryChange = event => {
-    console.log(event.target.value);
-    setKnowCountry(event.target.value);
+
+  function handleKnowCountryChange(guate, esp) {
+    if (guate === true && esp === true) {
+      setKnowCountry("1")
+    }
+    if (guate === true && esp === false) {
+      setKnowCountry("2")
+    }
+    if (guate === false && esp === true) {
+      setKnowCountry("3")
+    }
+    if (guate === false && esp === false) {
+      setKnowCountry("4")
+    }
+  };
+
+  const handleChangeCheckedSpanish = (event) => {
+    setCheckedSpanish(event.target.checked);
+    handleKnowCountryChange(checkedGuatemala, event.target.checked)
+  };
+  const handleChangeCheckedGuatemala = (event) => {
+    setCheckedGuatemala(event.target.checked);
+    handleKnowCountryChange(event.target.checked, checkedSpanish)
+
   };
   const handleProjectInterestChange = event => {
     console.log(event.target.value);
@@ -220,10 +307,19 @@ const Register = ({ login }) => {
     console.log(event.target.value);
     setPreferWorkWith(event.target.value);
   };
-  const handleFoodInfoChange = event => {
-    console.log(event.target.value);
-    setFoodInfo(event.target.value);
+  function handleFoodInfoChange(food) {
+    console.log(food);
+    setFoodInfo(food);
   };
+  const handleVegetarianChange = event => {
+    setVegetarian(event.target.checked);
+    if (event.target.checked) {
+      handleFoodInfoChange("2")
+    }
+    else {
+      handleFoodInfoChange("0")
+    }
+  }
   const handlePasswordChange = event => {
     let passwordValidate = event.target.value.match(credentialRegex);
     setValidPassword(passwordValidate != null);
@@ -235,10 +331,22 @@ const Register = ({ login }) => {
 
     setPassword(event.target.value);
   };
+  const handleClick = () => {
+
+    history.push("/login")
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+    handleClick()
+  };
 
   const submit = event => {
     event.preventDefault();
-    
+
     let req = {
       name,
       birthDate,
@@ -252,47 +360,47 @@ const Register = ({ login }) => {
       timeTravel,
       knowCountry,
       projectInterest,
-      preferWorkWith:0,
-      contactInfo:[{
+      preferWorkWith: 0,
+      contactInfo: [{
         role,
-        name: cName,
-        phone:cPhone,
-        email:cEmail
+        name: cName + " " + cLastName,
+        phone: cCode + " " + cPhone,
+        email: cEmail
       }],
-      healthInfo:{"btype":bType,"pcondition":"NA","allergies":allergies,"medicine":"NA"},
+      healthInfo: { "btype": bType, "pcondition": "NA", "allergies": allergies, "medicine": "NA" },
       foodInfo,
-      lname:lastName,
-      bio:biography,
+      lname: lastName,
+      bio: biography,
       nationality,
       ncode: nationalCode,
       password,
-      photo:""
+      photo: ""
 
     }
     //alert(JSON.stringify(req));
     setLoading(true);
     axios
-        .post(Constants.REGISTER, JSON.stringify(req), {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-        .then(response => {
-          //alert(response)
-          console.log("user logged in: ", response);
-          alert("Su usuario ha sido registrado")
-          history.push('/login');
-        })
-        .catch(response => {
-          console.log(response);
-        
-          //alert(response)
-          if (response.data == "Invalid Credentials") {
-            setValidTries({ validTries } + 1);
-          }
-          showFormError(true);
-          setLoading(false);
-        });
+      .post(Constants.REGISTER, JSON.stringify(req), {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(response => {
+        //alert(response)
+        console.log("user logged in: ", response);
+        setOpen(true)
+
+      })
+      .catch(response => {
+        console.log(response);
+
+        //alert(response)
+        if (response.data == "Invalid Credentials") {
+          setValidTries({ validTries } + 1);
+        }
+        showFormError(true);
+        setLoading(false);
+      });
   };
   return (
     <MainContainer>
@@ -303,7 +411,7 @@ const Register = ({ login }) => {
           <LockOutlinedIcon />
         </CustomAvatar>
         <Typography variant="h5">Create account</Typography>
-        <Form noValidate onSubmit={submit}>
+        <Form noValidate onSubmit={submit} variant="outlined" className={classes.formControl}>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <TextField
               variant="outlined"
@@ -313,7 +421,7 @@ const Register = ({ login }) => {
               onChange={handleNameChange}
               fullWidth
               id="name"
-              label="Name"
+              label={<Translate content="name" />}
               name="name"
               autoComplete="name"
               autoFocus
@@ -326,10 +434,9 @@ const Register = ({ login }) => {
               onChange={handleLastNameChange}
               fullWidth
               id="lastName"
-              label="Last Name"
+              label={<Translate content="lastname" />}
               name="lastName"
               autoComplete="lastName"
-              autoFocus
             />
           </div>
           <div style={{ display: "flex", flexDirection: "row" }}>
@@ -341,10 +448,9 @@ const Register = ({ login }) => {
               onChange={handleNationalCodeChange}
               fullWidth
               id="nationalCode"
-              label="National Code"
+              label={<Translate content="countrycode" />}
               name="nationalCode"
               autoComplete="nationalCode"
-              autoFocus
             />
 
             <TextField
@@ -355,54 +461,9 @@ const Register = ({ login }) => {
               onChange={handlePhoneChange}
               fullWidth
               id="phone"
-              label="Phone"
+              label={<Translate content="phone" />}
               name="Phone"
               autoComplete="Phone"
-              autoFocus
-            />
-          </div>
-          <InputLabel id="label">Select your birth date</InputLabel>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            value={birthDate}
-            onChange={handleBirthDateChange}
-            fullWidth
-            type="date"
-            id="BirthDate"
-            //label="BirthDate"
-            defaultValue="2001-01-01"
-            name="BirthDate"
-            autoFocus
-          />
-
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              value={occupation}
-              onChange={handleOccupationChange}
-              fullWidth
-              id="Occupation"
-              label="Occupation"
-              name="Occupation"
-              autoComplete="Occupation"
-              autoFocus
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              value={nationality}
-              onChange={handleNationalityChange}
-              fullWidth
-              id="nationality"
-              label="Nationality"
-              name="Nationality"
-              autoComplete="Nationality"
-              autoFocus
             />
           </div>
           <div style={{ display: "flex", flexDirection: "row" }}>
@@ -414,15 +475,14 @@ const Register = ({ login }) => {
               onChange={handleEmailChange}
               fullWidth
               id="email"
-              label="Email"
+              label={<Translate content="email" />}
               name="email"
               autoComplete="email"
-              autoFocus
             />
           </div>
 
           <div style={{ display: "flex", flexDirection: "row" }}></div>
-          <div>
+          <div style={{ marginBottom: "5%" }}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -431,12 +491,55 @@ const Register = ({ login }) => {
               onChange={handlePasswordChange}
               fullWidth
               name="password"
-              label="Password"
+              label={<Translate content="password" />}
               type="password"
               id="password"
               autoComplete="current-password"
+              helperText={<Translate content="emailText" />}
             />
           </div>
+
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker
+              autoOk
+              variant="inline"
+              inputVariant="outlined"
+              disableFuture="false"
+              label={<Translate content="selectBirth" />}
+              format="dd/MM/yyyy"
+              value={selectedDate}
+              InputAdornmentProps={{ position: "start" }}
+              onChange={handleDateChange}
+            />
+          </MuiPickersUtilsProvider>
+
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              value={occupation}
+              onChange={handleOccupationChange}
+              fullWidth
+              id="Occupation"
+              label={<Translate content="occup" />}
+              name="Occupation"
+              autoComplete="Occupation"
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              value={nationality}
+              onChange={handleNationalityChange}
+              fullWidth
+              id="nationality"
+              label={<Translate content="nationality" />}
+              name="Nationality"
+              autoComplete="Nationality"
+            />
+          </div>
+
           <TextField
             variant="outlined"
             margin="normal"
@@ -445,28 +548,37 @@ const Register = ({ login }) => {
             onChange={handleBiographyChange}
             fullWidth
             id="bio"
-            label="Biography"
+            label={<Translate content="bio" />}
             name="Biography"
             autoComplete="Biography"
-            autoFocus
+            multiline
+            rows={4}
           />
+
           <div
-            style={{ display: "flex", flexDirection: "row", marginTop: "5%" }}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginTop: "5%",
+              alignItems: "center"
+            }}
           >
-            <InputLabel id="label" style={{ marginRight: "5%" }}>
-              Civil Status
+            <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+              <Translate content="civilstatus" />
             </InputLabel>
             <Select
               labelId="civilStatus"
               id="civilStatus"
+              variant="outlined"
               value={civilStatus}
               onChange={handleCivilStatusChange}
+              style={{ width: "100%" }}
             >
-              <MenuItem value="1">Single</MenuItem>
-              <MenuItem value="2">Married</MenuItem>
-              <MenuItem value="3">Widow</MenuItem>
-              <MenuItem value="4">Divorced</MenuItem>
-              <MenuItem value="5">Free Union</MenuItem>
+              <MenuItem value="1"><Translate content="single" /></MenuItem>
+              <MenuItem value="2"><Translate content="married" /></MenuItem>
+              <MenuItem value="3"><Translate content="widow" /></MenuItem>
+              <MenuItem value="4"><Translate content="divorced" /></MenuItem>
+              <MenuItem value="5"><Translate content="freeUnion" /></MenuItem>
             </Select>
           </div>
 
@@ -474,136 +586,174 @@ const Register = ({ login }) => {
             style={{
               display: "flex",
               flexDirection: "row",
-              marginBottom: "10%",
-              marginTop: "5%"
+              marginTop: "5%",
+              alignItems: "center"
             }}
           >
-            <InputLabel id="label" style={{ marginRight: "5%" }}>
-              Gender
+            <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+              <Translate content="gender" />
             </InputLabel>
             <Select
               labelId="gender"
               id="gender"
+              variant="outlined"
               value={gender}
               onChange={handleGenderChange}
+              style={{ width: "100%" }}
             >
-              <MenuItem value="0">Prefer Not To Say</MenuItem>
-              <MenuItem value="1">Women</MenuItem>
-              <MenuItem value="2">Men</MenuItem>
+              <MenuItem value="0"><Translate content="noSay" /></MenuItem>
+              <MenuItem value="1"><Translate content="female" /></MenuItem>
+              <MenuItem value="2"><Translate content="male" /></MenuItem>
             </Select>
           </div>
+
           <div
             style={{
               display: "flex",
               flexDirection: "row",
-              marginBottom: "10%"
+              marginTop: "5%",
+              alignItems: "center"
             }}
           >
-            <InputLabel id="label" style={{ marginRight: "5%" }}>
-              Education Level
+            <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+              <Translate content="eduLevel" />
             </InputLabel>
             <Select
               labelId="educationLevel"
               id="educationLevel"
+              variant="outlined"
               value={educationLevel}
               onChange={handleEducationLevelChange}
-              style={{ marginRight: "5%" }}
+              style={{ width: "100%" }}
             >
-              <MenuItem value="1">Elementary</MenuItem>
-              <MenuItem value="2">HighSchool</MenuItem>
-              <MenuItem value="3">University</MenuItem>
-              <MenuItem value="4">Master</MenuItem>
-              <MenuItem value="5">PHD</MenuItem>
-            </Select>
-            <InputLabel id="label" style={{ marginRight: "5%" }}>
-              Time to travel
-            </InputLabel>
-            <Select
-              labelId="timeTravel"
-              id="timeTravel"
-              value={timeTravel}
-              onChange={handleTimeTravelChange}
-            >
-              <MenuItem value="1">1 week</MenuItem>
-              <MenuItem value="2">2 weeks</MenuItem>
-              <MenuItem value="3">4 weeks</MenuItem>
-              <MenuItem value="4">6 or more weeks</MenuItem>
+              <MenuItem value="1"><Translate content="middle" /></MenuItem>
+              <MenuItem value="2"><Translate content="highschool" /></MenuItem>
+              <MenuItem value="3"><Translate content="university" /></MenuItem>
+              <MenuItem value="4"><Translate content="master" /></MenuItem>
+              <MenuItem value="5"><Translate content="phd" /></MenuItem>
             </Select>
           </div>
+
           <div
             style={{
               display: "flex",
               flexDirection: "row",
-              marginBottom: "10%"
+              marginTop: "5%",
+              alignItems: "center"
             }}
           >
-            <InputLabel id="label" style={{ marginRight: "5%" }}>
-              ¿Do you know Guatemala?¿Do you know Spanish?
-            </InputLabel>
-            <Select
-              labelId="knowCountry"
-              id="knowCountry"
-              value={knowCountry}
-              onChange={handleKnowCountryChange}
-            >
-              <MenuItem value="1">Yes,Yes</MenuItem>
-              <MenuItem value="2">Yes,No</MenuItem>
-              <MenuItem value="3">No,Yes</MenuItem>
-              <MenuItem value="4">No,No</MenuItem>
-            </Select>
-          </div>
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <InputLabel id="label" style={{ marginRight: "5%" }}>
-              Which projects do you prefer?
+            <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+              <Translate content="projectsPrefer" />
             </InputLabel>
             <Select
               labelId="projectInterest"
               id="projectInterest"
+              variant="outlined"
               value={projectInterest}
               onChange={handleProjectInterestChange}
+              style={{ width: "100%" }}
             >
-              <MenuItem value="1">Education</MenuItem>
-              <MenuItem value="2">Health</MenuItem>
-              <MenuItem value="3">Environment</MenuItem>
-              <MenuItem value="4">All</MenuItem>
-            </Select>
-          </div>
-          <div
-            style={{ display: "flex", flexDirection: "row", marginTop: "10%" }}
-          >
-            <InputLabel id="label" style={{ marginRight: "5%" }}>
-              Type of food
-            </InputLabel>
-            <Select
-              labelId="foodInfo"
-              id="foodInfo"
-              value={foodInfo}
-              onChange={handleFoodInfoChange}
-            >
-              <MenuItem value="0">Nothing in especial</MenuItem>
-              <MenuItem value="1">Vegetarian</MenuItem>
-              <MenuItem value="2">Vegan</MenuItem>
+              <MenuItem value="1"><Translate content="education" /></MenuItem>
+              <MenuItem value="2"><Translate content="health" /></MenuItem>
+              <MenuItem value="3"><Translate content="environment" /></MenuItem>
+              <MenuItem value="4"><Translate content="all" /></MenuItem>
             </Select>
           </div>
 
-          <Typography variant="h6">Emergency Contact</Typography>
           <div
-            style={{ display: "flex", flexDirection: "row", marginTop: "5%" }}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginTop: "5%",
+              alignItems: "center"
+            }}
           >
-            <InputLabel id="label" style={{ marginRight: "5%" }}>
-              Role
+            <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }}>
+              <Translate content="timeTravel" />
+            </InputLabel>
+            <Select
+              labelId="timeTravel"
+              id="timeTravel"
+              variant="outlined"
+              value={timeTravel}
+              onChange={handleTimeTravelChange}
+              style={{ width: "100%" }}
+            >
+              <MenuItem value="1"><em>1  <Translate content="week"/></em></MenuItem>
+              <MenuItem value="2"><em>2  <Translate content="weeks"/></em></MenuItem>
+              <MenuItem value="3"><em>4  <Translate content="weeks"/></em></MenuItem>
+              <MenuItem value="4"><em>6  <Translate content="moreWeeks"/></em></MenuItem>
+            </Select>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "row", marginTop: "10%" }}>
+            <FormGroup row>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={checkedGuatemala}
+                    onChange={handleChangeCheckedGuatemala}
+                  />
+                }
+                labelPlacement="start"
+                label={<Translate content="knowGuate" />}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={checkedSpanish}
+                    onChange={handleChangeCheckedSpanish}
+                  />
+                }
+                labelPlacement="start"
+                label={<Translate content="knowSpanish" />}
+              />
+            </FormGroup>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "row", marginTop: "1%" }}>
+            <FormGroup row>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={vegetarian}
+                    onChange={handleVegetarianChange}
+                  />
+                }
+                labelPlacement="start"
+                label= {<Translate content='vegan'/>}
+              />
+            </FormGroup>
+          </div>
+
+
+          <Typography variant="h6" style={{ marginTop: "10%" }}><Translate content="emergencyContact" /></Typography>
+          <Typography variant="body2" style={{ marginTop: "2%", color: "#70818c" }}> <Translate content="emergencyText" /> </Typography>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginTop: "5%",
+              alignItems: "center"
+            }}
+          >
+            <InputLabel id="label" style={{ marginRight: "5%", width: "25%" }}>
+              <Translate content="role" />
             </InputLabel>
             <Select
               labelId="role"
               id="role"
+              variant="outlined"
               value={role}
               onChange={handleRoleChange}
-              style={{ marginRight: "5%" }}
+              style={{ width: "100%" }}
             >
-              <MenuItem value="Other">Other</MenuItem>
-              <MenuItem value="Mother">Mother</MenuItem>
-              <MenuItem value="Father">Father</MenuItem>
+              <MenuItem value="Other"><Translate content="other" /></MenuItem>
+              <MenuItem value="Mother"><Translate content="mother" /></MenuItem>
+              <MenuItem value="Father"><Translate content="father" /></MenuItem>
             </Select>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -612,13 +762,30 @@ const Register = ({ login }) => {
               onChange={handleCNameChange}
               fullWidth
               id="cName"
-              label="Name"
+              label={<Translate content="name" />}
               name="CName"
-              autoComplete="name"
-              autoFocus
+              autoComplete="cname"
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              value={cLastName}
+              onChange={handleCLastnameChange}
+              fullWidth
+              id="clastName"
+              label={<Translate content="lastname" />}
+              name="clastName"
+              autoComplete="clastName"
             />
           </div>
-          <div style={{ display: "flex", flexDirection: "row" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center"
+            }}
+          >
             <TextField
               variant="outlined"
               margin="normal"
@@ -627,11 +794,25 @@ const Register = ({ login }) => {
               onChange={handleCEmailChange}
               fullWidth
               id="cEmail"
-              label="Email"
+              label={<Translate content="email" />}
               name="cEmail"
               autoComplete="email"
-              autoFocus
             />
+          </div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              value={cCode}
+              onChange={handleCCodeChange}
+              fullWidth
+              id="cCode"
+              label={<Translate content="code" />}
+              name="cCode"
+              autoComplete="code"
+            />
+
             <TextField
               variant="outlined"
               margin="normal"
@@ -640,28 +821,35 @@ const Register = ({ login }) => {
               onChange={handleCPhoneChange}
               fullWidth
               id="cPhone"
-              label="Phone"
+              label={<Translate content="phone" />}
               name="cPhone"
               autoComplete="Phone"
-              autoFocus
             />
           </div>
 
-          <Typography variant="h6">Health Info</Typography>
+
+          <Typography variant="h6" style={{ marginTop: "10%" }}><Translate content="healthInfo" /></Typography>
+          <Typography variant="body2" style={{ marginTop: "2%", color: "#70818c" }}> <Translate content="healthText" /> </Typography>
           <div
-            style={{ display: "flex", flexDirection: "row", marginTop: "5%" }}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginTop: "5%",
+              alignItems: "center"
+            }}
           >
-            <InputLabel id="label" style={{ marginRight: "5%" }}>
-              Blood type
+            <InputLabel id="label" style={{ marginRight: "5%", width: "55%" }} >
+              <Translate content="typeBlood" />
             </InputLabel>
             <Select
               labelId="bType"
               id="bType"
+              variant="outlined"
               value={bType}
               onChange={handleBTypeChange}
-              style={{ marginRight: "5%" }}
+              style={{ width: "100%" }}
             >
-              <MenuItem value="0">Dont know</MenuItem>
+              <MenuItem value="0"><Translate content="dontKnow" /></MenuItem>
               <MenuItem value="1">O-</MenuItem>
               <MenuItem value="2">O+</MenuItem>
               <MenuItem value="3">A+</MenuItem>
@@ -671,6 +859,8 @@ const Register = ({ login }) => {
               <MenuItem value="7">AB-</MenuItem>
               <MenuItem value="8">AB+</MenuItem>
             </Select>
+          </div>
+          <div>
             <TextField
               variant="outlined"
               margin="normal"
@@ -679,10 +869,12 @@ const Register = ({ login }) => {
               onChange={handleAllergiesChange}
               fullWidth
               id="allergies"
-              label="Allergies"
+              label={<Translate content="allergies" />}
               name="allergies"
               autoComplete="Allergies"
-              autoFocus
+              helperText={<Translate content="allergiesText" />}
+              multiline
+              rows={2}
             />
           </div>
           {formError && (
@@ -700,9 +892,14 @@ const Register = ({ login }) => {
             variant="contained"
             color="primary"
           >
-            Create account
+            <Translate content="createaccount" />
           </SeparatedButton>
         </Form>
+        <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="success">
+            <Translate content="successAccount" />
+          </Alert>
+        </Snackbar>
       </StyledPaper>
     </MainContainer>
   );

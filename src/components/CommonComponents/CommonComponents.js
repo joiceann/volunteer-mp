@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import colors from '../../colors';
+import { sizing } from '@material-ui/system';
 import MuButton from '@material-ui/core/Button';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
@@ -8,6 +9,8 @@ import {
   TextField as MuTextField,
   Typography,
 } from '@material-ui/core';
+import { AppBar as MUAppBar} from '@material-ui/core';
+import {Toolbar as MUToolbar} from '@material-ui/core';
 import{
   KeyboardDatePicker,
 } from '@material-ui/pickers';
@@ -21,6 +24,23 @@ export const Button = styled(MuButton)`
     background-color: ${colors.main};
   }
 `;
+
+export const MUTextHover = styled (Typography)`
+  &:hover {
+    text-decoration: underline;
+    cursor:pointer;
+  }
+`;
+
+export const LangButton = styled(MuButton)`
+  background-color: ${colors.darkYellow};
+  height:20px;
+  
+  &:hover {
+    background-color: ${colors.main};
+  }
+`;
+
 
 export const HeaderLine = styled.div`
   display: flex;
@@ -37,6 +57,15 @@ export const PrecautionButton = styled(MuButton)`
   &:hover {
     background-color: ${colors.main};
   }
+`;
+
+export const YellowButton = styled(MuButton)`
+  background-color: ${colors.yellow};
+  color: ${colors.fg};
+  &:hover {
+    background-color: ${colors.darkYellow};
+  }
+  
 `;
 
 export const TextField = styled(MuTextField)`

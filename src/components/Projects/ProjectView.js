@@ -56,7 +56,7 @@ const ProjectView = ({ open, onClose, project }) => {
           <Filler>
           </Filler>
           <Button autoFocus color="inherit" onClick={onClose}>
-            Suscribirme
+            Suscribirrrrrme
           </Button>
         </Toolbar>
       </CustomAppBar>

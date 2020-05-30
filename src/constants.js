@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://voluntariosapiweb-dev.pxvnantpm2.us-west-2.elasticbeanstalk.com/api/v1';
+export const BASE_URL = 'http://localhost:8081/';
 
 export const ACCEPT_VOLUNTEER = '/projects/accept'
 export const CREATE_PROJECT = '/projects/project';
